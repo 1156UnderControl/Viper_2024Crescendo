@@ -3,11 +3,13 @@ package frc.robot.subsystems.Intake;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Motors.Motor;
 import frc.robot.subsystems.Motors.SparkMAXMotor;
 import frc.robot.subsystems.Shooter.IShooter;
 import frc.robot.subsystems.Shooter.ShooterSubsystem;
+import frc.robot.subsystems.Intake.IIntake;
 
 public class IntakeSubsystem implements IIntake {
   private static IntakeSubsystem mInstance = null;
@@ -22,13 +24,13 @@ public class IntakeSubsystem implements IIntake {
 
   private static double kDt = 0.02;
 
-  CANSparkMax mFeederSpark = new CANSparkMax(ShooterConstants.ID_feeder, MotorType.kBrushless);
-  CANSparkMax mShooterPivotSpark = new CANSparkMax(ShooterConstants.ID_pivotShooter, MotorType.kBrushless);
+  CANSparkMax mIntakeSparkMax = new CANSparkMax(IntakeConstants.ID_intake, MotorType.kBrushless);
+  CANSparkMax mPivotIntakeSparkMax = new CANSparkMax(IntakeConstants.ID_pivotIntake, MotorType.kBrushless);
 
-  Motor mShooterUp = new SparkMAXMotor(mShooterUpSpark, false);
-  Motor mShooterDown = new SparkMAXMotor(mShooterDownSpark, false);
+  Motor mIntake = new SparkMAXMotor(mIntakeSparkMax, false);
+  Motor mPivotIntake = new SparkMAXMotor(mPivotIntakeSparkMax, false);
 
-  IShooter aa = ShooterSubsystem.getInstance();
+  IShooter InterfaceShooter = ShooterSubsystem.getInstance();
 
   private IntakeSubsystem() {
     // conversion factor: position: 360, velocity: 6
@@ -36,6 +38,8 @@ public class IntakeSubsystem implements IIntake {
 
   @Override
   public void intake() {
+
+    mIntake.set();
 
   }
 

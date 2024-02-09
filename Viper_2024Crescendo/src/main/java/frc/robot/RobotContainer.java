@@ -21,7 +21,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.JoystickConstants;
 import frc.robot.commands.Swerve.Teleoperado;
 import frc.robot.subsystems.Shooter.ShooterSubsystem;
-import frc.robot.subsystems.Swerve.SwerveSubsystem;
+import frc.robot.subsystems.Intake.IntakeSubsystem;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -36,7 +37,9 @@ public class RobotContainer {
   private final SwerveSubsystem swerve = SwerveSubsystem.getInstance(new File(Filesystem.getDeployDirectory(),
       "swerve/swerve"));
 
+  private final IntakeSubsystem intake = IntakeSubsystem.getInstance();
   private final ShooterSubsystem shooter = ShooterSubsystem.getInstance();
+
 
   private final SendableChooser<Command> autoChooser;
 
