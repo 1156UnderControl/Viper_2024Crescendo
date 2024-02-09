@@ -7,6 +7,7 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Motors.Motor;
 import frc.robot.subsystems.Motors.SparkMAXMotor;
 import frc.robot.subsystems.Shooter.IShooter;
+import frc.robot.subsystems.Shooter.ShooterSubsystem;
 
 public class IntakeSubsystem implements IIntake {
   private static IntakeSubsystem mInstance = null;
@@ -27,7 +28,7 @@ public class IntakeSubsystem implements IIntake {
   Motor mShooterUp = new SparkMAXMotor(mShooterUpSpark, false);
   Motor mShooterDown = new SparkMAXMotor(mShooterDownSpark, false);
 
-  IShooter aa = IntakeSubsystem.getInstance();
+  IShooter aa = ShooterSubsystem.getInstance();
 
   private IntakeSubsystem() {
     // conversion factor: position: 360, velocity: 6
