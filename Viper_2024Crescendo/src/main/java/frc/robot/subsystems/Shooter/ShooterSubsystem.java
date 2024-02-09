@@ -14,13 +14,13 @@ import frc.robot.subsystems.Motors.Motor;
 import frc.robot.subsystems.Motors.SparkMAXMotor;
 import frc.robot.subsystems.Sensors.InfraRed;
 
-public class IntakeSubsystem extends SubsystemBase implements IShooter {
+public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
-  private static IntakeSubsystem mInstance = null;
+  private static ShooterSubsystem mInstance = null;
 
-  public static IntakeSubsystem getInstance() {
+  public static ShooterSubsystem getInstance() {
     if (mInstance == null) {
-      mInstance = new IntakeSubsystem();
+      mInstance = new ShooterSubsystem();
     }
 
     return mInstance;
@@ -45,7 +45,7 @@ public class IntakeSubsystem extends SubsystemBase implements IShooter {
   private TrapezoidProfile.State mSetpoint = new TrapezoidProfile.State();
   private TrapezoidProfile.State mGoal = new TrapezoidProfile.State();
 
-  private IntakeSubsystem() {
+  private ShooterSubsystem() {
     mShooterUp.setMotorBrake(false);
     mShooterDown.setMotorBrake(false);
     mFeeder.setMotorBrake(false);

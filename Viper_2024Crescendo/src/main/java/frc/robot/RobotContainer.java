@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.JoystickConstants;
 import frc.robot.commands.Swerve.Teleoperado;
-import frc.robot.subsystems.Shooter.IntakeSubsystem;
+import frc.robot.subsystems.Shooter.ShooterSubsystem;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
 /**
@@ -36,7 +36,7 @@ public class RobotContainer {
   private final SwerveSubsystem swerve = SwerveSubsystem.getInstance(new File(Filesystem.getDeployDirectory(),
       "swerve/swerve"));
 
-  private final IntakeSubsystem shooter = IntakeSubsystem.getInstance();
+  private final ShooterSubsystem shooter = ShooterSubsystem.getInstance();
 
   private final SendableChooser<Command> autoChooser;
 
