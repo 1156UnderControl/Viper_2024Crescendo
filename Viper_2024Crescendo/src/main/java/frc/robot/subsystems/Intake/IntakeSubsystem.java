@@ -36,19 +36,19 @@ public class IntakeSubsystem implements IIntake {
 
   IShooter InterfaceShooter = ShooterSubsystem.getInstance();
 
-  CANPID pivotIntakePID = new PIDController(IntakeConstants.pitvotIntakeP, IntakeConstants.pitvotIntakeI, IntakeConstants.pitvotIntakeD) ;
-
-
   private void IntakeSubsystem() {
     // conversion factor: position: 360, velocity: 6
+    mPivotIntake.setPositionFactor(360);
+    mPivotIntake.setVelocityFactor(6);
+
+
   }
 
   @Override
   public void intake() {
 
     mIntake.set(IntakeConstants.intakeSpeed);    
-    mPivotIntake.set(pivotIntakePID.calculate(mPivotIntake.getPosition(), IntakeConstants.intakeCollectPosition));
-    mPivotIntakeSparkMax.pid
+    //Add PID do intake
   }
 
   @Override
