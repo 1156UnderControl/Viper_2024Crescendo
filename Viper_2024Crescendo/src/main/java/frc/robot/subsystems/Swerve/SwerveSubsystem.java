@@ -84,8 +84,8 @@ public class SwerveSubsystem extends SubsystemBase {
     swerveDrive.updateOdometry();
     if (!trackSpeaker) {
       LimelightHelpers.setPipelineIndex("", 0);
-      poseVision = LimelightHelpers.getBotPose2d_wpiBlue("");
-      aprField2d.setRobotPose(poseVision);
+      // poseVision = LimelightHelpers.getBotPose2d_wpiBlue("");
+      // aprField2d.setRobotPose(poseVision);
     } else {
       LimelightHelpers.setPipelineIndex("", 1);
     }

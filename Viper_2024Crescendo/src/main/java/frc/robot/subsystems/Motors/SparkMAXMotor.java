@@ -177,6 +177,11 @@ public class SparkMAXMotor implements Motor {
   }
 
   @Override
+  public void setInvertedEncoder(boolean inverted) {
+    encoder.setInverted(inverted);
+  }
+
+  @Override
   public void burnFlash() {
     try {
       Thread.sleep(200);

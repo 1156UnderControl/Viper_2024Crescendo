@@ -17,6 +17,8 @@ public interface Motor {
 
   void setInverted(boolean inverted);
 
+  void setInvertedEncoder(boolean inverted);
+
   void burnFlash();
 
   void set(double percentOutput);

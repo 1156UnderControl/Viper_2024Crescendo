@@ -15,12 +15,12 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.JoystickConstants;
 import frc.robot.commands.Swerve.Teleoperado;
+import frc.robot.subsystems.Shooter.ShooterSubsystem;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
 /**
@@ -33,9 +33,10 @@ import frc.robot.subsystems.Swerve.SwerveSubsystem;
  */
 public class RobotContainer {
 
-  // The robot's subsystems and commands are defined here...
-  private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
+  private final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
       "swerve/swerve"));
+
+  private final ShooterSubsystem shooter = ShooterSubsystem.getInstance();
 
   private final SendableChooser<Command> autoChooser;
 
@@ -45,7 +46,7 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-
+    // shooter.periodic();
     NamedCommands.registerCommand("Shoot", new PrintCommand("SHOOT"));
     NamedCommands.registerCommand("Intake", new PrintCommand("INTAKING"));
 
@@ -54,7 +55,7 @@ public class RobotContainer {
 
     configureBindings();
 
-    drivebase.setDefaultCommand(new Teleoperado(drivebase,
+    swerve.setDefaultCommand(new Teleoperado(swerve,
         () -> -MathUtil.applyDeadband(driverXbox.getLeftX(), JoystickConstants.DEADBAND),
         () -> -MathUtil.applyDeadband(driverXbox.getLeftY(), JoystickConstants.DEADBAND),
         () -> -driverXbox.getRightX(),
@@ -65,31 +66,25 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    new JoystickButton(driverXbox, 1).onTrue(new InstantCommand(drivebase::setAngleNeg90));
-    new JoystickButton(driverXbox, 2).onTrue(new InstantCommand(drivebase::setAngle180));
-    new JoystickButton(driverXbox, 3).onTrue(new InstantCommand(drivebase::setAngle0));
-    new JoystickButton(driverXbox, 4).onTrue(new InstantCommand(drivebase::setAngle90));
-    new JoystickButton(driverXbox, 5).onTrue(new InstantCommand(drivebase::setAngle45));
-    new JoystickButton(driverXbox, 6).toggleOnTrue((Commands.run(() -> drivebase.addVisionReading())));
-    new JoystickButton(driverXbox, 6).toggleOnFalse(Commands.none());
-    new JoystickButton(driverXbox, 7).onTrue(new InstantCommand(drivebase::setTrackSpeaker));
-    new JoystickButton(driverXbox, 8).onTrue(new InstantCommand(drivebase::setStopTrackSpeaker));
+    new JoystickButton(driverXbox, 1).onTrue(new InstantCommand(swerve::setAngleNeg90));
+    new JoystickButton(driverXbox, 2).onTrue(new InstantCommand(swerve::setAngle180));
+    new JoystickButton(driverXbox, 3).onTrue(new InstantCommand(swerve::setAngle0));
+    new JoystickButton(driverXbox, 4).onTrue(new InstantCommand(swerve::setAngle90));
+    new JoystickButton(driverXbox, 5).onTrue(new InstantCommand(swerve::setAngle45));
+    new JoystickButton(driverXbox, 7).onTrue(new InstantCommand(swerve::setTrackSpeaker));
+    new JoystickButton(driverXbox, 8).onTrue(new InstantCommand(swerve::setStopTrackSpeaker));
   }
 
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
   }
 
-  public void setDriveMode() {
-    // drivebase.setDefaultCommand();
-  }
-
   public void setMotorBrake(boolean brake) {
-    drivebase.setMotorBrake(brake);
+    swerve.setMotorBrake(brake);
   }
 
   public void setHeadingCorrection(boolean active) {
-    drivebase.setHeadingCorrection(active);
+    swerve.setHeadingCorrection(active);
   }
 
 }
