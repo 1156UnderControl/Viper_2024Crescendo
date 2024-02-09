@@ -38,6 +38,16 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 public class SwerveSubsystem extends SubsystemBase {
 
+  private static SwerveSubsystem mInstance = null;
+
+  public static SwerveSubsystem getInstance(File directory) {
+    if (mInstance == null) {
+      mInstance = new SwerveSubsystem(directory);
+    }
+
+    return mInstance;
+  }
+
   private final SwerveDrive swerveDrive;
 
   public boolean trackSpeaker;

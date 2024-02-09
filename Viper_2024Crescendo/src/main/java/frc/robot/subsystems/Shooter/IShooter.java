@@ -13,5 +13,7 @@ public interface IShooter {
 
   void shoot();
 
+  boolean hasShooted();
+
   boolean secureForIntake();
 }

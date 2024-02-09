@@ -16,19 +16,13 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
-import frc.robot.Constants.JoystickConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Joysticks.ControlBoard;
-import frc.robot.Joysticks.DriverController;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 import swervelib.SwerveController;
 import swervelib.math.SwerveMath;
 
-/**
- * Classe que calcula a partir da entrada do gamepad a saída do swerve
- */
 public class Teleoperado extends Command {
-  // Variáveis que guardam nossas funções do gamepad
   DoubleSupplier y;
   DoubleSupplier x;
   boolean boostActivate;
@@ -36,12 +30,10 @@ public class Teleoperado extends Command {
   DoubleSupplier turnX;
   DoubleSupplier turnY;
 
-  // Objetos necessárias para acessar funções e variáveis
   SwerveSubsystem swerve;
   SwerveController controller;
   ControlBoard mControlBoard = ControlBoard.getInstance();
 
-  // Variáveis que guardam a translação e velocidade angular do swerve
   Translation2d translation;
   ChassisSpeeds speedsWithAng;
   double angle;
@@ -53,7 +45,6 @@ public class Teleoperado extends Command {
 
   public Teleoperado(SwerveSubsystem swerve, DoubleSupplier y, DoubleSupplier x, DoubleSupplier turnX,
       DoubleSupplier turnY, DoubleSupplier triggerSpeed, DoubleSupplier boostActivate) {
-    // Aqui atribuimos as funções e subsistema
     this.y = y;
     this.x = x;
     this.boostActivate = mControlBoard.turboActivate();
@@ -62,18 +53,15 @@ public class Teleoperado extends Command {
     this.turnX = turnX;
     this.turnY = turnY;
     this.swerve = swerve;
-    controller = swerve.getSwerveController(); // Obtemos o controlador do swerve
-    // Adiciona a tração como requerimento
+    controller = swerve.getSwerveController();
     addRequirements(swerve);
   }
 
-  // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     initRotation = true;
   }
 
-  // Abaixo calculamos os valores de saída a partir dos nossos inputs
   @Override
   public void execute() {
 

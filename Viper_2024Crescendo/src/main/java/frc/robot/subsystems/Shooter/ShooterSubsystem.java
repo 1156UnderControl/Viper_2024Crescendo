@@ -58,7 +58,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     mShooterPivot.setPosition(0);
 
     mShooterUp.setVelocityFactor(1.8);
-    mShooterDown.setVelocityFactor(1 / 23.33);
+    mShooterDown.setVelocityFactor(1.8);
     mShooterPivot.setVelocityFactor(1 / 0.52);
     mShooterPivot.setPositionFactor(264 / 2.32);
     mShooterPivot.setInvertedEncoder(true);
@@ -103,6 +103,11 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   @Override
   public void securedPosition() {
     mShooterPivot.setPositionReference(profilePosition(10), getFeedForwardProfiled());
+  }
+
+  @Override
+  public boolean hasShooted() {
+    return false;
   }
 
   @Override

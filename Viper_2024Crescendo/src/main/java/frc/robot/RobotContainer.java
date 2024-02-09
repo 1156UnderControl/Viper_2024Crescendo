@@ -33,7 +33,7 @@ import frc.robot.subsystems.Swerve.SwerveSubsystem;
  */
 public class RobotContainer {
 
-  private final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
+  private final SwerveSubsystem swerve = SwerveSubsystem.getInstance(new File(Filesystem.getDeployDirectory(),
       "swerve/swerve"));
 
   private final ShooterSubsystem shooter = ShooterSubsystem.getInstance();
