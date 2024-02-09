@@ -10,6 +10,10 @@ import frc.robot.subsystems.Motors.SparkMAXMotor;
 import frc.robot.subsystems.Shooter.IShooter;
 import frc.robot.subsystems.Shooter.ShooterSubsystem;
 import frc.robot.subsystems.Intake.IIntake;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+
 
 public class IntakeSubsystem implements IIntake {
   private static IntakeSubsystem mInstance = null;
@@ -32,15 +36,19 @@ public class IntakeSubsystem implements IIntake {
 
   IShooter InterfaceShooter = ShooterSubsystem.getInstance();
 
-  private IntakeSubsystem() {
+  CANPID pivotIntakePID = new PIDController(IntakeConstants.pitvotIntakeP, IntakeConstants.pitvotIntakeI, IntakeConstants.pitvotIntakeD) ;
+
+
+  private void IntakeSubsystem() {
     // conversion factor: position: 360, velocity: 6
   }
 
   @Override
   public void intake() {
 
-    mIntake.set();
-
+    mIntake.set(IntakeConstants.intakeSpeed);    
+    mPivotIntake.set(pivotIntakePID.calculate(mPivotIntake.getPosition(), IntakeConstants.intakeCollectPosition));
+    mPivotIntakeSparkMax.pid
   }
 
   @Override
@@ -50,6 +58,10 @@ public class IntakeSubsystem implements IIntake {
 
   @Override
   public void securedPosition() {
+
+    mIntake.set(0);    
+    mPivotIntake.set(pivotIntakePID.calculate(mPivotIntake.getPosition(), IntakeConstants.intakeSafePosition));
+
 
   }
 
@@ -61,10 +73,13 @@ public class IntakeSubsystem implements IIntake {
   @Override
   public void expell() {
 
+
+
   }
 
   @Override
   public void hasCollected() {
 
   }
+
 }
