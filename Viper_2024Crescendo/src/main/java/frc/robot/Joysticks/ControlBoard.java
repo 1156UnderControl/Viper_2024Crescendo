@@ -19,4 +19,38 @@ public class ControlBoard implements IDriverController, IOperatorController {
     mOperatorController = OperatorController.getInstance();
   }
 
+  @Override
+  public double getXtranslation() {
+    return mDriverController.getXtranslation();
+  }
+
+  @Override
+  public double getYtranslation() {
+    return mDriverController.getYtranslation();
+  }
+
+  @Override
+  public double getCOS_Joystick() {
+    return mDriverController.getCOS_Joystick();
+  }
+
+  @Override
+  public double getSIN_Joystick() {
+    return mDriverController.getSIN_Joystick();
+  }
+
+  @Override
+  public double getThrottle() {
+    return mDriverController.getThrottle();
+  }
+
+  @Override
+  public boolean turboActivate() {
+    return mDriverController.turboActivate();
+  }
+
+  @Override
+  public boolean notUsingJoystick() {
+    return mDriverController.notUsingJoystick();
+  }
 }

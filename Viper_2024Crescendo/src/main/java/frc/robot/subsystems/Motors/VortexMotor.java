@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Interfaces;
+package frc.robot.subsystems.Motors;
 
 public class VortexMotor {
 

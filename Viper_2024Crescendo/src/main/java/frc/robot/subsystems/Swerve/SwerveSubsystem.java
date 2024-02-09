@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems.swervedrive;
+package frc.robot.subsystems.Swerve;
 
 import java.io.File;
 
@@ -25,12 +25,12 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.LimelightHelpers;
+import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CommandConstant;
+import frc.robot.Constants.SwerveConstants;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
-import swervelib.math.SwerveMath;
 import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
@@ -38,21 +38,13 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 public class SwerveSubsystem extends SubsystemBase {
 
-  /**
-   * Swerve drive object.
-   */
   private final SwerveDrive swerveDrive;
-
-  public double maximumSpeed = Units.feetToMeters(14.5);
 
   public boolean trackSpeaker;
 
   SwerveController controller;
 
   Rotation2d angleAlign = new Rotation2d(Units.degreesToRadians(90));
-
-  double DriveConversionFactor;
-  double SteeringConversionFactor;
 
   MedianFilter filter = new MedianFilter(5);
 
@@ -62,20 +54,17 @@ public class SwerveSubsystem extends SubsystemBase {
   Pose2d poseVision;
   Field2d aprField2d = new Field2d();
 
-  // Método construtor da classe
   public SwerveSubsystem(File directory) {
 
     SmartDashboard.putData("POSE APRIL", aprField2d);
 
-    // Seta a telemetria como nível mais alto
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.LOW;
 
-    // Acessa os arquivos do diretório .JSON
     try {
-      DriveConversionFactor = SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(4), 6.12, 1);
-      SteeringConversionFactor = SwerveMath.calculateDegreesPerSteeringRotation(12.8, 1);
-      swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed, SteeringConversionFactor,
-          DriveConversionFactor);
+
+      swerveDrive = new SwerveParser(directory).createSwerveDrive(SwerveConstants.MAX_VEL,
+          SwerveConstants.SteeringConversionFactor,
+          SwerveConstants.DriveConversionFactor);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -101,9 +90,6 @@ public class SwerveSubsystem extends SubsystemBase {
       LimelightHelpers.setPipelineIndex("", 1);
     }
 
-    // SmartDashboard.putNumber("heading vision",
-    // poseVision.getRotation().getDegrees());
-    // SmartDashboard.putNumber("Heading top", swerveDrive.getYaw().getDegrees());
   }
 
   /**
@@ -144,7 +130,7 @@ public class SwerveSubsystem extends SubsystemBase {
     swerveDrive.drive(translation,
         rotation,
         fieldRelative,
-        false); // Open loop is disabled since it shouldn't be used most of the time.
+        false);
   }
 
   public SwerveDriveKinematics getKinematics() {
@@ -190,7 +176,7 @@ public class SwerveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Heading Rad", getHeading().getRadians());
 
     return swerveDrive.swerveController.getTargetSpeeds(xInput, yInput, headingX, headingY,
-        getHeading().getRadians(), maximumSpeed);
+        getHeading().getRadians(), SwerveConstants.MAX_VEL);
   }
 
   // Resolve o Skew
@@ -219,10 +205,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public SwerveDriveConfiguration getSwerveDriveConfiguration() {
     return swerveDrive.swerveDriveConfiguration;
-  }
-
-  public Rotation2d getPitch() {
-    return swerveDrive.getPitch();
   }
 
   public void lock() {

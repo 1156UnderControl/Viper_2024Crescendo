@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Constants.CommandConstant;
+import frc.robot.Constants.SwerveConstants;
 import swervelib.parser.SwerveParser;
 
 /**
@@ -90,7 +90,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    if (disabledTimer.hasElapsed(CommandConstant.WHEEL_LOCK_TIME)) {
+    if (disabledTimer.hasElapsed(SwerveConstants.WHEEL_LOCK_TIME)) {
       m_robotContainer.setMotorBrake(false);
       disabledTimer.stop();
     }

@@ -2,7 +2,7 @@ package frc.robot.subsystems.Sensors;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 
-public class InfraRed implements DigitalInput {
+public class InfraRed implements frc.robot.subsystems.Sensors.DigitalInput {
   private DigitalInput IR;
 
   private boolean inverted;

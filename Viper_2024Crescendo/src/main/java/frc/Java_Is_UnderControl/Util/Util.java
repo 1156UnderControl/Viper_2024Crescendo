@@ -1,11 +1,11 @@
-package frc.Java_Is_UnderControl;
+package frc.Java_Is_UnderControl.Util;
 
 public class Util {
 
-  public Util() {
+  private Util() {
   }
 
-  public Boolean inRange(double x, double minX, double maxX) {
+  public static Boolean inRange(double x, double minX, double maxX) {
     return x > minX && x < maxX;
   }
 }

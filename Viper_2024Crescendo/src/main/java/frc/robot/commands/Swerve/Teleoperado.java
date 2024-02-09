@@ -3,7 +3,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.swervedrive.drivebase;
+package frc.robot.commands.Swerve;
 
 import java.util.List;
 import java.util.function.DoubleSupplier;
@@ -15,10 +15,12 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.Java_Is_UnderControl.LimelightHelpers;
+import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
 import frc.robot.Constants.JoystickConstants;
 import frc.robot.Constants.SwerveConstants;
-import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+import frc.robot.Joysticks.ControlBoard;
+import frc.robot.Joysticks.DriverController;
+import frc.robot.subsystems.Swerve.SwerveSubsystem;
 import swervelib.SwerveController;
 import swervelib.math.SwerveMath;
 
@@ -29,7 +31,7 @@ public class Teleoperado extends Command {
   // Variáveis que guardam nossas funções do gamepad
   DoubleSupplier y;
   DoubleSupplier x;
-  DoubleSupplier boostActivate;
+  boolean boostActivate;
   DoubleSupplier triggerSpeed;
   DoubleSupplier turnX;
   DoubleSupplier turnY;
@@ -37,6 +39,7 @@ public class Teleoperado extends Command {
   // Objetos necessárias para acessar funções e variáveis
   SwerveSubsystem swerve;
   SwerveController controller;
+  ControlBoard mControlBoard = ControlBoard.getInstance();
 
   // Variáveis que guardam a translação e velocidade angular do swerve
   Translation2d translation;
@@ -53,7 +56,7 @@ public class Teleoperado extends Command {
     // Aqui atribuimos as funções e subsistema
     this.y = y;
     this.x = x;
-    this.boostActivate = boostActivate;
+    this.boostActivate = mControlBoard.turboActivate();
     this.triggerSpeed = triggerSpeed;
 
     this.turnX = turnX;
@@ -82,12 +85,8 @@ public class Teleoperado extends Command {
     double angY;
 
     double triggerSpeed = Math.pow(this.triggerSpeed.getAsDouble(), 2);
-    boolean notUsingJoystick = frc.Java_Is_UnderControl.Util.Util.inRange(angXjoystick, -JoystickConstants.DEADBAND,
-        0.2)
-        && frc.Java_Is_UnderControl.Util.Util.inRange(angYjoystick, -JoystickConstants.DEADBAND,
-            JoystickConstants.DEADBAND);
 
-    if (notUsingJoystick) {
+    if (mControlBoard.notUsingJoystick()) {
       angX = swerve.getAngleSP().getCos();
       angY = swerve.getAngleSP().getSin();
     } else {
@@ -99,7 +98,7 @@ public class Teleoperado extends Command {
       xVelocity = triggerSpeed * xVelocity;
       yVelocity = triggerSpeed * yVelocity;
     } else {
-      if (boostActivate.getAsDouble() < 0.2) {
+      if (!boostActivate) {
         xVelocity = xVelocity * 0.6;
         yVelocity = yVelocity * 0.6;
       }
@@ -119,7 +118,7 @@ public class Teleoperado extends Command {
 
     speedsWithAng = swerve.discretize(speedsWithAng);
 
-    if (initRotation && !notUsingJoystick) {
+    if (initRotation && !mControlBoard.notUsingJoystick()) {
       if (angX == 0 && angY == 0) {
         double firstLoopHeading = swerve.getHeading().getRadians();
 

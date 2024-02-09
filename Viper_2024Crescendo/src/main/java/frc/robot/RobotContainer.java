@@ -20,8 +20,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.JoystickConstants;
-import frc.robot.commands.swervedrive.drivebase.Teleoperado;
-import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+import frc.robot.commands.Swerve.Teleoperado;
+import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since

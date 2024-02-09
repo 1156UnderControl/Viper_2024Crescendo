@@ -25,11 +25,13 @@ public class SparkMAXMotor implements Motor {
 
   boolean factoryDefaultOcurred = false;
 
-  SparkMAXMotor(CANSparkMax motor, boolean usingAlternateEncoder) {
+  public SparkMAXMotor(CANSparkMax motor, boolean usingAlternateEncoder) {
     this.motor = motor;
 
     factoryDefault();
     clearStickyFaults();
+
+    setCurrentLimit(80);
 
     if (usingAlternateEncoder) {
       encoder = motor.getAlternateEncoder(8192);
@@ -123,6 +125,11 @@ public class SparkMAXMotor implements Motor {
     }
 
     factoryDefaultOcurred = true;
+  }
+
+  @Override
+  public void clearStickyFaults() {
+    configureSparkMax(() -> motor.clearFaults());
   }
 
   @Override
@@ -221,7 +228,6 @@ public class SparkMAXMotor implements Motor {
   @Override
   public void setPosition(double position) {
     configureSparkMax(() -> encoder.setPosition(position));
-
   }
 
 }

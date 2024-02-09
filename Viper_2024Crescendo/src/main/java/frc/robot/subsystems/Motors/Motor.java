@@ -21,9 +21,9 @@ public interface Motor {
 
   void set(double percentOutput);
 
-  void setPositionReference(double position);
+  void setPositionReference(double position, double feedforward);
 
-  void setPIDFvelocity(double velocity);
+  void setVelocityReference(double velocity, double feedforward);
 
   double getVoltage();
 
