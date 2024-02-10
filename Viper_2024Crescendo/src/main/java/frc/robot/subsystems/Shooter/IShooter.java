@@ -16,4 +16,6 @@ public interface IShooter {
   boolean hasShooted();
 
   boolean isSecureForIntake();
+
+  boolean atSetpoint();
 }

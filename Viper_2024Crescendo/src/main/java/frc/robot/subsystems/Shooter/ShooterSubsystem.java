@@ -6,6 +6,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.Java_Is_UnderControl.Util.Util;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Motors.Motor;
 import frc.robot.subsystems.Motors.SparkMAXMotor;
@@ -116,6 +117,11 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   private double getFeedForwardProfiled() {
 
     return mFeedforward.calculate(mSetpoint.velocity / 12);
+  }
+
+  @Override
+  public boolean atSetpoint() {
+    return Util.inRange(mShooterPivot.getPosition(), -1, 1);
   }
 
 }

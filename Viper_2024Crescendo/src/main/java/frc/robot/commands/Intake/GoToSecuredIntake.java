@@ -3,10 +3,10 @@ package frc.robot.commands.Intake;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
 
-public class GoToSecured extends Command {
+public class GoToSecuredIntake extends Command {
   private IntakeSubsystem intake;
 
-  public GoToSecured(IntakeSubsystem intake) {
+  public GoToSecuredIntake(IntakeSubsystem intake) {
     this.intake = intake;
     addRequirements(intake);
   }
@@ -18,6 +18,6 @@ public class GoToSecured extends Command {
 
   @Override
   public boolean isFinished() {
-    return intak
+    return intake.atSetpoint();
   }
 }
