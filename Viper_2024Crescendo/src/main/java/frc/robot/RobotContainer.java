@@ -19,10 +19,11 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.JoystickConstants;
-import frc.robot.commands.Swerve.Teleoperado;
-import frc.robot.subsystems.Shooter.ShooterSubsystem;
+import frc.robot.Joysticks.ControlBoard;
+import frc.robot.commands.Swerve.SwerveTeleopControl;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
-
+import frc.robot.subsystems.Shooter.ShooterSubsystem;
+import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -40,10 +41,10 @@ public class RobotContainer {
   private final IntakeSubsystem intake = IntakeSubsystem.getInstance();
   private final ShooterSubsystem shooter = ShooterSubsystem.getInstance();
 
-
   private final SendableChooser<Command> autoChooser;
 
   XboxController driverXbox = new XboxController(0);
+  public ControlBoard mControlBoard = ControlBoard.getInstance();
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -58,7 +59,7 @@ public class RobotContainer {
 
     configureBindings();
 
-    swerve.setDefaultCommand(new Teleoperado(swerve,
+    swerve.setDefaultCommand(new SwerveTeleopControl(swerve,
         () -> -MathUtil.applyDeadband(driverXbox.getLeftX(), JoystickConstants.DEADBAND),
         () -> -MathUtil.applyDeadband(driverXbox.getLeftY(), JoystickConstants.DEADBAND),
         () -> -driverXbox.getRightX(),
@@ -69,6 +70,7 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
+    // Abstrair para um
     new JoystickButton(driverXbox, 1).onTrue(new InstantCommand(swerve::setAngleNeg90));
     new JoystickButton(driverXbox, 2).onTrue(new InstantCommand(swerve::setAngle180));
     new JoystickButton(driverXbox, 3).onTrue(new InstantCommand(swerve::setAngle0));
@@ -76,6 +78,9 @@ public class RobotContainer {
     new JoystickButton(driverXbox, 5).onTrue(new InstantCommand(swerve::setAngle45));
     new JoystickButton(driverXbox, 7).onTrue(new InstantCommand(swerve::setTrackSpeaker));
     new JoystickButton(driverXbox, 8).onTrue(new InstantCommand(swerve::setStopTrackSpeaker));
+
+    mControlBoard.getIntake().onTrue(getAutonomousCommand());
+
   }
 
   public Command getAutonomousCommand() {

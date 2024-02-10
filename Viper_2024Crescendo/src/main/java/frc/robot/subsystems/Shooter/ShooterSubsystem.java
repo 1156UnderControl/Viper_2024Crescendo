@@ -1,8 +1,5 @@
 package frc.robot.subsystems.Shooter;
 
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
-
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
@@ -28,15 +25,10 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private static double kDt = 0.02;
 
-  CANSparkMax mShooterUpSpark = new CANSparkMax(ShooterConstants.ID_shooterUp, MotorType.kBrushless);
-  CANSparkMax mShooterDownSpark = new CANSparkMax(ShooterConstants.ID_shooterDown, MotorType.kBrushless);
-  CANSparkMax mFeederSpark = new CANSparkMax(ShooterConstants.ID_feeder, MotorType.kBrushless);
-  CANSparkMax mShooterPivotSpark = new CANSparkMax(ShooterConstants.ID_pivotShooter, MotorType.kBrushless);
-
-  Motor mShooterUp = new SparkMAXMotor(mShooterUpSpark, false);
-  Motor mShooterDown = new SparkMAXMotor(mShooterDownSpark, false);
-  Motor mFeeder = new SparkMAXMotor(mFeederSpark, false);
-  Motor mShooterPivot = new SparkMAXMotor(mShooterPivotSpark, true);
+  Motor mShooterUp = new SparkMAXMotor(ShooterConstants.ID_shooterUp, false);
+  Motor mShooterDown = new SparkMAXMotor(ShooterConstants.ID_shooterDown, false);
+  Motor mFeeder = new SparkMAXMotor(ShooterConstants.ID_feeder, false);
+  Motor mShooterPivot = new SparkMAXMotor(ShooterConstants.ID_pivotShooter, true);
 
   frc.robot.subsystems.Sensors.DigitalInput IR = new InfraRed(ShooterConstants.port_IR, false);
 
@@ -77,12 +69,12 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public void intake() {
-
+    mFeeder.set(IR.getBoolean() ? 0 : ShooterConstants.setpoints.VELOCITY_COLLECT);
   }
 
   @Override
   public boolean hasNote() {
-    return false;
+    return IR.getBoolean();
   }
 
   @Override
@@ -97,7 +89,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public void shoot() {
-
+    mFeeder.set(0.8);
   }
 
   @Override
@@ -107,11 +99,11 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public boolean hasShooted() {
-    return false;
+    return !IR.getBoolean();
   }
 
   @Override
-  public boolean secureForIntake() {
+  public boolean isSecureForIntake() {
     return false;
   }
 

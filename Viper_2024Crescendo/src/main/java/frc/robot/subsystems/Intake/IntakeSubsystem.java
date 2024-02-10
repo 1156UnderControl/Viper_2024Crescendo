@@ -1,21 +1,19 @@
 package frc.robot.subsystems.Intake;
 
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
-
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.Java_Is_UnderControl.Util.Util;
 import frc.robot.Constants.IntakeConstants;
-import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Motors.Motor;
 import frc.robot.subsystems.Motors.SparkMAXMotor;
 import frc.robot.subsystems.Shooter.IShooter;
 import frc.robot.subsystems.Shooter.ShooterSubsystem;
-import frc.robot.subsystems.Intake.IIntake;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 
-
-public class IntakeSubsystem implements IIntake {
+public class IntakeSubsystem extends SubsystemBase implements IIntake {
   private static IntakeSubsystem mInstance = null;
 
   public static IntakeSubsystem getInstance() {
@@ -28,27 +26,40 @@ public class IntakeSubsystem implements IIntake {
 
   private static double kDt = 0.02;
 
-  CANSparkMax mIntakeSparkMax = new CANSparkMax(IntakeConstants.ID_intake, MotorType.kBrushless);
-  CANSparkMax mPivotIntakeSparkMax = new CANSparkMax(IntakeConstants.ID_pivotIntake, MotorType.kBrushless);
-
-  Motor mIntake = new SparkMAXMotor(mIntakeSparkMax, false);
-  Motor mPivotIntake = new SparkMAXMotor(mPivotIntakeSparkMax, false);
+  Motor mIntake = new SparkMAXMotor(IntakeConstants.ID_intake);
+  Motor mPivotIntake = new SparkMAXMotor(IntakeConstants.ID_pivotIntake, true);
 
   IShooter InterfaceShooter = ShooterSubsystem.getInstance();
 
+  SimpleMotorFeedforward mFeedforward = new SimpleMotorFeedforward(1, 0);
+  TrapezoidProfile mProfile = new TrapezoidProfile(new Constraints(5, 10));
+  private TrapezoidProfile.State mSetpoint = new TrapezoidProfile.State();
+  private TrapezoidProfile.State mGoal = new TrapezoidProfile.State();
+
   private void IntakeSubsystem() {
     // conversion factor: position: 360, velocity: 6
+    mPivotIntake.setMotorBrake(true);
+    mIntake.setMotorBrake(false);
+
+    mPivotIntake.setLoopRampRate(0.2);
+    mIntake.setLoopRampRate(0.2);
+
     mPivotIntake.setPositionFactor(360);
     mPivotIntake.setVelocityFactor(6);
 
+  }
 
+  @Override
+  public void periodic() {
+    SmartDashboard.putNumber("Position Pivot", mPivotIntake.getPosition());
+    SmartDashboard.putNumber("Velocity Pivot", mPivotIntake.getVelocity());
+    SmartDashboard.putNumber("Voltage Collect", mIntake.getVoltage());
   }
 
   @Override
   public void intake() {
 
-    mIntake.set(IntakeConstants.intakeSpeed);    
-    //Add PID do intake
+    mIntake.set(IntakeConstants.intakeSpeed);
   }
 
   @Override
@@ -59,9 +70,7 @@ public class IntakeSubsystem implements IIntake {
   @Override
   public void securedPosition() {
 
-    mIntake.set(0);    
-    mPivotIntake.set(pivotIntakePID.calculate(mPivotIntake.getPosition(), IntakeConstants.intakeSafePosition));
-
+    mIntake.setPositionReference(profilePosition(10), getFeedForwardProfiled());
 
   }
 
@@ -73,13 +82,27 @@ public class IntakeSubsystem implements IIntake {
   @Override
   public void expell() {
 
-
-
   }
 
   @Override
   public void hasCollected() {
 
+  }
+
+  private double profilePosition(double goal) {
+    mGoal = new State(goal, 0);
+    mSetpoint = mProfile.calculate(kDt, mSetpoint, mGoal);
+    return mSetpoint.position;
+  }
+
+  private double getFeedForwardProfiled() {
+
+    return mFeedforward.calculate(mSetpoint.velocity / 12);
+  }
+
+  @Override
+  public boolean atSetpoint() {
+    return Util.inRange(mPivotIntake.getPosition(), -1, 1);
   }
 
 }

@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
@@ -25,40 +26,16 @@ public class SparkMAXMotor implements Motor {
 
   boolean factoryDefaultOcurred = false;
 
-  public SparkMAXMotor(CANSparkMax motor, boolean usingAlternateEncoder) {
-    this.motor = motor;
-
-    factoryDefault();
-    clearStickyFaults();
-
-    setCurrentLimit(80);
-
-    if (usingAlternateEncoder) {
-      encoder = motor.getAlternateEncoder(8192);
-    } else {
-      encoder = motor.getEncoder();
-    }
-
-    pid = motor.getPIDController();
-
-    pid.setFeedbackDevice(encoder);
-
-    velocity = encoder::getVelocity;
-    position = encoder::getPosition;
+  public SparkMAXMotor(int motorId) {
+    this(motorId, false);
   }
 
-  SparkMAXMotor(CANSparkMax motor) {
-    this.motor = motor;
-
+  public SparkMAXMotor(int motorID, boolean usingAlternateEncoder) {
+    this.motor = new CANSparkMax(motorID, MotorType.kBrushless);
     factoryDefault();
     clearStickyFaults();
-
-    encoder = motor.getEncoder();
-
-    pid = motor.getPIDController();
-
-    pid.setFeedbackDevice(encoder);
-
+    setCurrentLimit(80);
+    setupMotorPid(usingAlternateEncoder);
     velocity = encoder::getVelocity;
     position = encoder::getPosition;
   }
@@ -70,6 +47,20 @@ public class SparkMAXMotor implements Motor {
       }
     }
     DriverStation.reportWarning("Failure configuring motor " + motor.getDeviceId(), true);
+  }
+
+  private void setupMotorPid(boolean usingAlternateEncoder) {
+    this.setAlternateEncoder(usingAlternateEncoder);
+    pid = motor.getPIDController();
+    pid.setFeedbackDevice(encoder);
+  }
+
+  private void setAlternateEncoder(boolean usingAlternateEncoder) {
+    if (usingAlternateEncoder) {
+      encoder = motor.getAlternateEncoder(8192);
+    } else {
+      encoder = motor.getEncoder();
+    }
   }
 
   /*

@@ -22,7 +22,7 @@ import frc.robot.subsystems.Swerve.SwerveSubsystem;
 import swervelib.SwerveController;
 import swervelib.math.SwerveMath;
 
-public class Teleoperado extends Command {
+public class SwerveTeleopControl extends Command {
   DoubleSupplier y;
   DoubleSupplier x;
   boolean boostActivate;
@@ -43,7 +43,10 @@ public class Teleoperado extends Command {
 
   PIDController pidTrackApril;
 
-  public Teleoperado(SwerveSubsystem swerve, DoubleSupplier y, DoubleSupplier x, DoubleSupplier turnX,
+  // O ideal seria a gente fazer varias versões de controle do swerve
+  // podemos ter uma versão de controle field oriented, ums versão de controle
+  // na perspectiva do robô, talvez uma de posicionar ele em um ponto da quadra
+  public SwerveTeleopControl(SwerveSubsystem swerve, DoubleSupplier y, DoubleSupplier x, DoubleSupplier turnX,
       DoubleSupplier turnY, DoubleSupplier triggerSpeed, DoubleSupplier boostActivate) {
     this.y = y;
     this.x = x;

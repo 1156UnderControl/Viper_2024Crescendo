@@ -12,4 +12,6 @@ public interface IIntake {
   void expell();
 
   void hasCollected();
+
+  boolean atSetpoint();
 }

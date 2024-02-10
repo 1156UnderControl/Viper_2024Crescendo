@@ -1,5 +1,7 @@
 package frc.robot.Joysticks;
 
-public interface IOperatorController {
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
+public interface IOperatorController {
+  Trigger getIntake();
 }

@@ -1,5 +1,7 @@
 package frc.robot.Joysticks;
 
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 public class ControlBoard implements IDriverController, IOperatorController {
   private static ControlBoard mInstance = null;
 
@@ -52,5 +54,10 @@ public class ControlBoard implements IDriverController, IOperatorController {
   @Override
   public boolean notUsingJoystick() {
     return mDriverController.notUsingJoystick();
+  }
+
+  @Override
+  public Trigger getIntake() {
+    return mOperatorController.getIntake();
   }
 }
