@@ -25,4 +25,9 @@ public class OperatorController implements IOperatorController {
 
     return controller.a();
   }
+
+  @Override
+  public Trigger getSecured() {
+    return controller.y();
+  }
 }

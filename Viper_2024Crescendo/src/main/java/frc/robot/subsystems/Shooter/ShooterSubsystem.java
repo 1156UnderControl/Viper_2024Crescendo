@@ -62,6 +62,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public void periodic() {
+    SmartDashboard.putNumber("kv", mShooterPivot.getVelocity() / mShooterPivot.getVoltage());
     SmartDashboard.putNumber("Position Pivot", mShooterPivot.getPosition());
     SmartDashboard.putNumber("Velocity Pivot", mShooterPivot.getVelocity());
     SmartDashboard.putNumber("Velocity ShooterUp", mShooterUp.getVelocity());
@@ -112,6 +113,10 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     mGoal = new State(goal, 0);
     mSetpoint = mProfile.calculate(kDt, mSetpoint, mGoal);
     return mSetpoint.position;
+  }
+
+  public void setVoltage(double voltage) {
+    mShooterPivot.setVoltage(voltage);
   }
 
   private double getFeedForwardProfiled() {

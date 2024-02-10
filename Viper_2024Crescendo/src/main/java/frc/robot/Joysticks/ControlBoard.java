@@ -60,4 +60,9 @@ public class ControlBoard implements IDriverController, IOperatorController {
   public Trigger getIntake() {
     return mOperatorController.getIntake();
   }
+
+  @Override
+  public Trigger getSecured() {
+    return mOperatorController.getSecured();
+  }
 }

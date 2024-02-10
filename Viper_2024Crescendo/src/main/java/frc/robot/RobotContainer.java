@@ -9,18 +9,17 @@ import java.io.File;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.Constants.JoystickConstants;
 import frc.robot.Joysticks.ControlBoard;
-import frc.robot.commands.Swerve.SwerveTeleopControl;
+import frc.robot.commands.States.SecuredPosition;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
 import frc.robot.subsystems.Shooter.ShooterSubsystem;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
@@ -59,14 +58,17 @@ public class RobotContainer {
 
     configureBindings();
 
-    swerve.setDefaultCommand(new SwerveTeleopControl(swerve,
-        () -> -MathUtil.applyDeadband(driverXbox.getLeftX(), JoystickConstants.DEADBAND),
-        () -> -MathUtil.applyDeadband(driverXbox.getLeftY(), JoystickConstants.DEADBAND),
-        () -> -driverXbox.getRightX(),
-        () -> -driverXbox.getRightY(),
-        () -> driverXbox.getRightTriggerAxis(),
-        () -> driverXbox.getLeftTriggerAxis()));
-
+    /*
+     * swerve.setDefaultCommand(new SwerveTeleopControl(swerve,
+     * () -> -MathUtil.applyDeadband(driverXbox.getLeftX(),
+     * JoystickConstants.DEADBAND),
+     * () -> -MathUtil.applyDeadband(driverXbox.getLeftY(),
+     * JoystickConstants.DEADBAND),
+     * () -> -driverXbox.getRightX(),
+     * () -> -driverXbox.getRightY(),
+     * () -> driverXbox.getRightTriggerAxis(),
+     * () -> driverXbox.getLeftTriggerAxis()));
+     */
   }
 
   private void configureBindings() {
@@ -79,8 +81,8 @@ public class RobotContainer {
     new JoystickButton(driverXbox, 7).onTrue(new InstantCommand(swerve::setTrackSpeaker));
     new JoystickButton(driverXbox, 8).onTrue(new InstantCommand(swerve::setStopTrackSpeaker));
 
-    mControlBoard.getIntake().onTrue(getAutonomousCommand());
-
+    mControlBoard.getIntake().onTrue(new SecuredPosition(shooter, intake));
+    mControlBoard.getSecured().onTrue(Commands.runOnce(() -> intake.setVoltage(0), intake));
   }
 
   public Command getAutonomousCommand() {
