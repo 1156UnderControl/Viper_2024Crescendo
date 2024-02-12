@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Joysticks.ControlBoard;
-import frc.robot.commands.Tuning.TuneIntake;
+import frc.robot.commands.Tuning.TuneShooter;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
 import frc.robot.subsystems.Shooter.ShooterSubsystem;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
@@ -81,8 +81,8 @@ public class RobotContainer {
     new JoystickButton(driverXbox, 7).onTrue(new InstantCommand(swerve::setTrackSpeaker));
     new JoystickButton(driverXbox, 8).onTrue(new InstantCommand(swerve::setStopTrackSpeaker));
 
-    mControlBoard.getIntake().onTrue(new TuneIntake(intake));
-    mControlBoard.getSecured().onTrue(Commands.runOnce(() -> intake.setVoltage(0), intake));
+    mControlBoard.getIntake().onTrue(new TuneShooter(shooter));
+    mControlBoard.getSecured().onTrue(Commands.runOnce(() -> shooter.setVoltage(0), shooter));
   }
 
   public Command getAutonomousCommand() {

@@ -18,6 +18,7 @@ public class IntakeConstants {
     public static final double LIMIT_MAX = 150;
     public static final double LIMIT_MIN = 0;
 
-    public static final double SECURED = 1;
+    public static final double ANGLE_SECURED = 1;
+    public static final double ANGLE_INTAKE = 1;
   }
 }

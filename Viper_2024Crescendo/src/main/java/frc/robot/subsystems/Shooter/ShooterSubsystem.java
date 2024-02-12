@@ -33,7 +33,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   frc.robot.subsystems.Sensors.DigitalInput IR = new InfraRed(ShooterConstants.port_IR, false);
 
-  SimpleMotorFeedforward mFeedforward = new SimpleMotorFeedforward(1, 0);
+  SimpleMotorFeedforward mFeedforward = new SimpleMotorFeedforward(0.63, 0.04);
   TrapezoidProfile mProfile = new TrapezoidProfile(new Constraints(5, 10));
   private TrapezoidProfile.State mSetpoint = new TrapezoidProfile.State();
   private TrapezoidProfile.State mGoal = new TrapezoidProfile.State();
@@ -66,7 +66,12 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("kv", mShooterPivot.getVelocity() / mShooterPivot.getVoltage());
+    if (SmartDashboard.getBoolean("setPID", false)) {
+      mShooterPivot.configurePIDF(SmartDashboard.getNumber("P Shooter", 0),
+          SmartDashboard.getNumber("I Shooter", 0),
+          0,
+          SmartDashboard.getNumber("I Zone", 0));
+    }
     SmartDashboard.putNumber("Position Pivot", mShooterPivot.getPosition());
     SmartDashboard.putNumber("Velocity Pivot", mShooterPivot.getVelocity());
     SmartDashboard.putNumber("Velocity ShooterUp", mShooterUp.getVelocity());
@@ -120,6 +125,15 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   private double profilePosition(double goal) {
     mGoal = new State(goal, 0);
     mSetpoint = mProfile.calculate(kDt, mSetpoint, mGoal);
+
+    if (mSetpoint.position > ShooterConstants.setpoints.LIMIT_MAX) {
+      return ShooterConstants.setpoints.LIMIT_MAX;
+    }
+
+    if (mSetpoint.position < ShooterConstants.setpoints.LIMIT_MIN) {
+      return ShooterConstants.setpoints.LIMIT_MIN;
+    }
+
     return mSetpoint.position;
   }
 

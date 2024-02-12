@@ -51,13 +51,12 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
 
     mPivotIntake.configurePIDF(0.025, 0, 0, 0);
 
-    SmartDashboard.putNumber("Position Manual Setpoint", 20);
+    SmartDashboard.putNumber("Position Manual Setpoint", 0);
   }
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("kv intake", mPivotIntake.getVelocity() / mPivotIntake.getVoltage());
-    SmartDashboard.putNumber("Position  intake Pivot", mPivotIntake.getPosition());
+    SmartDashboard.putNumber("Position intake Pivot", mPivotIntake.getPosition());
     SmartDashboard.putNumber("Velocity intake Pivot", mPivotIntake.getVelocity());
     SmartDashboard.putNumber("Voltage Collect", mIntake.getVoltage());
     SmartDashboard.putNumber("Output Pivot intake", mPivotIntake.getAppliedOutput());
@@ -108,6 +107,15 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
     mGoal = new State(goal, 0);
     mSetpoint = mProfile.calculate(kDt, mSetpoint, mGoal);
     SmartDashboard.putNumber("setpoint intake", mSetpoint.position);
+
+    if (mSetpoint.position > IntakeConstants.setpoints.LIMIT_MAX) {
+      return IntakeConstants.setpoints.LIMIT_MAX;
+    }
+
+    if (mSetpoint.position < IntakeConstants.setpoints.LIMIT_MIN) {
+      return IntakeConstants.setpoints.LIMIT_MIN;
+    }
+
     return mSetpoint.position;
   }
 

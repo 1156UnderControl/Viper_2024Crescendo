@@ -9,6 +9,9 @@ public class ShooterConstants {
   public static final int port_IR = 0;
 
   public class setpoints {
+    public static final double LIMIT_MAX = 150;
+    public static final double LIMIT_MIN = 0;
+
     public static final double ANGLE_SECURED = 1;
     public static final double ANGLE_INTAKE = 1;
     public static final double ANGLE_SHOOT_AMP = 1;
