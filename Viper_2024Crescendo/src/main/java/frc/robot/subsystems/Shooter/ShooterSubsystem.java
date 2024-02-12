@@ -119,7 +119,9 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public void prepareAmpShot() {
-
+    mShooterDown.set(-0.8);
+    mShooterUp.set(-0.8);
+    goal = 125;
   }
 
   @Override
@@ -134,6 +136,9 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public void securedPosition() {
+    mShooterDown.set(0);
+    mShooterUp.set(0);
+    mFeeder.set(0);
     goal = 0;
   }
 
@@ -181,5 +186,4 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   public boolean atSetpoint() {
     return Util.inRange(mShooterPivot.getPosition(), mShooterPivot.getPosition() - 1, mShooterPivot.getPosition() + 1);
   }
-
 }

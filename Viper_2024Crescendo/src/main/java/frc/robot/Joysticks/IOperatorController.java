@@ -6,4 +6,8 @@ public interface IOperatorController {
   Trigger getIntake();
 
   Trigger getSecured();
+
+  Trigger getPrepareAmp();
+
+  Trigger getShootAmp();
 }

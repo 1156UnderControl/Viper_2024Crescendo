@@ -65,4 +65,14 @@ public class ControlBoard implements IDriverController, IOperatorController {
   public Trigger getSecured() {
     return mOperatorController.getSecured();
   }
+
+  @Override
+  public Trigger getPrepareAmp() {
+    return mOperatorController.getPrepareAmp();
+  }
+
+  @Override
+  public Trigger getShootAmp() {
+    return mOperatorController.getShootAmp();
+  }
 }
