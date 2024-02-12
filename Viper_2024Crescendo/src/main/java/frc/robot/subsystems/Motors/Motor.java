@@ -23,7 +23,9 @@ public interface Motor {
 
   void set(double percentOutput);
 
-  void setPositionReference(double position, double feedforward);
+  void setPositionReference(double position);
+
+  void setPositionReferenceArbFF(double position, double feedforward);
 
   void setVelocityReference(double velocity, double feedforward);
 

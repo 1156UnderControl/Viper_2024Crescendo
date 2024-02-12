@@ -31,8 +31,8 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
 
   IShooter InterfaceShooter = ShooterSubsystem.getInstance();
 
-  SimpleMotorFeedforward mFeedforward = new SimpleMotorFeedforward(0.28, 26);
-  TrapezoidProfile mProfile = new TrapezoidProfile(new Constraints(5, 10));
+  SimpleMotorFeedforward mFeedforward = new SimpleMotorFeedforward(0.28, 0.03);
+  TrapezoidProfile mProfile = new TrapezoidProfile(new Constraints(337, 2000));
   private TrapezoidProfile.State mSetpoint = new TrapezoidProfile.State();
   private TrapezoidProfile.State mGoal = new TrapezoidProfile.State();
 
@@ -49,16 +49,18 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
     mPivotIntake.setPositionFactor(360);
     mPivotIntake.setVelocityFactor(6);
 
+    mPivotIntake.configurePIDF(0.025, 0, 0, 0);
+
+    SmartDashboard.putNumber("Position Manual Setpoint", 20);
   }
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("setpoint intake", profilePosition(100));
     SmartDashboard.putNumber("kv intake", mPivotIntake.getVelocity() / mPivotIntake.getVoltage());
     SmartDashboard.putNumber("Position  intake Pivot", mPivotIntake.getPosition());
     SmartDashboard.putNumber("Velocity intake Pivot", mPivotIntake.getVelocity());
     SmartDashboard.putNumber("Voltage Collect", mIntake.getVoltage());
-    mPivotIntake.configurePIDF(0, 0, 0, 0);
+    SmartDashboard.putNumber("Output Pivot intake", mPivotIntake.getAppliedOutput());
   }
 
   @Override
@@ -75,7 +77,7 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
   @Override
   public void securedPosition() {
 
-    mIntake.setPositionReference(profilePosition(40), getFeedForwardProfiled());
+    mIntake.setPositionReferenceArbFF(profilePosition(40), 0);
 
   }
 
@@ -95,16 +97,17 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
   }
 
   public void tuningState(double goal) {
-    mIntake.setPositionReference(profilePosition(goal), getFeedForwardProfiled());
+    mPivotIntake.setPositionReferenceArbFF(profilePosition(goal), getFeedForwardProfiled());
   }
 
   public void setVoltage(double voltage) {
     mPivotIntake.setVoltage(voltage);
   }
 
-  double profilePosition(double goal) {
+  private double profilePosition(double goal) {
     mGoal = new State(goal, 0);
     mSetpoint = mProfile.calculate(kDt, mSetpoint, mGoal);
+    SmartDashboard.putNumber("setpoint intake", mSetpoint.position);
     return mSetpoint.position;
   }
 

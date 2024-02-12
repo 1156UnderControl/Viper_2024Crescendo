@@ -39,6 +39,10 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   private TrapezoidProfile.State mGoal = new TrapezoidProfile.State();
 
   private ShooterSubsystem() {
+    SmartDashboard.putNumber("P Shooter", 0);
+    SmartDashboard.putNumber("I Shooter", 0);
+    SmartDashboard.putNumber("D Shooter", 0);
+    SmartDashboard.putNumber("I zone Shooter", 0);
     mShooterUp.setMotorBrake(false);
     mShooterDown.setMotorBrake(false);
     mFeeder.setMotorBrake(false);
@@ -96,7 +100,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public void securedPosition() {
-    mShooterPivot.setPositionReference(profilePosition(10), getFeedForwardProfiled());
+    mShooterPivot.setPositionReferenceArbFF(profilePosition(10), getFeedForwardProfiled());
   }
 
   @Override
@@ -110,7 +114,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   }
 
   public void tuningState(double goal) {
-    mShooterPivot.setPositionReference(profilePosition(goal), getFeedForwardProfiled());
+    mShooterPivot.setPositionReferenceArbFF(profilePosition(goal), getFeedForwardProfiled());
   }
 
   private double profilePosition(double goal) {

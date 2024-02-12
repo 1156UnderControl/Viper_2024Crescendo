@@ -32,6 +32,8 @@ public class SparkMAXMotor implements Motor {
 
   public SparkMAXMotor(int motorID, boolean usingAlternateEncoder) {
     this.motor = new CANSparkMax(motorID, MotorType.kBrushless);
+    this.pid = motor.getPIDController();
+
     factoryDefault();
     clearStickyFaults();
     setCurrentLimit(80);
@@ -51,8 +53,7 @@ public class SparkMAXMotor implements Motor {
 
   private void setupMotorPid(boolean usingAlternateEncoder) {
     this.setAlternateEncoder(usingAlternateEncoder);
-    pid = motor.getPIDController();
-    pid.setFeedbackDevice(encoder);
+    this.pid.setFeedbackDevice(encoder);
   }
 
   private void setAlternateEncoder(boolean usingAlternateEncoder) {
@@ -135,19 +136,20 @@ public class SparkMAXMotor implements Motor {
 
   @Override
   public void configurePIDF(double P, double I, double D, double F, double Izone) {
-    configureSparkMax(() -> pid.setP(P));
-    configureSparkMax(() -> pid.setI(I));
-    configureSparkMax(() -> pid.setD(D));
-    configureSparkMax(() -> pid.setFF(F));
-    configureSparkMax(() -> pid.setIZone(Izone));
+    configureSparkMax(() -> pid.setP(P, 0));
+    configureSparkMax(() -> pid.setI(I, 0));
+    configureSparkMax(() -> pid.setD(D, 0));
+    configureSparkMax(() -> pid.setFF(F, 0));
+    configureSparkMax(() -> pid.setIZone(Izone, 0));
   }
 
   @Override
   public void configurePIDF(double P, double I, double D, double F) {
-    configureSparkMax(() -> pid.setP(P));
-    configureSparkMax(() -> pid.setI(I));
-    configureSparkMax(() -> pid.setP(D));
-    configureSparkMax(() -> pid.setP(F));
+    configureSparkMax(() -> pid.setP(P, 0));
+    configureSparkMax(() -> pid.setI(I, 0));
+    configureSparkMax(() -> pid.setD(D, 0));
+    configureSparkMax(() -> pid.setFF(F, 0));
+    DriverStation.reportWarning("P configured " + P + "ID" + motor.getDeviceId(), true);
   }
 
   @Override
@@ -187,7 +189,12 @@ public class SparkMAXMotor implements Motor {
   }
 
   @Override
-  public void setPositionReference(double position, double feedforward) {
+  public void setPositionReference(double position) {
+    configureSparkMax(() -> pid.setReference(position, ControlType.kPosition, 0));
+  }
+
+  @Override
+  public void setPositionReferenceArbFF(double position, double feedforward) {
     configureSparkMax(() -> pid.setReference(position, ControlType.kPosition, 0, feedforward));
   }
 

@@ -15,12 +15,11 @@ public class TuneIntake extends Command {
 
   @Override
   public void initialize() {
-    SmartDashboard.putNumber("Position Manual Setpoint", 0);
   }
 
   @Override
   public void execute() {
-    intake.tuningState(SmartDashboard.getNumber("Position Manual Setpoint", 0));
+    intake.tuningState(SmartDashboard.getNumber("Position Manual Setpoint", 20));
   }
 
   @Override

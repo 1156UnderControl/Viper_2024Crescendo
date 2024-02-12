@@ -10,11 +10,14 @@ public class IntakeConstants {
   public static final double intakeCollectPosition = 180;
   public static final double intakeSafePosition = 0;
 
-  public static final double pitvotIntakeP = 0.1;
-  public static final double pitvotIntakeI = 0.1;
-  public static final double pitvotIntakeD = 0;
+  public static final double pidPivotIntakeP = 0.1;
+  public static final double pidPivotIntakeI = 0.1;
+  public static final double pidPivotIntakeD = 0;
 
   public class setpoints {
+    public static final double LIMIT_MAX = 150;
+    public static final double LIMIT_MIN = 0;
+
     public static final double SECURED = 1;
   }
 }
