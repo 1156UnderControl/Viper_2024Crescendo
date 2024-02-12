@@ -1,28 +1,28 @@
 package frc.robot.commands.Intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Intake.IntakeSubsystem;
+import frc.robot.RobotSubsystems;
 
 public class GoToIntakeIntake extends Command {
-  private IntakeSubsystem intake;
+  private RobotSubsystems robot;
 
-  public GoToIntakeIntake(IntakeSubsystem intake) {
-    this.intake = intake;
-    this.addRequirements(intake);
+  public GoToIntakeIntake(RobotSubsystems robot) {
+    this.robot = robot;
+    this.addRequirements(robot);
   }
 
   @Override
   public void initialize() {
-    this.intake.intake();
+    this.robot.intake.intake();
   }
 
   @Override
   public void execute() {
-    this.intake.intakePosition();
+    this.robot.intake.intakePosition();
   }
 
   @Override
   public boolean isFinished() {
-    return this.intake.secureForShooter();
+    return this.robot.intake.secureForShooter();
   }
 }

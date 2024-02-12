@@ -1,23 +1,23 @@
 package frc.robot.commands.Shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Shooter.ShooterSubsystem;
+import frc.robot.RobotSubsystems;
 
 public class GoToSecuredShooter extends Command {
-  private ShooterSubsystem shooter;
+  private RobotSubsystems robot;
 
-  public GoToSecuredShooter(ShooterSubsystem shooter) {
-    this.shooter = shooter;
-    this.addRequirements(shooter);
+  public GoToSecuredShooter(RobotSubsystems robot) {
+    this.robot = robot;
+    this.addRequirements(this.robot);
   }
 
   @Override
   public void execute() {
-    this.shooter.securedPosition();
+    this.robot.shooter.securedPosition();
   }
 
   @Override
   public boolean isFinished() {
-    return this.shooter.atSetpoint();
+    return this.robot.shooter.atSetpoint();
   }
 }

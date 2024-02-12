@@ -20,8 +20,6 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Joysticks.ControlBoard;
 import frc.robot.commands.States.CollectPosition;
 import frc.robot.commands.States.SecuredPosition;
-import frc.robot.subsystems.Intake.IntakeSubsystem;
-import frc.robot.subsystems.Shooter.ShooterSubsystem;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
 /**
@@ -37,8 +35,7 @@ public class RobotContainer {
   private final SwerveSubsystem swerve = SwerveSubsystem.getInstance(new File(Filesystem.getDeployDirectory(),
       "swerve/swerve"));
 
-  private final IntakeSubsystem intake = IntakeSubsystem.getInstance();
-  private final ShooterSubsystem shooter = ShooterSubsystem.getInstance();
+  private final RobotSubsystems robot = new RobotSubsystems();
 
   private final SendableChooser<Command> autoChooser;
 
@@ -57,7 +54,7 @@ public class RobotContainer {
     SmartDashboard.putData("Aut Chooser", autoChooser);
 
     configureBindings();
-    intake.setDefaultCommand(new SecuredPosition(shooter, intake));
+    robot.setDefaultCommand(new SecuredPosition(robot));
 
     /*
      * swerve.setDefaultCommand(new SwerveTeleopControl(swerve,
@@ -82,8 +79,8 @@ public class RobotContainer {
     new JoystickButton(driverXbox, 7).onTrue(new InstantCommand(swerve::setTrackSpeaker));
     new JoystickButton(driverXbox, 8).onTrue(new InstantCommand(swerve::setStopTrackSpeaker));
 
-    mControlBoard.getIntake().onTrue(new CollectPosition(shooter, intake));
-    mControlBoard.getSecured().onTrue(new SecuredPosition(shooter, intake));
+    mControlBoard.getIntake().onTrue(new CollectPosition(robot));
+    mControlBoard.getSecured().onTrue(new SecuredPosition(robot));
   }
 
   public Command getAutonomousCommand() {

@@ -1,24 +1,24 @@
 package frc.robot.commands.Shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Shooter.ShooterSubsystem;
+import frc.robot.RobotSubsystems;
 
 public class CollectToShooter extends Command {
-  private ShooterSubsystem shooter;
+  private RobotSubsystems robot;
 
-  public CollectToShooter(ShooterSubsystem shooter) {
-    this.shooter = shooter;
-    this.addRequirements(shooter);
+  public CollectToShooter(RobotSubsystems robot) {
+    this.robot = robot;
+    this.addRequirements(robot);
   }
 
   @Override
   public void execute() {
-    this.shooter.intakePosition();
-    this.shooter.intake();
+    this.robot.shooter.intakePosition();
+    this.robot.shooter.intake();
   }
 
   @Override
   public boolean isFinished() {
-    return this.shooter.hasNote();
+    return this.robot.shooter.hasNote();
   }
 }
