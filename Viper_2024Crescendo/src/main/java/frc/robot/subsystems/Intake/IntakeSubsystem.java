@@ -26,24 +26,27 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
 
   private static double kDt = 0.02;
 
+  private static double goal = 140;
+
   Motor mIntake = new SparkMAXMotor(IntakeConstants.ID_intake);
   Motor mPivotIntake = new SparkMAXMotor(IntakeConstants.ID_pivotIntake, true);
 
   IShooter InterfaceShooter = ShooterSubsystem.getInstance();
 
   SimpleMotorFeedforward mFeedforward = new SimpleMotorFeedforward(0.28, 0.03);
-  TrapezoidProfile mProfile = new TrapezoidProfile(new Constraints(337, 2000));
+  TrapezoidProfile mProfile = new TrapezoidProfile(new Constraints(400, 2500));
   private TrapezoidProfile.State mSetpoint = new TrapezoidProfile.State();
   private TrapezoidProfile.State mGoal = new TrapezoidProfile.State();
 
   private IntakeSubsystem() {
     mPivotIntake.setPosition(0);
     mPivotIntake.setInverted(true);
+    mIntake.setInverted(true);
 
     mPivotIntake.setMotorBrake(true);
     mIntake.setMotorBrake(false);
 
-    mPivotIntake.setLoopRampRate(0.2);
+    mPivotIntake.setLoopRampRate(0);
     mIntake.setLoopRampRate(0.2);
 
     mPivotIntake.setPositionFactor(360);
@@ -51,7 +54,7 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
 
     mPivotIntake.configurePIDF(0.025, 0, 0, 0);
 
-    SmartDashboard.putNumber("Position Manual Setpoint", 0);
+    SmartDashboard.putNumber("Position Manual Setpoint Shooter", 0);
   }
 
   @Override
@@ -60,6 +63,8 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
     SmartDashboard.putNumber("Velocity intake Pivot", mPivotIntake.getVelocity());
     SmartDashboard.putNumber("Voltage Collect", mIntake.getVoltage());
     SmartDashboard.putNumber("Output Pivot intake", mPivotIntake.getAppliedOutput());
+
+    mPivotIntake.setPositionReferenceArbFF(profilePosition(goal), getFeedForwardProfiled());
   }
 
   @Override
@@ -69,20 +74,28 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
   }
 
   @Override
+  public void stopIntaking() {
+    mIntake.set(0);
+  }
+
+  @Override
+  public void intakePosition() {
+    goal = 0;
+  }
+
+  @Override
   public void freewayShooter() {
 
   }
 
   @Override
   public void securedPosition() {
-
-    mIntake.setPositionReferenceArbFF(profilePosition(40), 0);
-
+    goal = 140;
   }
 
   @Override
   public boolean secureForShooter() {
-    return false;
+    return mPivotIntake.getPosition() < 90;
   }
 
   @Override
@@ -106,7 +119,7 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
   private double profilePosition(double goal) {
     mGoal = new State(goal, 0);
     mSetpoint = mProfile.calculate(kDt, mSetpoint, mGoal);
-    SmartDashboard.putNumber("setpoint intake", mSetpoint.position);
+    SmartDashboard.putNumber("Setpoint Intake", mSetpoint.position);
 
     if (mSetpoint.position > IntakeConstants.setpoints.LIMIT_MAX) {
       return IntakeConstants.setpoints.LIMIT_MAX;
@@ -126,7 +139,7 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
 
   @Override
   public boolean atSetpoint() {
-    return Util.inRange(mPivotIntake.getPosition(), -1, 1);
+    return Util.inRange(mPivotIntake.getPosition(), mPivotIntake.getPosition() - 1, mPivotIntake.getPosition() + 1);
   }
 
 }

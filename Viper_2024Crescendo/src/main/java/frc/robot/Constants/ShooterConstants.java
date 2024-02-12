@@ -6,10 +6,12 @@ public class ShooterConstants {
   public static final int ID_feeder = 16;
   public static final int ID_pivotShooter = 10;
 
-  public static final int port_IR = 0;
+  public static final int port_IR = 1;
+
+  public static boolean HAS_NOTE = false;
 
   public class setpoints {
-    public static final double LIMIT_MAX = 150;
+    public static final double LIMIT_MAX = 230;
     public static final double LIMIT_MIN = 0;
 
     public static final double ANGLE_SECURED = 1;

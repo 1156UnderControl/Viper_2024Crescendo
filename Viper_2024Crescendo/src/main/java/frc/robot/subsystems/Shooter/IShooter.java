@@ -3,6 +3,10 @@ package frc.robot.subsystems.Shooter;
 public interface IShooter {
   void intake();
 
+  void stopIntaking();
+
+  void intakePosition();
+
   boolean hasNote();
 
   void prepareSpeakerShot();

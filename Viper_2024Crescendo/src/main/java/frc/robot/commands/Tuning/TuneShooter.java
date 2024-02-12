@@ -14,17 +14,16 @@ public class TuneShooter extends Command {
 
   @Override
   public void initialize() {
-    SmartDashboard.putNumber("Position Manual Setpoint", 0);
 
   }
 
   @Override
   public void execute() {
-    this.shooter.tuningState(SmartDashboard.getNumber("Position Manual Setpoint", 0));
+    this.shooter.tuningState(SmartDashboard.getNumber("Position Manual Setpoint Shooter", 0));
   }
 
   @Override
   public boolean isFinished() {
-    return this.shooter.isSecureForIntake();
+    return false;
   }
 }

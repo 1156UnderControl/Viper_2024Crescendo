@@ -12,13 +12,12 @@ public class GoToSecuredShooter extends Command {
   }
 
   @Override
-  public void initialize() {
+  public void execute() {
     this.shooter.securedPosition();
-    ;
   }
 
   @Override
   public boolean isFinished() {
-    return this.shooter.isSecureForIntake();
+    return this.shooter.atSetpoint();
   }
 }

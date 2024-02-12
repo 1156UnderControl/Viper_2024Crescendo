@@ -13,12 +13,12 @@ public class GoToSecuredIntake extends Command {
   }
 
   @Override
-  public void initialize() {
+  public void execute() {
     this.intake.securedPosition();
   }
 
   @Override
   public boolean isFinished() {
-    return false;
+    return intake.atSetpoint();
   }
 }

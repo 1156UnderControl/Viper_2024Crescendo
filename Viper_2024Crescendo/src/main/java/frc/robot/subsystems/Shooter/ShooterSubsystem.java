@@ -26,6 +26,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private static double kDt = 0.02;
 
+  private static double goal = 0;
+
   Motor mShooterUp = new SparkMAXMotor(ShooterConstants.ID_shooterUp, false);
   Motor mShooterDown = new SparkMAXMotor(ShooterConstants.ID_shooterDown, false);
   Motor mFeeder = new SparkMAXMotor(ShooterConstants.ID_feeder, false);
@@ -34,15 +36,19 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   frc.robot.subsystems.Sensors.DigitalInput IR = new InfraRed(ShooterConstants.port_IR, false);
 
   SimpleMotorFeedforward mFeedforward = new SimpleMotorFeedforward(0.63, 0.04);
-  TrapezoidProfile mProfile = new TrapezoidProfile(new Constraints(5, 10));
+  TrapezoidProfile mProfile = new TrapezoidProfile(new Constraints(277, 1600));
   private TrapezoidProfile.State mSetpoint = new TrapezoidProfile.State();
   private TrapezoidProfile.State mGoal = new TrapezoidProfile.State();
 
   private ShooterSubsystem() {
+    ShooterConstants.HAS_NOTE = false;
+
     SmartDashboard.putNumber("P Shooter", 0);
     SmartDashboard.putNumber("I Shooter", 0);
     SmartDashboard.putNumber("D Shooter", 0);
     SmartDashboard.putNumber("I zone Shooter", 0);
+    SmartDashboard.putBoolean("setPID", false);
+
     mShooterUp.setMotorBrake(false);
     mShooterDown.setMotorBrake(false);
     mFeeder.setMotorBrake(false);
@@ -51,17 +57,22 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     mShooterUp.setLoopRampRate(0.2);
     mShooterDown.setLoopRampRate(0.2);
     mFeeder.setLoopRampRate(0.2);
-    mShooterPivot.setLoopRampRate(0.2);
-    mShooterPivot.setPosition(0);
+    mShooterPivot.setLoopRampRate(0);
 
     mShooterUp.setVelocityFactor(1.8);
     mShooterDown.setVelocityFactor(1.8);
     mShooterPivot.setVelocityFactor(1 / 0.52);
     mShooterPivot.setPositionFactor(264 / 2.32);
     mShooterPivot.setInvertedEncoder(true);
+
+    mShooterPivot.setPosition(0);
+
+    mShooterPivot.configurePIDF(0.025, 0, 0, 0);
+
     mShooterUp.configurePIDF(0, 0, 0, 0);
     mShooterDown.configurePIDF(0, 0, 0, 0);
 
+    securedPosition();
   }
 
   @Override
@@ -72,20 +83,38 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
           0,
           SmartDashboard.getNumber("I Zone", 0));
     }
+
+    SmartDashboard.putBoolean("IR", IR.getBoolean());
     SmartDashboard.putNumber("Position Pivot", mShooterPivot.getPosition());
     SmartDashboard.putNumber("Velocity Pivot", mShooterPivot.getVelocity());
+    SmartDashboard.putNumber("Output Pivot Shooter", mShooterPivot.getAppliedOutput());
     SmartDashboard.putNumber("Velocity ShooterUp", mShooterUp.getVelocity());
     SmartDashboard.putNumber("Velocity ShooterDown", mShooterDown.getVelocity());
+
+    mShooterPivot.setPositionReferenceArbFF(profilePosition(goal), getFeedForwardProfiled());
   }
 
   @Override
   public void intake() {
-    mFeeder.set(IR.getBoolean() ? 0 : ShooterConstants.setpoints.VELOCITY_COLLECT);
+    if (IR.getBoolean() && !ShooterConstants.HAS_NOTE) {
+      ShooterConstants.HAS_NOTE = true;
+    }
+    mFeeder.set(ShooterConstants.HAS_NOTE ? 0 : ShooterConstants.setpoints.VELOCITY_COLLECT);
+  }
+
+  @Override
+  public void stopIntaking() {
+    mFeeder.set(0);
+  }
+
+  @Override
+  public void intakePosition() {
+    goal = 46;
   }
 
   @Override
   public boolean hasNote() {
-    return IR.getBoolean();
+    return ShooterConstants.HAS_NOTE;
   }
 
   @Override
@@ -105,7 +134,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public void securedPosition() {
-    mShooterPivot.setPositionReferenceArbFF(profilePosition(10), getFeedForwardProfiled());
+    goal = 0;
   }
 
   @Override
@@ -125,6 +154,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   private double profilePosition(double goal) {
     mGoal = new State(goal, 0);
     mSetpoint = mProfile.calculate(kDt, mSetpoint, mGoal);
+
+    SmartDashboard.putNumber("Setpoint Shooter", mSetpoint.position);
 
     if (mSetpoint.position > ShooterConstants.setpoints.LIMIT_MAX) {
       return ShooterConstants.setpoints.LIMIT_MAX;
@@ -148,7 +179,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public boolean atSetpoint() {
-    return Util.inRange(mShooterPivot.getPosition(), -1, 1);
+    return Util.inRange(mShooterPivot.getPosition(), mShooterPivot.getPosition() - 1, mShooterPivot.getPosition() + 1);
   }
 
 }

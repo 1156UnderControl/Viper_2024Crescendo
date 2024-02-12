@@ -14,12 +14,12 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Joysticks.ControlBoard;
-import frc.robot.commands.Tuning.TuneShooter;
+import frc.robot.commands.States.CollectPosition;
+import frc.robot.commands.States.SecuredPosition;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
 import frc.robot.subsystems.Shooter.ShooterSubsystem;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
@@ -57,6 +57,7 @@ public class RobotContainer {
     SmartDashboard.putData("Aut Chooser", autoChooser);
 
     configureBindings();
+    intake.setDefaultCommand(new SecuredPosition(shooter, intake));
 
     /*
      * swerve.setDefaultCommand(new SwerveTeleopControl(swerve,
@@ -81,8 +82,8 @@ public class RobotContainer {
     new JoystickButton(driverXbox, 7).onTrue(new InstantCommand(swerve::setTrackSpeaker));
     new JoystickButton(driverXbox, 8).onTrue(new InstantCommand(swerve::setStopTrackSpeaker));
 
-    mControlBoard.getIntake().onTrue(new TuneShooter(shooter));
-    mControlBoard.getSecured().onTrue(Commands.runOnce(() -> shooter.setVoltage(0), shooter));
+    mControlBoard.getIntake().onTrue(new CollectPosition(shooter, intake));
+    mControlBoard.getSecured().onTrue(new SecuredPosition(shooter, intake));
   }
 
   public Command getAutonomousCommand() {
