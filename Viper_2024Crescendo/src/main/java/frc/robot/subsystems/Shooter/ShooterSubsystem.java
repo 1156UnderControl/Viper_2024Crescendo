@@ -109,6 +109,10 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     return false;
   }
 
+  public void tuningState(double goal) {
+    mShooterPivot.setPositionReference(profilePosition(goal), getFeedForwardProfiled());
+  }
+
   private double profilePosition(double goal) {
     mGoal = new State(goal, 0);
     mSetpoint = mProfile.calculate(kDt, mSetpoint, mGoal);

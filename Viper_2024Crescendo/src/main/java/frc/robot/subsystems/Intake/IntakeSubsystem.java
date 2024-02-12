@@ -94,11 +94,15 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
 
   }
 
+  public void tuningState(double goal) {
+    mIntake.setPositionReference(profilePosition(goal), getFeedForwardProfiled());
+  }
+
   public void setVoltage(double voltage) {
     mPivotIntake.setVoltage(voltage);
   }
 
-  private double profilePosition(double goal) {
+  double profilePosition(double goal) {
     mGoal = new State(goal, 0);
     mSetpoint = mProfile.calculate(kDt, mSetpoint, mGoal);
     return mSetpoint.position;

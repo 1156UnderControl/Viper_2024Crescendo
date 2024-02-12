@@ -1,6 +1,5 @@
 package frc.robot.commands.Intake;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
 
@@ -15,13 +14,7 @@ public class GoToSecuredIntake extends Command {
 
   @Override
   public void initialize() {
-    System.out.println("rodando command");
-    SmartDashboard.putNumber("voltage pivot", 0);
-  }
-
-  @Override
-  public void execute() {
-    intake.securedPosition();
+    this.intake.securedPosition();
   }
 
   @Override
