@@ -22,6 +22,7 @@ import frc.robot.Joysticks.ControlBoard;
 import frc.robot.commands.States.CollectPosition;
 import frc.robot.commands.States.SecuredPosition;
 import frc.robot.commands.States.ShootAmpPosition;
+import frc.robot.commands.States.ShootSpeakerPosition;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
 /**
@@ -84,7 +85,7 @@ public class RobotContainer {
     mControlBoard.getIntake().onTrue(new CollectPosition(robot));
     mControlBoard.getSecured().onTrue(new SecuredPosition(robot));
     mControlBoard.getPrepareAmp().and(() -> ShooterConstants.HAS_NOTE).onTrue(new ShootAmpPosition(robot));
-    mControlBoard.getPrepareSpeaker().and(() -> ShooterConstants.HAS_NOTE).onTrue(new ShootAmpPosition(robot));
+    mControlBoard.getPrepareSpeaker().and(() -> ShooterConstants.HAS_NOTE).onTrue(new ShootSpeakerPosition(robot));
   }
 
   public Command getAutonomousCommand() {
