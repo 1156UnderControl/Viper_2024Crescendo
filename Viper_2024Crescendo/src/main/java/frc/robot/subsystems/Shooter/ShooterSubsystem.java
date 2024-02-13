@@ -132,6 +132,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   @Override
   public void shoot() {
     mFeeder.set(0.8);
+    ShooterConstants.HAS_NOTE = false;
   }
 
   @Override
