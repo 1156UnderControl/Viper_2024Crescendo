@@ -156,6 +156,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   @Override
   public void shoot() {
     this.feederMotor.set(0.8);
+    this.hasNote = false;
   }
 
   @Override
