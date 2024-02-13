@@ -17,7 +17,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private static ShooterSubsystem shooterInstance = null;
 
-  private boolean hasDetectedNoteOnLastExecution;
+  private double maxVelocityFeeder;
 
   private boolean hasNote;
 
@@ -117,6 +117,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     SmartDashboard.putNumber("Velocity ShooterUp", this.upperFlywheelMotor.getVelocity());
     SmartDashboard.putNumber("Velocity ShooterDown", this.lowerFlywheelMotor.getVelocity());
     SmartDashboard.putNumber("Setpoint Shooter", this.pivotCurrentSetpoint.position);
+    SmartDashboard.putNumber("Velocity Feeder", this.feederMotor.getVelocity());
   }
 
   @Override
@@ -127,11 +128,17 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   }
 
   private void runNoteDetection() {
-    boolean isDetectingNote = this.noteSensor.getBoolean();
-    if (isDetectingNote && hasDetectedNoteOnLastExecution) {
-      this.hasNote = true;
+    double velocityFeeder = this.feederMotor.getVelocity();
+
+    if (velocityFeeder > this.maxVelocityFeeder) {
+      this.maxVelocityFeeder = velocityFeeder;
     }
-    this.hasDetectedNoteOnLastExecution = isDetectingNote;
+
+    if (noteSensor.getBoolean()) {
+      if (velocityFeeder < this.maxVelocityFeeder - 200) {
+        hasNote = true;
+      }
+    }
   }
 
   @Override
