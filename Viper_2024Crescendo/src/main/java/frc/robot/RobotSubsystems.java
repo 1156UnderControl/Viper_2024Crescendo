@@ -1,4 +1,9 @@
 package frc.robot;
+<<<<<<< Updated upstream
+=======
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+>>>>>>> Stashed changes
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Intake.IIntake;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
@@ -21,6 +26,8 @@ public class RobotSubsystems extends SubsystemBase {
 
   @Override
   public void periodic() {
+    SmartDashboard.putData(intakeSubsystem);
+    SmartDashboard.putData(shooterSubsystem);
     this.intakeSubsystem.periodic();
     this.shooterSubsystem.periodic();
   }
