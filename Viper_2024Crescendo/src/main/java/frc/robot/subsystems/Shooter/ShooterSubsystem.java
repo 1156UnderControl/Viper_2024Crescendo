@@ -119,7 +119,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     SmartDashboard.putNumber("Setpoint Shooter", this.pivotCurrentSetpoint.position);
     SmartDashboard.putNumber("Velocity Feeder", this.feederMotor.getVelocity());
     SmartDashboard.putNumber("Max Velocity Feeder", this.maxVelocityFeeder);
-    SmartDashboard.putBoolean("hasNote", hasNote);
+    SmartDashboard.putBoolean("hasNote", this.hasNote);
+    SmartDashboard.putBoolean("Shooter At Setpoint", this.isAtSetpoint());
   }
 
   @Override
@@ -168,7 +169,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   public void prepareSpeakerShot() {
     this.lowerFlywheelMotor.set(-0.8);
     this.upperFlywheelMotor.set(-0.8);
-    goal = 100;
+    goal = 46;
   }
 
   @Override
@@ -199,8 +200,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public boolean isAtSetpoint() {
-    double minPosition = goal - ShooterConstants.pivotGoalDeadband;
-    double maxPosition = goal + ShooterConstants.pivotGoalDeadband;
+    double minPosition = this.goal - ShooterConstants.pivotGoalDeadband;
+    double maxPosition = this.goal + ShooterConstants.pivotGoalDeadband;
     return Util.inRange(this.pivotMotor.getPosition(), minPosition, maxPosition);
   }
 
