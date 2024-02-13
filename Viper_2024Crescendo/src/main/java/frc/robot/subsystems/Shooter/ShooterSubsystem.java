@@ -184,6 +184,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public boolean atSetpoint() {
-    return Util.inRange(mShooterPivot.getPosition(), mShooterPivot.getPosition() - 1, mShooterPivot.getPosition() + 1);
+    double minPosition = goal - ShooterConstants.pivotGoalDeadband;
+    double maxPosition = goal + ShooterConstants.pivotGoalDeadband;
+    return Util.inRange(mShooterPivot.getPosition(), minPosition, maxPosition);
   }
 }
