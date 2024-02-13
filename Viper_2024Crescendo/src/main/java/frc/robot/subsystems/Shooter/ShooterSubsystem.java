@@ -180,7 +180,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   public void goToSecuredPosition() {
     this.lowerFlywheelMotor.set(0);
     this.upperFlywheelMotor.set(0);
-    this.feederMotor.set(0);
+    this.feederMotor.set(noteSensor.getBoolean() || !hasNote ? 0 : -0.1);
     goal = 0;
   }
 
