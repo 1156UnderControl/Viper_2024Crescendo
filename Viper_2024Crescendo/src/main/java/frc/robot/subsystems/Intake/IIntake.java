@@ -5,17 +5,17 @@ public interface IIntake {
 
   void stopIntaking();
 
-  void intakePosition();
+  void goToIntakePosition();
 
   void shootingPosition();
 
-  void securedPosition();
+  void goToSecuredPosition();
 
-  boolean secureForShooter();
+  boolean isSecureForShooter();
 
   void expell();
 
-  void hasCollected();
+  boolean isAtSetpoint();
 
-  boolean atSetpoint();
+  void setManualPivotPosition(double goal);
 }

@@ -13,11 +13,11 @@ public class GoToSecuredIntake extends Command {
 
   @Override
   public void execute() {
-    this.robot.intake.securedPosition();
+    this.robot.intake.goToSecuredPosition();
   }
 
   @Override
   public boolean isFinished() {
-    return this.robot.intake.atSetpoint();
+    return this.robot.intake.isAtSetpoint();
   }
 }
