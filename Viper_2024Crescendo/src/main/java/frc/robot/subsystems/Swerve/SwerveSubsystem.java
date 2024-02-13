@@ -68,7 +68,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     SmartDashboard.putData("POSE APRIL", aprField2d);
 
-    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.LOW;
+    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
 
     try {
 
