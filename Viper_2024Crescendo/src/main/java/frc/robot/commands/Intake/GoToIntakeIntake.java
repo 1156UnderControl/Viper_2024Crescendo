@@ -18,11 +18,11 @@ public class GoToIntakeIntake extends Command {
 
   @Override
   public void execute() {
-    this.robot.intake.intakePosition();
+    this.robot.intake.goToIntakePosition();
   }
 
   @Override
   public boolean isFinished() {
-    return this.robot.intake.secureForShooter();
+    return this.robot.intake.isSecureForShooter();
   }
 }

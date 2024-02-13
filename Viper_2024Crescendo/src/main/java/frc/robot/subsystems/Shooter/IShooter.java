@@ -5,7 +5,7 @@ public interface IShooter {
 
   void stopIntaking();
 
-  void intakePosition();
+  void goToIntakePosition();
 
   boolean hasNote();
 
@@ -13,7 +13,7 @@ public interface IShooter {
 
   void prepareAmpShot();
 
-  void securedPosition();
+  void goToSecuredPosition();
 
   void shoot();
 
@@ -21,5 +21,7 @@ public interface IShooter {
 
   boolean isSecureForIntake();
 
-  boolean atSetpoint();
+  boolean isAtSetpoint();
+
+  void setManualPivotPosition(double goal);
 }

@@ -10,79 +10,84 @@ import frc.Java_Is_UnderControl.Util.Util;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.subsystems.Motors.Motor;
 import frc.robot.subsystems.Motors.SparkMAXMotor;
-import frc.robot.subsystems.Shooter.IShooter;
-import frc.robot.subsystems.Shooter.ShooterSubsystem;
 
 public class IntakeSubsystem extends SubsystemBase implements IIntake {
-  private static IntakeSubsystem mInstance = null;
+  private static IntakeSubsystem intakeInstance = null;
+
+  private double kDt = 0.02;
+
+  private double goal = 140;
+
+  private Motor rollerMotor = new SparkMAXMotor(IntakeConstants.ID_intake);
+
+  private Motor pivotMotor = new SparkMAXMotor(IntakeConstants.ID_pivotIntake, true);
+
+  private SimpleMotorFeedforward pivotFeedforward = new SimpleMotorFeedforward(0.28, 0.03);
+
+  private TrapezoidProfile pivotMotionProfile = new TrapezoidProfile(new Constraints(400, 2500));
+
+  private TrapezoidProfile.State pivotCurrentSetpoint = new TrapezoidProfile.State();
+  
+  private TrapezoidProfile.State pivotGoal = new TrapezoidProfile.State();
 
   public static IntakeSubsystem getInstance() {
-    if (mInstance == null) {
-      mInstance = new IntakeSubsystem();
+    if (intakeInstance == null) {
+      intakeInstance = new IntakeSubsystem();
     }
-
-    return mInstance;
+    return intakeInstance;
   }
 
-  private static double kDt = 0.02;
-
-  private static double goal = 140;
-
-  private double pivotGoalDeadband = 1;
-
-  Motor mIntake = new SparkMAXMotor(IntakeConstants.ID_intake);
-  Motor mPivotIntake = new SparkMAXMotor(IntakeConstants.ID_pivotIntake, true);
-
-  IShooter InterfaceShooter = ShooterSubsystem.getInstance();
-
-  SimpleMotorFeedforward mFeedforward = new SimpleMotorFeedforward(0.28, 0.03);
-  TrapezoidProfile mProfile = new TrapezoidProfile(new Constraints(400, 2500));
-  private TrapezoidProfile.State mSetpoint = new TrapezoidProfile.State();
-  private TrapezoidProfile.State mGoal = new TrapezoidProfile.State();
-
   private IntakeSubsystem() {
-    mPivotIntake.setPosition(0);
-    mPivotIntake.setInverted(true);
-    mIntake.setInverted(true);
-
-    mPivotIntake.setMotorBrake(true);
-    mIntake.setMotorBrake(false);
-
-    mPivotIntake.setLoopRampRate(0);
-    mIntake.setLoopRampRate(0.2);
-
-    mPivotIntake.setPositionFactor(360);
-    mPivotIntake.setVelocityFactor(6);
-
-    mPivotIntake.configurePIDF(0.025, 0, 0, 0);
-
+    this.configurePivotMotor();
+    this.configureRollerMotor();
     SmartDashboard.putNumber("Position Manual Setpoint Shooter", 0);
+    this.updateSmartDashboard();
+  }
+
+  private void configurePivotMotor() {
+    this.pivotMotor.setInverted(true);
+    this.pivotMotor.setMotorBrake(true);
+    this.pivotMotor.setLoopRampRate(0);
+    this.pivotMotor.setPositionFactor(360);
+    this.pivotMotor.setVelocityFactor(6);
+    this.pivotMotor.configurePIDF(0.025, 0, 0, 0);
+    this.pivotMotor.setPosition(0);
+  }
+
+  private void configureRollerMotor() {
+    this.rollerMotor.setInverted(true);
+    this.rollerMotor.setMotorBrake(false);
+    this.rollerMotor.setLoopRampRate(0.2);
   }
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Position intake Pivot", mPivotIntake.getPosition());
-    SmartDashboard.putNumber("Velocity intake Pivot", mPivotIntake.getVelocity());
-    SmartDashboard.putNumber("Voltage Collect", mIntake.getVoltage());
-    SmartDashboard.putNumber("Output Pivot intake", mPivotIntake.getAppliedOutput());
+    this.pivotMotor.setPositionReferenceArbFF(profilePosition(goal), getFeedForwardProfiled());
+    this.updateSmartDashboard();
+  }
 
-    mPivotIntake.setPositionReferenceArbFF(profilePosition(goal), getFeedForwardProfiled());
+  private void updateSmartDashboard() {
+    SmartDashboard.putNumber("Position intake Pivot", pivotMotor.getPosition());
+    SmartDashboard.putNumber("Velocity intake Pivot", pivotMotor.getVelocity());
+    SmartDashboard.putNumber("Voltage Collect", rollerMotor.getVoltage());
+    SmartDashboard.putNumber("Output Pivot intake", pivotMotor.getAppliedOutput());
+    SmartDashboard.putNumber("Setpoint Intake", pivotCurrentSetpoint.position);
   }
 
   @Override
   public void intake() {
-
-    mIntake.set(IntakeConstants.intakeSpeed);
+    this.goToIntakePosition();
+    this.rollerMotor.set(IntakeConstants.intakeSpeed);
   }
 
   @Override
   public void stopIntaking() {
-    mIntake.set(0);
+    this.rollerMotor.set(0);
   }
 
   @Override
-  public void intakePosition() {
-    goal = 0;
+  public void goToIntakePosition() {
+    this.goal = 0;
   }
 
   @Override
@@ -91,13 +96,13 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
   }
 
   @Override
-  public void securedPosition() {
-    goal = 140;
+  public void goToSecuredPosition() {
+    this.goal = 140;
   }
 
   @Override
-  public boolean secureForShooter() {
-    return mPivotIntake.getPosition() < 90;
+  public boolean isSecureForShooter() {
+    return this.pivotMotor.getPosition() < 90;
   }
 
   @Override
@@ -106,44 +111,32 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
   }
 
   @Override
-  public void hasCollected() {
-
-  }
-
-  public void tuningState(double goal) {
-    mPivotIntake.setPositionReferenceArbFF(profilePosition(goal), getFeedForwardProfiled());
-  }
-
-  public void setVoltage(double voltage) {
-    mPivotIntake.setVoltage(voltage);
-  }
-
-  private double profilePosition(double goal) {
-    mGoal = new State(goal, 0);
-    mSetpoint = mProfile.calculate(kDt, mSetpoint, mGoal);
-    SmartDashboard.putNumber("Setpoint Intake", mSetpoint.position);
-
-    if (mSetpoint.position > IntakeConstants.setpoints.LIMIT_MAX) {
-      return IntakeConstants.setpoints.LIMIT_MAX;
-    }
-
-    if (mSetpoint.position < IntakeConstants.setpoints.LIMIT_MIN) {
-      return IntakeConstants.setpoints.LIMIT_MIN;
-    }
-
-    return mSetpoint.position;
-  }
-
-  private double getFeedForwardProfiled() {
-
-    return mFeedforward.calculate(mSetpoint.velocity / 12);
+  public boolean isAtSetpoint() {
+    double minPosition = this.goal - IntakeConstants.pivotDeadband;
+    double maxPosition = this.goal + IntakeConstants.pivotDeadband;
+    return Util.inRange(this.pivotMotor.getPosition(), minPosition, maxPosition);
   }
 
   @Override
-  public boolean atSetpoint() {
-    double minPosition = goal - pivotGoalDeadband;
-    double maxPosition = goal + pivotGoalDeadband;
-    return Util.inRange(mPivotIntake.getPosition(), minPosition, maxPosition);
+  public void setManualPivotPosition(double goal) {
+    this.goal = goal;
+    this.periodic();
+  }
+
+  private double profilePosition(double goal) {
+    this.pivotGoal = new State(goal, 0);
+    this.pivotCurrentSetpoint = this.pivotMotionProfile.calculate(kDt, pivotCurrentSetpoint, pivotGoal);
+    if (pivotCurrentSetpoint.position > IntakeConstants.setpoints.LIMIT_MAX) {
+      return IntakeConstants.setpoints.LIMIT_MAX;
+    }
+    if (pivotCurrentSetpoint.position < IntakeConstants.setpoints.LIMIT_MIN) {
+      return IntakeConstants.setpoints.LIMIT_MIN;
+    }
+    return this.pivotCurrentSetpoint.position;
+  }
+
+  private double getFeedForwardProfiled() {
+    return this.pivotFeedforward.calculate(pivotCurrentSetpoint.velocity / 12);
   }
 
 }

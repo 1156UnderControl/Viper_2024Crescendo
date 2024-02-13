@@ -1,9 +1,6 @@
 package frc.robot;
-<<<<<<< Updated upstream
-=======
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
->>>>>>> Stashed changes
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Intake.IIntake;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
@@ -11,18 +8,18 @@ import frc.robot.subsystems.Shooter.IShooter;
 import frc.robot.subsystems.Shooter.ShooterSubsystem;
 
 public class RobotSubsystems extends SubsystemBase {
-    public IIntake intake;
-    public IShooter shooter;
+  public IIntake intake;
+  public IShooter shooter;
 
-    private SubsystemBase intakeSubsystem;
-    private SubsystemBase shooterSubsystem;
+  private SubsystemBase intakeSubsystem;
+  private SubsystemBase shooterSubsystem;
 
-    public RobotSubsystems() {
-        this.intake = IntakeSubsystem.getInstance();
-        this.shooter = ShooterSubsystem.getInstance();
-        this.intakeSubsystem = IntakeSubsystem.getInstance();
-        this.shooterSubsystem = ShooterSubsystem.getInstance();
-    }
+  public RobotSubsystems() {
+    this.intake = IntakeSubsystem.getInstance();
+    this.shooter = ShooterSubsystem.getInstance();
+    this.intakeSubsystem = IntakeSubsystem.getInstance();
+    this.shooterSubsystem = ShooterSubsystem.getInstance();
+  }
 
   @Override
   public void periodic() {
