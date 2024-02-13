@@ -9,6 +9,7 @@ import java.io.File;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -17,12 +18,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Constants.JoystickConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Joysticks.ControlBoard;
 import frc.robot.commands.States.CollectPosition;
 import frc.robot.commands.States.SecuredPosition;
 import frc.robot.commands.States.ShootAmpPosition;
 import frc.robot.commands.States.ShootSpeakerPosition;
+import frc.robot.commands.Swerve.SwerveTeleopControl;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
 /**
@@ -59,17 +62,16 @@ public class RobotContainer {
     configureBindings();
     robot.setDefaultCommand(new SecuredPosition(robot));
 
-    /*
-     * swerve.setDefaultCommand(new SwerveTeleopControl(swerve,
-     * () -> -MathUtil.applyDeadband(driverXbox.getLeftX(),
-     * JoystickConstants.DEADBAND),
-     * () -> -MathUtil.applyDeadband(driverXbox.getLeftY(),
-     * JoystickConstants.DEADBAND),
-     * () -> -driverXbox.getRightX(),
-     * () -> -driverXbox.getRightY(),
-     * () -> driverXbox.getRightTriggerAxis(),
-     * () -> driverXbox.getLeftTriggerAxis()));
-     */
+    swerve.setDefaultCommand(new SwerveTeleopControl(swerve,
+        () -> -MathUtil.applyDeadband(driverXbox.getLeftX(),
+            JoystickConstants.DEADBAND),
+        () -> -MathUtil.applyDeadband(driverXbox.getLeftY(),
+            JoystickConstants.DEADBAND),
+        () -> -driverXbox.getRightX(),
+        () -> -driverXbox.getRightY(),
+        () -> driverXbox.getRightTriggerAxis(),
+        () -> driverXbox.getLeftTriggerAxis()));
+
   }
 
   private void configureBindings() {
