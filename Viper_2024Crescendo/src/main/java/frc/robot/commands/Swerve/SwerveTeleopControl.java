@@ -25,7 +25,7 @@ import swervelib.math.SwerveMath;
 public class SwerveTeleopControl extends Command {
   DoubleSupplier y;
   DoubleSupplier x;
-  double boostActivate;
+  DoubleSupplier boostActivate;
   DoubleSupplier triggerSpeed;
   DoubleSupplier turnX;
   DoubleSupplier turnY;
@@ -50,9 +50,8 @@ public class SwerveTeleopControl extends Command {
       DoubleSupplier turnY, DoubleSupplier triggerSpeed, DoubleSupplier boostActivate) {
     this.y = y;
     this.x = x;
-    this.boostActivate = boostActivate.getAsDouble();
+    this.boostActivate = boostActivate;
     this.triggerSpeed = triggerSpeed;
-
     this.turnX = turnX;
     this.turnY = turnY;
     this.swerve = swerve;
@@ -93,7 +92,7 @@ public class SwerveTeleopControl extends Command {
       xVelocity = triggerSpeed * xVelocity;
       yVelocity = triggerSpeed * yVelocity;
     } else {
-      if (boostActivate < 0.2) {
+      if (boostActivate.getAsDouble() < 0.2) {
         xVelocity = xVelocity * 0.6;
         yVelocity = yVelocity * 0.6;
       }
@@ -106,9 +105,9 @@ public class SwerveTeleopControl extends Command {
     SmartDashboard.putNumber("angPre", swerve.getAngleSP().getDegrees());
 
     if (DriverStation.getAlliance().get() == Alliance.Red) {
-      speedsWithAng = swerve.getTargetSpeeds(xVelocity, yVelocity, -angX, -angY);
+      speedsWithAng = swerve.getTargetSpeeds(xVelocity, yVelocity, angX, angY);
     } else {
-      speedsWithAng = swerve.getTargetSpeeds(-xVelocity, -yVelocity, angX, angY);
+      speedsWithAng = swerve.getTargetSpeeds(-xVelocity, -yVelocity, -angX, -angY);
     }
 
     speedsWithAng = swerve.discretize(speedsWithAng);
