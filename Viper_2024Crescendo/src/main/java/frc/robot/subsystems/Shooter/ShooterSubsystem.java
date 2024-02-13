@@ -17,6 +17,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private static ShooterSubsystem shooterInstance = null;
 
+  private boolean hasDetectedNoteOnLastExecution;
+
   private boolean hasNote;
 
   private double kDt = 0.02;
@@ -120,10 +122,16 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   @Override
   public void intake() {
     this.goToIntakePosition();
-    if (this.noteSensor.getBoolean()) {
+    this.runNoteDetection();
+    this.feederMotor.set(this.hasNote ? 0 : ShooterConstants.setpoints.VELOCITY_COLLECT);
+  }
+
+  private void runNoteDetection() {
+    boolean isDetectingNote = this.noteSensor.getBoolean();
+    if (isDetectingNote && hasDetectedNoteOnLastExecution) {
       this.hasNote = true;
     }
-    this.feederMotor.set(this.hasNote ? 0 : ShooterConstants.setpoints.VELOCITY_COLLECT);
+    this.hasDetectedNoteOnLastExecution = isDetectingNote;
   }
 
   @Override
