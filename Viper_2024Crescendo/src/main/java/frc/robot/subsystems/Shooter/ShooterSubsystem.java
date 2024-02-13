@@ -10,118 +10,142 @@ import frc.Java_Is_UnderControl.Util.Util;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Motors.Motor;
 import frc.robot.subsystems.Motors.SparkMAXMotor;
+import frc.robot.subsystems.Sensors.DigitalInput;
 import frc.robot.subsystems.Sensors.InfraRed;
 
 public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
-  private static ShooterSubsystem mInstance = null;
+  private static ShooterSubsystem shooterInstance = null;
+
+  private boolean hasNote;
+
+  private double kDt = 0.02;
+
+  private double goal = 0;
+
+  private Motor upperFlywheelMotor = new SparkMAXMotor(ShooterConstants.ID_shooterUp);
+
+  private Motor lowerFlywheelMotor = new SparkMAXMotor(ShooterConstants.ID_shooterDown);
+
+  private Motor feederMotor = new SparkMAXMotor(ShooterConstants.ID_feeder);
+
+  private Motor pivotMotor = new SparkMAXMotor(ShooterConstants.ID_pivotShooter, true);
+
+  private DigitalInput noteSensor = new InfraRed(ShooterConstants.port_IR, false);
+
+  SimpleMotorFeedforward pivotFeedforward = new SimpleMotorFeedforward(0.63, 0.04);
+
+  TrapezoidProfile pivotMotionProfile = new TrapezoidProfile(new Constraints(277, 1600));
+
+  private TrapezoidProfile.State pivotCurrentSetpoint = new TrapezoidProfile.State();
+
+  private TrapezoidProfile.State pivotGoal = new TrapezoidProfile.State();
 
   public static ShooterSubsystem getInstance() {
-    if (mInstance == null) {
-      mInstance = new ShooterSubsystem();
+    if (shooterInstance == null) {
+      shooterInstance = new ShooterSubsystem();
     }
-
-    return mInstance;
+    return shooterInstance;
   }
 
-  private static double kDt = 0.02;
-
-  private static double goal = 0;
-
-  Motor mShooterUp = new SparkMAXMotor(ShooterConstants.ID_shooterUp, false);
-  Motor mShooterDown = new SparkMAXMotor(ShooterConstants.ID_shooterDown, false);
-  Motor mFeeder = new SparkMAXMotor(ShooterConstants.ID_feeder, false);
-  Motor mShooterPivot = new SparkMAXMotor(ShooterConstants.ID_pivotShooter, true);
-
-  frc.robot.subsystems.Sensors.DigitalInput IR = new InfraRed(ShooterConstants.port_IR, false);
-
-  SimpleMotorFeedforward mFeedforward = new SimpleMotorFeedforward(0.63, 0.04);
-  TrapezoidProfile mProfile = new TrapezoidProfile(new Constraints(277, 1600));
-  private TrapezoidProfile.State mSetpoint = new TrapezoidProfile.State();
-  private TrapezoidProfile.State mGoal = new TrapezoidProfile.State();
-
   private ShooterSubsystem() {
-    ShooterConstants.HAS_NOTE = false;
+    this.hasNote = false;
+    this.configureFlywheelMotor(this.upperFlywheelMotor);
+    this.configureFlywheelMotor(this.lowerFlywheelMotor);
+    this.configureFeederMotor();
+    this.configurePivotMotor();
+    this.goToSecuredPosition();
+    this.initializeSmartDashboardVariables();
+  }
 
+  private void configureFlywheelMotor(Motor flywheelMotor) {
+    // Using this method for both rollers ensures that
+    // they are forced to use the same configuration.
+    flywheelMotor.setMotorBrake(false);
+    flywheelMotor.setLoopRampRate(0.2);
+    flywheelMotor.setVelocityFactor(1.8);
+    flywheelMotor.configurePIDF(0, 0, 0, 0);
+  }
+
+  private void configureFeederMotor() {
+    feederMotor.setMotorBrake(false);
+    feederMotor.setLoopRampRate(0.2);
+  }
+
+  private void configurePivotMotor() {
+    pivotMotor.setMotorBrake(true);
+    pivotMotor.setLoopRampRate(0);
+    pivotMotor.setVelocityFactor(1 / 0.52);
+    pivotMotor.setPositionFactor(264 / 2.32);
+    pivotMotor.setInvertedEncoder(true);
+    pivotMotor.configurePIDF(0.025, 0, 0, 0);
+    pivotMotor.setPosition(0);
+  }
+
+  private void initializeSmartDashboardVariables() {
     SmartDashboard.putNumber("P Shooter", 0);
     SmartDashboard.putNumber("I Shooter", 0);
     SmartDashboard.putNumber("D Shooter", 0);
     SmartDashboard.putNumber("I zone Shooter", 0);
     SmartDashboard.putBoolean("setPID", false);
-
-    mShooterUp.setMotorBrake(false);
-    mShooterDown.setMotorBrake(false);
-    mFeeder.setMotorBrake(false);
-    mShooterPivot.setMotorBrake(true);
-
-    mShooterUp.setLoopRampRate(0.2);
-    mShooterDown.setLoopRampRate(0.2);
-    mFeeder.setLoopRampRate(0.2);
-    mShooterPivot.setLoopRampRate(0);
-
-    mShooterUp.setVelocityFactor(1.8);
-    mShooterDown.setVelocityFactor(1.8);
-    mShooterPivot.setVelocityFactor(1 / 0.52);
-    mShooterPivot.setPositionFactor(264 / 2.32);
-    mShooterPivot.setInvertedEncoder(true);
-
-    mShooterPivot.setPosition(0);
-
-    mShooterPivot.configurePIDF(0.025, 0, 0, 0);
-
-    mShooterUp.configurePIDF(0, 0, 0, 0);
-    mShooterDown.configurePIDF(0, 0, 0, 0);
-
-    securedPosition();
   }
 
   @Override
   public void periodic() {
+    this.updatePivotPidFromDashboard();
+    this.pivotMotor.setPositionReferenceArbFF(profilePosition(goal), getFeedForwardProfiled());
+    this.updateSmartDashboard();
+  }
+
+  private void updatePivotPidFromDashboard() {
     if (SmartDashboard.getBoolean("setPID", false)) {
-      mShooterPivot.configurePIDF(SmartDashboard.getNumber("P Shooter", 0),
-          SmartDashboard.getNumber("I Shooter", 0),
-          0,
-          SmartDashboard.getNumber("I Zone", 0));
+      double p = SmartDashboard.getNumber("P Shooter", 0);
+      double i = SmartDashboard.getNumber("I Shooter", 0);
+      double d = 0;
+      double iZone = SmartDashboard.getNumber("I Zone", 0);
+      this.pivotMotor.configurePIDF(p, i, d, iZone);
     }
+  }
 
-    SmartDashboard.putBoolean("IR", IR.getBoolean());
-    SmartDashboard.putNumber("Position Pivot", mShooterPivot.getPosition());
-    SmartDashboard.putNumber("Velocity Pivot", mShooterPivot.getVelocity());
-    SmartDashboard.putNumber("Output Pivot Shooter", mShooterPivot.getAppliedOutput());
-    SmartDashboard.putNumber("Velocity ShooterUp", mShooterUp.getVelocity());
-    SmartDashboard.putNumber("Velocity ShooterDown", mShooterDown.getVelocity());
-
-    mShooterPivot.setPositionReferenceArbFF(profilePosition(goal), getFeedForwardProfiled());
+  private void updateSmartDashboard() {
+    SmartDashboard.putBoolean("IR", this.noteSensor.getBoolean());
+    SmartDashboard.putNumber("Position Pivot", this.pivotMotor.getPosition());
+    SmartDashboard.putNumber("Velocity Pivot", this.pivotMotor.getVelocity());
+    SmartDashboard.putNumber("Output Pivot Shooter", this.pivotMotor.getAppliedOutput());
+    SmartDashboard.putNumber("Velocity ShooterUp", this.upperFlywheelMotor.getVelocity());
+    SmartDashboard.putNumber("Velocity ShooterDown", this.lowerFlywheelMotor.getVelocity());
+    SmartDashboard.putNumber("Setpoint Shooter", this.pivotCurrentSetpoint.position);
   }
 
   @Override
   public void intake() {
-    if (IR.getBoolean() && !ShooterConstants.HAS_NOTE) {
-      ShooterConstants.HAS_NOTE = true;
+    this.goToIntakePosition();
+    if (this.noteSensor.getBoolean()) {
+      this.hasNote = true;
     }
-    mFeeder.set(ShooterConstants.HAS_NOTE ? 0 : ShooterConstants.setpoints.VELOCITY_COLLECT);
+    this.feederMotor.set(this.hasNote ? 0 : ShooterConstants.setpoints.VELOCITY_COLLECT);
   }
 
   @Override
   public void stopIntaking() {
-    mFeeder.set(0);
+    this.feederMotor.set(0);
   }
 
   @Override
-  public void intakePosition() {
-    goal = 46;
+  public void goToIntakePosition() {
+    this.goal = 46;
   }
 
   @Override
   public boolean hasNote() {
-    return ShooterConstants.HAS_NOTE;
+    return this.hasNote;
   }
 
   @Override
   public void prepareAmpShot() {
-    mShooterDown.set(-0.8);
-    mShooterUp.set(-0.8);
-    goal = 125;
+    this.lowerFlywheelMotor.set(-0.8);
+    this.upperFlywheelMotor.set(-0.8);
+    this.goal = 125;
   }
 
   @Override
@@ -131,20 +155,20 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public void shoot() {
-    mFeeder.set(0.8);
+    this.feederMotor.set(0.8);
   }
 
   @Override
-  public void securedPosition() {
-    mShooterDown.set(0);
-    mShooterUp.set(0);
-    mFeeder.set(0);
+  public void goToSecuredPosition() {
+    this.lowerFlywheelMotor.set(0);
+    this.upperFlywheelMotor.set(0);
+    this.feederMotor.set(0);
     goal = 0;
   }
 
   @Override
   public boolean hasShooted() {
-    return !IR.getBoolean();
+    return !noteSensor.getBoolean();
   }
 
   @Override
@@ -152,40 +176,32 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     return false;
   }
 
-  public void tuningState(double goal) {
-    mShooterPivot.setPositionReferenceArbFF(profilePosition(goal), getFeedForwardProfiled());
-  }
-
-  private double profilePosition(double goal) {
-    mGoal = new State(goal, 0);
-    mSetpoint = mProfile.calculate(kDt, mSetpoint, mGoal);
-
-    SmartDashboard.putNumber("Setpoint Shooter", mSetpoint.position);
-
-    if (mSetpoint.position > ShooterConstants.setpoints.LIMIT_MAX) {
-      return ShooterConstants.setpoints.LIMIT_MAX;
-    }
-
-    if (mSetpoint.position < ShooterConstants.setpoints.LIMIT_MIN) {
-      return ShooterConstants.setpoints.LIMIT_MIN;
-    }
-
-    return mSetpoint.position;
-  }
-
-  public void setVoltage(double voltage) {
-    mShooterPivot.setVoltage(voltage);
-  }
-
-  private double getFeedForwardProfiled() {
-
-    return mFeedforward.calculate(mSetpoint.velocity / 12);
+  @Override
+  public boolean isAtSetpoint() {
+    double minPosition = goal - ShooterConstants.pivotGoalDeadband;
+    double maxPosition = goal + ShooterConstants.pivotGoalDeadband;
+    return Util.inRange(this.pivotMotor.getPosition(), minPosition, maxPosition);
   }
 
   @Override
-  public boolean atSetpoint() {
-    double minPosition = goal - ShooterConstants.pivotGoalDeadband;
-    double maxPosition = goal + ShooterConstants.pivotGoalDeadband;
-    return Util.inRange(mShooterPivot.getPosition(), minPosition, maxPosition);
+  public void setManualPivotPosition(double goal) {
+    this.goal = goal;
+    this.periodic();
+  }
+
+  private double profilePosition(double goal) {
+    this.pivotGoal = new State(goal, 0);
+    this.pivotCurrentSetpoint = pivotMotionProfile.calculate(kDt, this.pivotCurrentSetpoint, this.pivotGoal);
+    if (this.pivotCurrentSetpoint.position > ShooterConstants.setpoints.LIMIT_MAX) {
+      return ShooterConstants.setpoints.LIMIT_MAX;
+    }
+    if (this.pivotCurrentSetpoint.position < ShooterConstants.setpoints.LIMIT_MIN) {
+      return ShooterConstants.setpoints.LIMIT_MIN;
+    }
+    return this.pivotCurrentSetpoint.position;
+  }
+
+  private double getFeedForwardProfiled() {
+    return pivotFeedforward.calculate(pivotCurrentSetpoint.velocity / 12);
   }
 }
