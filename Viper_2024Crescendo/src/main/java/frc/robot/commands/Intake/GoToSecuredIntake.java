@@ -13,7 +13,7 @@ public class GoToSecuredIntake extends Command {
 
   @Override
   public void execute() {
-    this.robot.intake.securedPosition();
+    this.robot.intake.goToSecuredPosition();
   }
 
   @Override

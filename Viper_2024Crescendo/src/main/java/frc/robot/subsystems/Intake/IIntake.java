@@ -5,17 +5,15 @@ public interface IIntake {
 
   void stopIntaking();
 
-  void intakePosition();
+  void goToIntakePosition();
 
   void freewayShooter();
 
-  void securedPosition();
+  void goToSecuredPosition();
 
-  boolean secureForShooter();
+  boolean isSecureForShooter();
 
   void expell();
-
-  void hasCollected();
 
   boolean atSetpoint();
 }
