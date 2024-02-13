@@ -17,7 +17,7 @@ public class OperatorController implements IOperatorController {
   CommandXboxController controller;
 
   private OperatorController() {
-    controller = new CommandXboxController(0);
+    controller = new CommandXboxController(1);
   }
 
   @Override
