@@ -7,7 +7,7 @@ public interface IIntake {
 
   void intakePosition();
 
-  void freewayShooter();
+  void shootingPosition();
 
   void securedPosition();
 

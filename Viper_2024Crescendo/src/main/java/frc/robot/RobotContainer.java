@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.Joysticks.ControlBoard;
 import frc.robot.commands.States.CollectPosition;
 import frc.robot.commands.States.SecuredPosition;
@@ -82,8 +83,8 @@ public class RobotContainer {
 
     mControlBoard.getIntake().onTrue(new CollectPosition(robot));
     mControlBoard.getSecured().onTrue(new SecuredPosition(robot));
-    mControlBoard.getPrepareAmp().onTrue(new ShootAmpPosition(robot));
-
+    mControlBoard.getPrepareAmp().and(() -> ShooterConstants.HAS_NOTE).onTrue(new ShootAmpPosition(robot));
+    mControlBoard.getPrepareSpeaker().and(() -> ShooterConstants.HAS_NOTE).onTrue(new ShootAmpPosition(robot));
   }
 
   public Command getAutonomousCommand() {

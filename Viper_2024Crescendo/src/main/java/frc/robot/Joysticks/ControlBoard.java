@@ -72,7 +72,12 @@ public class ControlBoard implements IDriverController, IOperatorController {
   }
 
   @Override
-  public Trigger getShootAmp() {
-    return mOperatorController.getShootAmp();
+  public Trigger getPrepareSpeaker() {
+    return mOperatorController.getPrepareSpeaker();
+  }
+
+  @Override
+  public Trigger getShoot() {
+    return mOperatorController.getShoot();
   }
 }

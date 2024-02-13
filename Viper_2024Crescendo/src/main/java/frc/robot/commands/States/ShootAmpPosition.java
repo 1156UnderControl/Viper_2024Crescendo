@@ -4,17 +4,17 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotSubsystems;
 import frc.robot.Joysticks.ControlBoard;
-import frc.robot.commands.Intake.GoToAmpIntake;
-import frc.robot.commands.Shooter.PrepareForAmp;
+import frc.robot.commands.Intake.GoToShootIntake;
+import frc.robot.commands.Shooter.ShootAmp;
 
 public class ShootAmpPosition extends SequentialCommandGroup {
-  ControlBoard mmBoard = ControlBoard.getInstance();
+  ControlBoard mControlBoard = ControlBoard.getInstance();
 
   public ShootAmpPosition(RobotSubsystems robot) {
     addCommands(
-        new GoToAmpIntake(robot),
-        new PrepareForAmp(robot),
-        Commands.waitUntil(mmBoard.getShootAmp()),
+        new GoToShootIntake(robot),
+        new ShootAmp(robot),
+        Commands.waitUntil(mControlBoard.getShoot()),
         Commands.runOnce(() -> robot.shooter.shoot(), robot),
         Commands.waitSeconds(1));
   }

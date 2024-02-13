@@ -37,7 +37,12 @@ public class OperatorController implements IOperatorController {
   }
 
   @Override
-  public Trigger getShootAmp() {
+  public Trigger getPrepareSpeaker() {
+    return controller.rightBumper();
+  }
+
+  @Override
+  public Trigger getShoot() {
     return controller.leftTrigger(0.2);
   }
 }

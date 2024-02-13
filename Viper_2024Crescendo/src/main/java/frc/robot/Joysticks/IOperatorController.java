@@ -9,5 +9,7 @@ public interface IOperatorController {
 
   Trigger getPrepareAmp();
 
-  Trigger getShootAmp();
+  Trigger getPrepareSpeaker();
+
+  Trigger getShoot();
 }

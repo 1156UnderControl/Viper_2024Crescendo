@@ -126,7 +126,9 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public void prepareSpeakerShot() {
-
+    mShooterDown.set(-0.8);
+    mShooterUp.set(-0.8);
+    goal = 100;
   }
 
   @Override
@@ -171,10 +173,6 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     }
 
     return mSetpoint.position;
-  }
-
-  public void setVoltage(double voltage) {
-    mShooterPivot.setVoltage(voltage);
   }
 
   private double getFeedForwardProfiled() {

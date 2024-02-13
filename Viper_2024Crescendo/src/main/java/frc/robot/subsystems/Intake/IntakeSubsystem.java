@@ -86,7 +86,7 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
   }
 
   @Override
-  public void freewayShooter() {
+  public void shootingPosition() {
     goal = 0;
   }
 

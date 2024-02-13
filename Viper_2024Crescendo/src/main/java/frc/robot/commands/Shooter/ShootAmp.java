@@ -1,23 +1,23 @@
-package frc.robot.commands.Intake;
+package frc.robot.commands.Shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotSubsystems;
 
-public class GoToAmpIntake extends Command {
+public class ShootAmp extends Command {
   private RobotSubsystems robot;
 
-  public GoToAmpIntake(RobotSubsystems robot) {
+  public ShootAmp(RobotSubsystems robot) {
     this.robot = robot;
     this.addRequirements(robot);
   }
 
   @Override
   public void execute() {
-    this.robot.intake.freewayShooter();
+    this.robot.shooter.prepareAmpShot();
   }
 
   @Override
   public boolean isFinished() {
-    return this.robot.intake.secureForShooter();
+    return this.robot.shooter.atSetpoint();
   }
 }
