@@ -15,7 +15,7 @@ public interface IIntake {
 
   void expell();
 
-  boolean atSetpoint();
+  boolean isAtSetpoint();
 
   void setManualPivotPosition(double goal);
 }

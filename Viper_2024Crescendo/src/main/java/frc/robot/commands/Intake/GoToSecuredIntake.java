@@ -18,6 +18,6 @@ public class GoToSecuredIntake extends Command {
 
   @Override
   public boolean isFinished() {
-    return this.robot.intake.atSetpoint();
+    return this.robot.intake.isAtSetpoint();
   }
 }

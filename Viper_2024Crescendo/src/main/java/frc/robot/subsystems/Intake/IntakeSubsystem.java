@@ -18,6 +18,8 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
 
   private double goal = 140;
 
+  private double pivotGoalDeadband = 1;
+
   private Motor rollerMotor = new SparkMAXMotor(IntakeConstants.ID_intake);
 
   private Motor pivotMotor = new SparkMAXMotor(IntakeConstants.ID_pivotIntake, true);
@@ -111,6 +113,13 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
   }
 
   @Override
+  public boolean isAtSetpoint() {
+    double minPosition = this.goal - this.pivotGoalDeadband;
+    double maxPosition = this.goal + this.pivotGoalDeadband;
+    return Util.inRange(this.pivotMotor.getPosition(), minPosition, maxPosition);
+  }
+
+  @Override
   public void setManualPivotPosition(double goal) {
     this.goal = goal;
     this.periodic();
@@ -130,11 +139,6 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
 
   private double getFeedForwardProfiled() {
     return this.pivotFeedforward.calculate(pivotCurrentSetpoint.velocity / 12);
-  }
-
-  @Override
-  public boolean atSetpoint() {
-    return Util.inRange(this.pivotMotor.getPosition(), this.pivotMotor.getPosition() - 1, this.pivotMotor.getPosition() + 1);
   }
 
 }
