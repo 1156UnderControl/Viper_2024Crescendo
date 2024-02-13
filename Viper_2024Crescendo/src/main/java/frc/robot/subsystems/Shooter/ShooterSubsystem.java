@@ -118,6 +118,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     SmartDashboard.putNumber("Velocity ShooterDown", this.lowerFlywheelMotor.getVelocity());
     SmartDashboard.putNumber("Setpoint Shooter", this.pivotCurrentSetpoint.position);
     SmartDashboard.putNumber("Velocity Feeder", this.feederMotor.getVelocity());
+    SmartDashboard.putNumber("Max Velocity Feeder", this.maxVelocityFeeder);
+    SmartDashboard.putBoolean("hasNote", hasNote);
   }
 
   @Override
@@ -129,11 +131,9 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private void runNoteDetection() {
     double velocityFeeder = this.feederMotor.getVelocity();
-
     if (velocityFeeder > this.maxVelocityFeeder) {
       this.maxVelocityFeeder = velocityFeeder;
     }
-
     if (noteSensor.getBoolean()) {
       if (velocityFeeder < this.maxVelocityFeeder - 200) {
         hasNote = true;
@@ -143,6 +143,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public void stopIntaking() {
+    this.maxVelocityFeeder = 0;
     this.feederMotor.set(0);
   }
 
@@ -174,6 +175,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   public void shoot() {
     this.feederMotor.set(0.8);
     this.hasNote = false;
+    this.maxVelocityFeeder = 0;
   }
 
   @Override
@@ -181,7 +183,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     this.lowerFlywheelMotor.set(0);
     this.upperFlywheelMotor.set(0);
     this.feederMotor.set(noteSensor.getBoolean() || !hasNote ? 0 : -0.1);
-    goal = 0;
+    this.goal = 0;
+    this.maxVelocityFeeder = 0;
   }
 
   @Override
