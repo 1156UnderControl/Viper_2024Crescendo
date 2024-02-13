@@ -92,6 +92,7 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
 
   @Override
   public void securedPosition() {
+    mIntake.set(0);
     goal = 140;
   }
 
