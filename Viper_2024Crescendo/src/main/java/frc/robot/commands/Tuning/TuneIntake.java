@@ -19,7 +19,7 @@ public class TuneIntake extends Command {
 
   @Override
   public void execute() {
-    intake.tuningState(SmartDashboard.getNumber("Position Manual Setpoint", 20));
+    intake.setManualPivotPosition(SmartDashboard.getNumber("Position Manual Setpoint", 20));
   }
 
   @Override

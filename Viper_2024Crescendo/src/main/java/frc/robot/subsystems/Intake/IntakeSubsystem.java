@@ -12,7 +12,7 @@ import frc.robot.subsystems.Motors.Motor;
 import frc.robot.subsystems.Motors.SparkMAXMotor;
 
 public class IntakeSubsystem extends SubsystemBase implements IIntake {
-  private static IntakeSubsystem mInstance = null;
+  private static IntakeSubsystem intakeInstance = null;
 
   private double kDt = 0.02;
 
@@ -31,11 +31,10 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
   private TrapezoidProfile.State pivotGoal = new TrapezoidProfile.State();
 
   public static IntakeSubsystem getInstance() {
-    if (mInstance == null) {
-      mInstance = new IntakeSubsystem();
+    if (intakeInstance == null) {
+      intakeInstance = new IntakeSubsystem();
     }
-
-    return mInstance;
+    return intakeInstance;
   }
 
   private IntakeSubsystem() {
@@ -111,13 +110,10 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
 
   }
 
-  public void tuningState(double goal) {
+  @Override
+  public void setManualPivotPosition(double goal) {
     this.goal = goal;
     this.periodic();
-  }
-
-  public void setVoltage(double voltage) {
-    this.pivotMotor.setVoltage(voltage);
   }
 
   private double profilePosition(double goal) {
