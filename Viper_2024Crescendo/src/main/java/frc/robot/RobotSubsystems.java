@@ -23,8 +23,8 @@ public class RobotSubsystems extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putData(intakeSubsystem);
-    SmartDashboard.putData(shooterSubsystem);
+    SmartDashboard.putData("Subsystem Intake", intakeSubsystem);
+    SmartDashboard.putData("Subsystem Shooter", shooterSubsystem);
     this.intakeSubsystem.periodic();
     this.shooterSubsystem.periodic();
   }
