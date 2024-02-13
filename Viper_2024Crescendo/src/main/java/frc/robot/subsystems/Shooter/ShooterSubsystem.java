@@ -1,12 +1,14 @@
 package frc.robot.subsystems.Shooter;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.Java_Is_UnderControl.Util.Util;
+import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Motors.Motor;
 import frc.robot.subsystems.Motors.SparkMAXMotor;
@@ -39,6 +41,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   TrapezoidProfile mProfile = new TrapezoidProfile(new Constraints(277, 1600));
   private TrapezoidProfile.State mSetpoint = new TrapezoidProfile.State();
   private TrapezoidProfile.State mGoal = new TrapezoidProfile.State();
+
+  public static InterpolatingDoubleTreeMap shooterMap = new InterpolatingDoubleTreeMap();
 
   private ShooterSubsystem() {
     ShooterConstants.HAS_NOTE = false;
@@ -128,7 +132,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   public void prepareSpeakerShot() {
     mShooterDown.set(-0.8);
     mShooterUp.set(-0.8);
-    goal = 100;
+    goal = calculateGoalSpeaker();
   }
 
   @Override
@@ -178,6 +182,19 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   private double getFeedForwardProfiled() {
 
     return mFeedforward.calculate(mSetpoint.velocity / 12);
+  }
+
+  private static double calculateGoalSpeaker() {
+    interpolationTree();
+    return shooterMap.get(LimelightConstants.getDistance());
+  }
+
+  private static void interpolationTree() {
+    shooterMap.put(null, null);
+    shooterMap.put(null, null);
+    shooterMap.put(null, null);
+    shooterMap.put(null, null);
+    shooterMap.put(null, null);
   }
 
   @Override
