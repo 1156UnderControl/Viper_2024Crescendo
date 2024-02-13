@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Joysticks.ControlBoard;
 import frc.robot.commands.States.CollectPosition;
 import frc.robot.commands.States.SecuredPosition;
+import frc.robot.commands.States.ShootAmpPosition;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
 /**
@@ -81,6 +82,8 @@ public class RobotContainer {
 
     mControlBoard.getIntake().onTrue(new CollectPosition(robot));
     mControlBoard.getSecured().onTrue(new SecuredPosition(robot));
+    mControlBoard.getPrepareAmp().onTrue(new ShootAmpPosition(robot));
+
   }
 
   public Command getAutonomousCommand() {

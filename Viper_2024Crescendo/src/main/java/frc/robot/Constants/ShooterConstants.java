@@ -8,7 +8,7 @@ public class ShooterConstants {
 
   public static final int port_IR = 1;
 
-  public static boolean HAS_NOTE = false;
+  public static final double pivotGoalDeadband = 1;
 
   public class setpoints {
     public static final double LIMIT_MAX = 230;

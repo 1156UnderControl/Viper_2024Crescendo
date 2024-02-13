@@ -30,4 +30,14 @@ public class OperatorController implements IOperatorController {
   public Trigger getSecured() {
     return controller.y();
   }
+
+  @Override
+  public Trigger getPrepareAmp() {
+    return controller.leftBumper();
+  }
+
+  @Override
+  public Trigger getShootAmp() {
+    return controller.leftTrigger(0.2);
+  }
 }
