@@ -160,9 +160,9 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public void prepareAmpShot() {
-    this.lowerFlywheelMotor.set(-0.8);
-    this.upperFlywheelMotor.set(-0.8);
-    this.goal = 125;
+    this.lowerFlywheelMotor.set(-0.5);
+    this.upperFlywheelMotor.set(-0.5);
+    this.goal = 127;
   }
 
   @Override
