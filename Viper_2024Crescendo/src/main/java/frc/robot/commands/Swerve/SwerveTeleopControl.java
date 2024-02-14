@@ -16,8 +16,8 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
+import frc.robot.Constants.JoystickConstants;
 import frc.robot.Constants.SwerveConstants;
-import frc.robot.Joysticks.ControlBoard;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 import swervelib.SwerveController;
 import swervelib.math.SwerveMath;
@@ -25,14 +25,14 @@ import swervelib.math.SwerveMath;
 public class SwerveTeleopControl extends Command {
   DoubleSupplier y;
   DoubleSupplier x;
-  boolean boostActivate;
+  DoubleSupplier boostActivate;
   DoubleSupplier triggerSpeed;
   DoubleSupplier turnX;
   DoubleSupplier turnY;
 
   SwerveSubsystem swerve;
   SwerveController controller;
-  ControlBoard mControlBoard = ControlBoard.getInstance();
+  // ControlBoard mControlBoard = ControlBoard.getInstance();
 
   Translation2d translation;
   ChassisSpeeds speedsWithAng;
@@ -50,9 +50,8 @@ public class SwerveTeleopControl extends Command {
       DoubleSupplier turnY, DoubleSupplier triggerSpeed, DoubleSupplier boostActivate) {
     this.y = y;
     this.x = x;
-    this.boostActivate = mControlBoard.turboActivate();
+    this.boostActivate = boostActivate;
     this.triggerSpeed = triggerSpeed;
-
     this.turnX = turnX;
     this.turnY = turnY;
     this.swerve = swerve;
@@ -77,7 +76,11 @@ public class SwerveTeleopControl extends Command {
 
     double triggerSpeed = Math.pow(this.triggerSpeed.getAsDouble(), 2);
 
-    if (mControlBoard.notUsingJoystick()) {
+    if (frc.Java_Is_UnderControl.Util.Util.inRange(angXjoystick,
+        -JoystickConstants.DEADBAND,
+        0.2)
+        && frc.Java_Is_UnderControl.Util.Util.inRange(angYjoystick, -JoystickConstants.DEADBAND,
+            JoystickConstants.DEADBAND)) {
       angX = swerve.getAngleSP().getCos();
       angY = swerve.getAngleSP().getSin();
     } else {
@@ -89,7 +92,7 @@ public class SwerveTeleopControl extends Command {
       xVelocity = triggerSpeed * xVelocity;
       yVelocity = triggerSpeed * yVelocity;
     } else {
-      if (!boostActivate) {
+      if (boostActivate.getAsDouble() < 0.2) {
         xVelocity = xVelocity * 0.6;
         yVelocity = yVelocity * 0.6;
       }
@@ -102,14 +105,18 @@ public class SwerveTeleopControl extends Command {
     SmartDashboard.putNumber("angPre", swerve.getAngleSP().getDegrees());
 
     if (DriverStation.getAlliance().get() == Alliance.Red) {
-      speedsWithAng = swerve.getTargetSpeeds(-xVelocity, -yVelocity, -angX, -angY);
-    } else {
       speedsWithAng = swerve.getTargetSpeeds(xVelocity, yVelocity, angX, angY);
+    } else {
+      speedsWithAng = swerve.getTargetSpeeds(-xVelocity, -yVelocity, -angX, -angY);
     }
 
     speedsWithAng = swerve.discretize(speedsWithAng);
 
-    if (initRotation && !mControlBoard.notUsingJoystick()) {
+    if (initRotation && !frc.Java_Is_UnderControl.Util.Util.inRange(angXjoystick,
+        -JoystickConstants.DEADBAND,
+        0.2)
+        && frc.Java_Is_UnderControl.Util.Util.inRange(angYjoystick, -JoystickConstants.DEADBAND,
+            JoystickConstants.DEADBAND)) {
       if (angX == 0 && angY == 0) {
         double firstLoopHeading = swerve.getHeading().getRadians();
 

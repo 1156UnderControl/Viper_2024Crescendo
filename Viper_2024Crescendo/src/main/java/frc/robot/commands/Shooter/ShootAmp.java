@@ -18,6 +18,6 @@ public class ShootAmp extends Command {
 
   @Override
   public boolean isFinished() {
-    return this.robot.shooter.atSetpoint();
+    return this.robot.shooter.isAtSetpoint();
   }
 }

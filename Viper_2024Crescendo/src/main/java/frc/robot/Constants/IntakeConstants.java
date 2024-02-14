@@ -14,6 +14,8 @@ public class IntakeConstants {
   public static final double pidPivotIntakeI = 0.1;
   public static final double pidPivotIntakeD = 0;
 
+  public static final double pivotDeadband = 1;
+
   public class setpoints {
     public static final double LIMIT_MAX = 140;
     public static final double LIMIT_MIN = 0;

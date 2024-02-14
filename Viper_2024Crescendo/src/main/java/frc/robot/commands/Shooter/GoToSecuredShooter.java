@@ -13,11 +13,11 @@ public class GoToSecuredShooter extends Command {
 
   @Override
   public void execute() {
-    this.robot.shooter.securedPosition();
+    this.robot.shooter.goToSecuredPosition();
   }
 
   @Override
   public boolean isFinished() {
-    return this.robot.shooter.atSetpoint();
+    return this.robot.shooter.isAtSetpoint();
   }
 }
