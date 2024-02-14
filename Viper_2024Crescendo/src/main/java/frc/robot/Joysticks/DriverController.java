@@ -1,7 +1,8 @@
 package frc.robot.Joysticks;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.JoystickConstants;
 
 public class DriverController implements IDriverController {
@@ -16,40 +17,40 @@ public class DriverController implements IDriverController {
     return mInstance;
   }
 
-  final XboxController driverXbox;
+  final CommandXboxController driverController;
 
   private DriverController() {
-    driverXbox = new XboxController(0);
+    driverController = new CommandXboxController(0);
   }
 
   @Override
   public double getXtranslation() {
-    return -MathUtil.applyDeadband(driverXbox.getLeftY(), JoystickConstants.DEADBAND);
+    return -MathUtil.applyDeadband(driverController.getLeftY(), JoystickConstants.DEADBAND);
   }
 
   @Override
   public double getYtranslation() {
-    return -MathUtil.applyDeadband(driverXbox.getLeftX(), JoystickConstants.DEADBAND);
+    return -MathUtil.applyDeadband(driverController.getLeftX(), JoystickConstants.DEADBAND);
   }
 
   @Override
   public double getCOS_Joystick() {
-    return -driverXbox.getRightX();
+    return -driverController.getRightX();
   }
 
   @Override
   public double getSIN_Joystick() {
-    return -driverXbox.getRightY();
+    return -driverController.getRightY();
   }
 
   @Override
   public double getThrottle() {
-    return driverXbox.getRightTriggerAxis();
+    return driverController.getRightTriggerAxis();
   }
 
   @Override
   public boolean turboActivate() {
-    return 0.2 < driverXbox.getLeftTriggerAxis();
+    return 0.2 < driverController.getLeftTriggerAxis();
   }
 
   @Override
@@ -59,6 +60,26 @@ public class DriverController implements IDriverController {
         0.2)
         && frc.Java_Is_UnderControl.Util.Util.inRange(getSIN_Joystick(), -JoystickConstants.DEADBAND,
             JoystickConstants.DEADBAND);
+  }
+
+  @Override
+  public Trigger setHeadingBack() {
+    return driverController.a();
+  }
+
+  @Override
+  public Trigger setHeadingFront() {
+    return driverController.y();
+  }
+
+  @Override
+  public Trigger setHeadingLeft() {
+    return driverController.x();
+  }
+
+  @Override
+  public Trigger setHeadingRight() {
+    return driverController.b();
   }
 
 }
