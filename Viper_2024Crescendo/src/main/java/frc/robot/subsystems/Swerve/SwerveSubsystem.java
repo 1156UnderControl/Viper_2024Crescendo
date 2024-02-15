@@ -45,6 +45,10 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   private static SwerveSubsystem mInstance = null;
 
+  private double headingDegrees;
+
+  private double headingRadians;
+
   private Rotation2d angleAlign = new Rotation2d(Units.degreesToRadians(90));
 
   PIDController pidTrackApril = new PIDController(CommandsConstants.P_TrackSpeaker, CommandsConstants.I_TrackSpeaker,
@@ -80,6 +84,10 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   @Override
   public void periodic() {
     swerveDrive.updateOdometry();
+    headingDegrees = getHeading().getDegrees();
+    headingRadians = getHeading().getRadians();
+    SmartDashboard.putNumber("Heading Degrees", headingDegrees);
+    SmartDashboard.putNumber("Heading Radians", headingRadians);
     if (!notUsingLLforOdometry) {
       LimelightHelpers.setPipelineIndex("", 0);
       // poseVision = LimelightHelpers.getBotPose2d_wpiBlue("");
@@ -232,10 +240,9 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     double angleTarget = angle;
     ChassisSpeeds targetSpeeds;
     SmartDashboard.putNumber("Angle Target Speeds", angleTarget);
-    SmartDashboard.putNumber("Heading Degrees", getHeading().getDegrees());
     double angleRadians = Units.degreesToRadians(angle);
     targetSpeeds = swerveDrive.swerveController.getTargetSpeeds(xInput, yInput, angleRadians,
-        getHeading().getDegrees(), SwerveConstants.MAX_VEL);
+        headingRadians, SwerveConstants.MAX_VEL);
     return targetSpeeds;
   }
 
@@ -249,9 +256,8 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     double angleTarget = Math.atan2(headingX, headingY);
     ChassisSpeeds targetSpeeds;
     SmartDashboard.putNumber("Angle Target Speeds", Units.radiansToDegrees(angleTarget));
-    SmartDashboard.putNumber("Heading Degrees", getHeading().getDegrees());
     targetSpeeds = swerveDrive.swerveController.getTargetSpeeds(xInput, yInput, headingX, headingY,
-        getHeading().getRadians(), SwerveConstants.MAX_VEL);
+        headingRadians, SwerveConstants.MAX_VEL);
     targetSpeeds = discretize(targetSpeeds);
     return targetSpeeds;
   }
