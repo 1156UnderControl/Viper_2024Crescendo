@@ -262,6 +262,8 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     return targetSpeeds;
   }
 
+  // This is useful for compensating for translational skew when translating and
+  // rotating a swerve drivetrain.
   public ChassisSpeeds discretize(ChassisSpeeds speeds) {
     double dt = 0.02;
     var desiredDeltaPose = new Pose2d(
