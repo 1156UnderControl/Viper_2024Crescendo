@@ -231,8 +231,8 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     }
     double angleTarget = angle;
     ChassisSpeeds targetSpeeds;
-    SmartDashboard.putNumber("Angle Target Speeds", Units.radiansToDegrees(angleTarget));
-    SmartDashboard.putNumber("Heading Rad", getHeading().getDegrees());
+    SmartDashboard.putNumber("Angle Target Speeds", angleTarget);
+    SmartDashboard.putNumber("Heading Degrees", getHeading().getDegrees());
     double angleRadians = Units.degreesToRadians(angle);
     targetSpeeds = swerveDrive.swerveController.getTargetSpeeds(xInput, yInput, angleRadians,
         getHeading().getDegrees(), SwerveConstants.MAX_VEL);
@@ -249,7 +249,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     double angleTarget = Math.atan2(headingX, headingY);
     ChassisSpeeds targetSpeeds;
     SmartDashboard.putNumber("Angle Target Speeds", Units.radiansToDegrees(angleTarget));
-    SmartDashboard.putNumber("Heading Rad", getHeading().getDegrees());
+    SmartDashboard.putNumber("Heading Degrees", getHeading().getDegrees());
     targetSpeeds = swerveDrive.swerveController.getTargetSpeeds(xInput, yInput, headingX, headingY,
         getHeading().getRadians(), SwerveConstants.MAX_VEL);
     targetSpeeds = discretize(targetSpeeds);
