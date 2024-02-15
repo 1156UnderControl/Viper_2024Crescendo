@@ -64,10 +64,10 @@ public class RobotContainer {
 
   private void configureBindings() {
     // Abstrair para um
-    new JoystickButton(driverXbox, 1).onTrue(new InstantCommand(swerve::setAngleNeg90));
-    new JoystickButton(driverXbox, 2).onTrue(new InstantCommand(swerve::setAngle180));
-    new JoystickButton(driverXbox, 3).onTrue(new InstantCommand(swerve::setAngle0));
-    new JoystickButton(driverXbox, 4).onTrue(new InstantCommand(swerve::setAngle90));
+    mControlBoard.setHeadingFront().onTrue(new InstantCommand(swerve::setAngleNeg90));
+    mControlBoard.setHeadingBack().onTrue(new InstantCommand(swerve::setAngle180));
+    mControlBoard.setHeadingLeft().onTrue(new InstantCommand(swerve::setAngle0));
+    mControlBoard.setHeadingRight().onTrue(new InstantCommand(swerve::setAngle90));
     new JoystickButton(driverXbox, 5).onTrue(new InstantCommand(swerve::setAngle45));
 
     mControlBoard.getIntake().onTrue(new CollectPosition(robot));
