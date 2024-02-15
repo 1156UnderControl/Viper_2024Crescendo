@@ -25,12 +25,12 @@ public class DriverController implements IDriverController {
 
   @Override
   public double getXtranslation() {
-    return -MathUtil.applyDeadband(driverController.getLeftY(), JoystickConstants.DEADBAND);
+    return -MathUtil.applyDeadband(driverController.getLeftX(), JoystickConstants.DEADBAND);
   }
 
   @Override
   public double getYtranslation() {
-    return -MathUtil.applyDeadband(driverController.getLeftX(), JoystickConstants.DEADBAND);
+    return -MathUtil.applyDeadband(driverController.getLeftY(), JoystickConstants.DEADBAND);
   }
 
   @Override

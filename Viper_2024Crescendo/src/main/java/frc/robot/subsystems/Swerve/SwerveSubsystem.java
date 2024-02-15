@@ -92,7 +92,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   @Override
   public void driveAlignAngleButton() {
     if (controller.notUsingJoystick()) {
-      ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getXtranslation(), controller.getYtranslation(),
+      ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(),
           angleAlign.getDegrees());
       SmartDashboard.putString("Chassis Speed", speeds.toString());
       driveFO(speeds);
@@ -103,7 +103,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   @Override
   public void driveAlignAngleJoy() {
-    ChassisSpeeds speeds = getTargetSpeedsAngleJoystick(controller.getXtranslation(), controller.getYtranslation(),
+    ChassisSpeeds speeds = getTargetSpeedsAngleJoystick(controller.getYtranslation(), controller.getXtranslation(),
         controller.getCOS_Joystick(), controller.getSIN_Joystick());
     SmartDashboard.putString("Chassis Speed", speeds.toString());
     driveFO(speeds);
