@@ -45,7 +45,7 @@ public class DriverController implements IDriverController {
 
   @Override
   public double getThrottle() {
-    return driverController.getRightTriggerAxis();
+    return Math.pow(driverController.getRightTriggerAxis(), 3);
   }
 
   @Override
