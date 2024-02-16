@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -23,6 +24,7 @@ import frc.robot.commands.States.SecuredPosition;
 import frc.robot.commands.States.ShootAmpPosition;
 import frc.robot.commands.States.ShootSpeakerPosition;
 import frc.robot.commands.Swerve.SwerveTeleopControl;
+import frc.robot.subsystems.Climber.ClimberSubsystem;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
 /**
@@ -36,6 +38,7 @@ import frc.robot.subsystems.Swerve.SwerveSubsystem;
 public class RobotContainer {
 
   private final SwerveSubsystem swerve;
+  private final ClimberSubsystem climber;
   public final RobotSubsystems robot = new RobotSubsystems();
 
   private final SendableChooser<Command> autoChooser;
@@ -47,6 +50,7 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+    this.climber = ClimberSubsystem.getInstance();
     this.swerve = SwerveSubsystem.getInstance(new File(Filesystem.getDeployDirectory(),
         "swerve/swerve"));
     NamedCommands.registerCommand("Shoot", new PrintCommand("SHOOT"));
@@ -73,6 +77,9 @@ public class RobotContainer {
     mControlBoard.getSecured().onTrue(new SecuredPosition(robot));
     mControlBoard.getPrepareAmp().and(() -> robot.shooter.hasNote()).onTrue(new ShootAmpPosition(robot));
     mControlBoard.getPrepareSpeaker().and(() -> robot.shooter.hasNote()).onTrue(new ShootSpeakerPosition(robot));
+    mControlBoard.climb().onTrue(Commands.run(() -> climber.climb(), climber));
+    mControlBoard.release().onTrue(Commands.run(() -> climber.release(), climber));
+    mControlBoard.climb().or(mControlBoard.release()).onFalse(Commands.run(() -> climber.stop(), climber));
   }
 
   public Command getAutonomousCommand() {

@@ -45,4 +45,14 @@ public class OperatorController implements IOperatorController {
   public Trigger getShoot() {
     return controller.leftTrigger(0.2);
   }
+
+  @Override
+  public Trigger climb() {
+    return controller.back();
+  }
+
+  @Override
+  public Trigger release() {
+    return controller.start();
+  }
 }

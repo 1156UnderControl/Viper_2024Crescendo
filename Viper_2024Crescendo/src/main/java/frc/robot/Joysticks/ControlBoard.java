@@ -101,4 +101,14 @@ public class ControlBoard implements IDriverController, IOperatorController {
     return mOperatorController.getShoot();
   }
 
+  @Override
+  public Trigger climb() {
+    return mOperatorController.climb();
+  }
+
+  @Override
+  public Trigger release() {
+    return mOperatorController.release();
+  }
+
 }
