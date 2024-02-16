@@ -35,9 +35,7 @@ import frc.robot.subsystems.Swerve.SwerveSubsystem;
  */
 public class RobotContainer {
 
-  private final SwerveSubsystem swerve = SwerveSubsystem.getInstance(new File(Filesystem.getDeployDirectory(),
-      "swerve/swerve"));
-
+  private final SwerveSubsystem swerve;
   public final RobotSubsystems robot = new RobotSubsystems();
 
   private final SendableChooser<Command> autoChooser;
@@ -49,6 +47,8 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+    this.swerve = SwerveSubsystem.getInstance(new File(Filesystem.getDeployDirectory(),
+        "swerve/swerve"));
     NamedCommands.registerCommand("Shoot", new PrintCommand("SHOOT"));
     NamedCommands.registerCommand("Intake", new PrintCommand("INTAKING"));
 
@@ -63,11 +63,10 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    // Abstrair para um
-    mControlBoard.setHeadingFront().onTrue(new InstantCommand(swerve::setAngleNeg90));
+    mControlBoard.setHeadingFront().onTrue(new InstantCommand(swerve::setAngle0));
     mControlBoard.setHeadingBack().onTrue(new InstantCommand(swerve::setAngle180));
-    mControlBoard.setHeadingLeft().onTrue(new InstantCommand(swerve::setAngle0));
-    mControlBoard.setHeadingRight().onTrue(new InstantCommand(swerve::setAngle90));
+    mControlBoard.setHeadingLeft().onTrue(new InstantCommand(swerve::setAngle90));
+    mControlBoard.setHeadingRight().onTrue(new InstantCommand(swerve::setAngleNeg90));
     new JoystickButton(driverXbox, 5).onTrue(new InstantCommand(swerve::setAngle45));
 
     mControlBoard.getIntake().onTrue(new CollectPosition(robot));
