@@ -100,5 +100,4 @@ public class ControlBoard implements IDriverController, IOperatorController {
   public Trigger getShoot() {
     return mOperatorController.getShoot();
   }
-
 }
