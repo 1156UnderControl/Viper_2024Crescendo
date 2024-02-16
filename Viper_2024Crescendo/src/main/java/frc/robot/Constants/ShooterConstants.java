@@ -10,18 +10,40 @@ public class ShooterConstants {
 
   public static final double pivotGoalDeadband = 5;
 
+  public class tunning_values_pivot {
+    public static final double KS = 0.63;
+    public static final double KV = 0.04;
+    public static final double MAX_VELOCITY = 277;
+    public static final double MAX_ACCELERATION = 1600;
+  }
+
+  public class tunning_values_shooter {
+    public static final double KS = 0.63;
+    public static final double KV = 0.04;
+    public static final double MAX_VELOCITY = 0.63;
+    public static final double MAX_ACCELERATION = 0.04;
+
+    public class PID {
+      public static final double P = 0.00006;
+      public static final double I = 0;
+      public static final double D = 0;
+      public static final double F = 0.00009;
+    }
+  }
+
   public class setpoints {
     public static final double LIMIT_MAX = 230;
     public static final double LIMIT_MIN = 0;
 
-    public static final double ANGLE_SECURED = 1;
-    public static final double ANGLE_INTAKE = 1;
-    public static final double ANGLE_SHOOT_AMP = 1;
+    public static final double ANGLE_SECURED = 0;
+    public static final double ANGLE_INTAKE = 46;
+    public static final double ANGLE_SHOOT_AMP = 127;
     public static final double ANGLE_SHOOT_SPEAKER = 1;
 
     public static final double VELOCITY_SHOOT_SPEAKER = 0.8;
     public static final double VELOCITY_SHOOT_AMP = 0.8;
-    public static final double VELOCITY_COLLECT = 1;
-    public static final double VELOCITY_FEED = 0.8;
+    public static final double VELOCITY_FEED_COLLECT = 1;
+    public static final double VELOCITY_FEED_SHOOT = 0.8;
+    public static final double VELOCITY_FEED_CORRECT_PASSED_NOTE = -0.1;
   }
 }
