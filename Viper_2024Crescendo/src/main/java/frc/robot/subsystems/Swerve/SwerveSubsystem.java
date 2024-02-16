@@ -13,7 +13,6 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
@@ -49,7 +48,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   private double headingRadians;
 
-  private Rotation2d angleAlign = new Rotation2d(Units.degreesToRadians(90));
+  private Rotation2d angleAlign = new Rotation2d(Units.degreesToRadians(0));
 
   PIDController pidTrackApril = new PIDController(CommandsConstants.P_TrackSpeaker, CommandsConstants.I_TrackSpeaker,
       CommandsConstants.D_TrackSpeaker);
@@ -77,7 +76,6 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     SmartDashboard.putData("POSE APRIL", aprField2d);
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     setupYAGSL_JSON(directory);
-    setupGyroToAlliance();
     setupPathPlanner();
   }
 
@@ -88,6 +86,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     headingRadians = getHeading().getRadians();
     SmartDashboard.putNumber("Heading Degrees", headingDegrees);
     SmartDashboard.putNumber("Heading Radians", headingRadians);
+    SmartDashboard.putNumber("Heading Odometry", swerveDrive.getOdometryHeading().getDegrees());
     if (!notUsingLLforOdometry) {
       LimelightHelpers.setPipelineIndex("", 0);
       // poseVision = LimelightHelpers.getBotPose2d_wpiBlue("");
@@ -131,17 +130,8 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   }
 
-  private void setupGyroToAlliance() {
-    if (DriverStation.getAlliance().get() == Alliance.Red) {
-      swerveDrive.setGyro(new Rotation3d(0, 0, Units.degreesToRadians(180)));
-    } else {
-      swerveDrive.zeroGyro();
-    }
-  }
-
   private void setupYAGSL_JSON(File directory) {
     try {
-
       swerveDrive = new SwerveParser(directory).createSwerveDrive(SwerveConstants.MAX_VEL,
           SwerveConstants.SteeringConversionFactor,
           SwerveConstants.DriveConversionFactor);
@@ -233,7 +223,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   }
 
   private ChassisSpeeds getTargetSpeedsAngle(double xInput, double yInput, double angle) {
-    if (DriverStation.getAlliance().get() == Alliance.Red) {
+    if (DriverStation.getAlliance().get() == Alliance.Blue) {
       xInput = -xInput;
       yInput = -yInput;
     }
@@ -247,7 +237,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   }
 
   private ChassisSpeeds getTargetSpeedsAngleJoystick(double xInput, double yInput, double headingX, double headingY) {
-    if (DriverStation.getAlliance().get() == Alliance.Red) {
+    if (DriverStation.getAlliance().get() == Alliance.Blue) {
       xInput = -xInput;
       yInput = -yInput;
       headingX = -headingX;
@@ -269,7 +259,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     var desiredDeltaPose = new Pose2d(
         speeds.vxMetersPerSecond * dt,
         speeds.vyMetersPerSecond * dt,
-        new Rotation2d(speeds.omegaRadiansPerSecond * dt * 7.5));
+        new Rotation2d(speeds.omegaRadiansPerSecond * dt * 4));
     var twist = new Pose2d().log(desiredDeltaPose);
 
     return new ChassisSpeeds((twist.dx / dt), (twist.dy / dt), (speeds.omegaRadiansPerSecond));
@@ -338,9 +328,5 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   public void setAngle45() {
     angleAlign = new Rotation2d(Units.degreesToRadians(45));
-  }
-
-  public Rotation2d getAngleSP() {
-    return angleAlign;
   }
 }
