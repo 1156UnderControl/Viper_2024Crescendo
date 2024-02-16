@@ -11,11 +11,8 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
@@ -29,6 +26,7 @@ import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CommandsConstants;
 import frc.robot.Constants.SwerveConstants;
+import frc.robot.Joysticks.ControlBoard;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.parser.SwerveDriveConfiguration;
@@ -36,9 +34,28 @@ import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
-public class SwerveSubsystem extends SubsystemBase {
+public class SwerveSubsystem extends SubsystemBase implements ISwerve {
+
+  private SwerveDrive swerveDrive;
+
+  private ControlBoard controller = ControlBoard.getInstance();
+
+  public boolean notUsingLLforOdometry;
 
   private static SwerveSubsystem mInstance = null;
+
+  private double headingDegrees;
+
+  private double headingRadians;
+
+  private Rotation2d angleAlign = new Rotation2d(Units.degreesToRadians(0));
+
+  PIDController pidTrackApril = new PIDController(CommandsConstants.P_TrackSpeaker, CommandsConstants.I_TrackSpeaker,
+      CommandsConstants.D_TrackSpeaker);
+
+  Pose2d poseVision;
+
+  Field2d aprField2d = new Field2d();
 
   public static SwerveSubsystem getInstance(File directory) {
     if (mInstance == null) {
@@ -48,58 +65,79 @@ public class SwerveSubsystem extends SubsystemBase {
     return mInstance;
   }
 
-  private final SwerveDrive swerveDrive;
+  public static SwerveSubsystem getInstance() {
+    if (mInstance == null) {
+      DriverStation.reportError("YAGSL Configuration not provided", true);
+    }
+    return mInstance;
+  }
 
-  public boolean trackSpeaker;
-
-  SwerveController controller;
-
-  Rotation2d angleAlign = new Rotation2d(Units.degreesToRadians(90));
-
-  MedianFilter filter = new MedianFilter(5);
-
-  PIDController pidTrackApril = new PIDController(CommandsConstants.P_TrackSpeaker, CommandsConstants.I_TrackSpeaker,
-      CommandsConstants.D_TrackSpeaker);
-
-  Pose2d poseVision;
-  Field2d aprField2d = new Field2d();
-
-  public SwerveSubsystem(File directory) {
-
+  private SwerveSubsystem(File directory) {
     SmartDashboard.putData("POSE APRIL", aprField2d);
-
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
-
-    try {
-
-      swerveDrive = new SwerveParser(directory).createSwerveDrive(SwerveConstants.MAX_VEL,
-          SwerveConstants.SteeringConversionFactor,
-          SwerveConstants.DriveConversionFactor);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-
-    if (DriverStation.getAlliance().get() == Alliance.Red) {
-      swerveDrive.setGyro(new Rotation3d(0, 0, Units.degreesToRadians(180)));
-    } else {
-      swerveDrive.zeroGyro();
-    }
-
-    // swerveDrive.addVisionMeasurement(poseVision, Timer.getFPGATimestamp());
+    setupYAGSL_JSON(directory);
     setupPathPlanner();
   }
 
   @Override
   public void periodic() {
     swerveDrive.updateOdometry();
-    if (!trackSpeaker) {
+    headingDegrees = getHeading().getDegrees();
+    headingRadians = getHeading().getRadians();
+    SmartDashboard.putNumber("Heading Degrees", headingDegrees);
+    SmartDashboard.putNumber("Heading Radians", headingRadians);
+    SmartDashboard.putNumber("Heading Odometry", swerveDrive.getOdometryHeading().getDegrees());
+    if (!notUsingLLforOdometry) {
       LimelightHelpers.setPipelineIndex("", 0);
       // poseVision = LimelightHelpers.getBotPose2d_wpiBlue("");
       // aprField2d.setRobotPose(poseVision);
     } else {
       LimelightHelpers.setPipelineIndex("", 1);
     }
+  }
 
+  @Override
+  public void driveAlignAngleButton() {
+    if (controller.notUsingJoystick()) {
+      ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(),
+          angleAlign.getDegrees());
+      SmartDashboard.putString("Chassis Speed", speeds.toString());
+      driveFO(speeds);
+    } else {
+      driveAlignAngleJoy();
+    }
+  }
+
+  @Override
+  public void driveAlignAngleJoy() {
+    ChassisSpeeds speeds = getTargetSpeedsAngleJoystick(controller.getYtranslation(), controller.getXtranslation(),
+        controller.getCOS_Joystick(), controller.getSIN_Joystick());
+    SmartDashboard.putString("Chassis Speed", speeds.toString());
+    driveFO(speeds);
+  }
+
+  @Override
+  public void driveAlignSpeaker() {
+  }
+
+  @Override
+  public void intakeNote() {
+
+  }
+
+  @Override
+  public void lockSwerve() {
+
+  }
+
+  private void setupYAGSL_JSON(File directory) {
+    try {
+      swerveDrive = new SwerveParser(directory).createSwerveDrive(SwerveConstants.MAX_VEL,
+          SwerveConstants.SteeringConversionFactor,
+          SwerveConstants.DriveConversionFactor);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   /**
@@ -135,12 +173,15 @@ public class SwerveSubsystem extends SubsystemBase {
     );
   }
 
-  public void drive(Translation2d translation, double rotation, boolean fieldRelative) {
-    swerveDrive.chassisVelocityCorrection = true;
-    swerveDrive.drive(translation,
-        rotation,
-        fieldRelative,
-        false);
+  private void driveFO(ChassisSpeeds speeds) {
+    swerveDrive.driveFieldOriented(speeds);
+  }
+
+  private void driveOmegaPIDfo(ChassisSpeeds speeds, double setpoint, double measurement, PIDController pid) {
+    speeds = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond,
+        pid.calculate(measurement, setpoint));
+    SmartDashboard.putNumber("Omega PID", speeds.omegaRadiansPerSecond);
+    swerveDrive.driveFieldOriented(speeds);
   }
 
   public SwerveDriveKinematics getKinematics() {
@@ -177,25 +218,48 @@ public class SwerveSubsystem extends SubsystemBase {
     swerveDrive.setMotorIdleMode(brake);
   }
 
-  public Rotation2d getHeading() {
+  private Rotation2d getHeading() {
     return swerveDrive.getYaw();
   }
 
-  public ChassisSpeeds getTargetSpeeds(double xInput, double yInput, double headingX, double headingY) {
-    SmartDashboard.putNumber("Angle Joy", Math.atan2(headingX, headingY));
-    SmartDashboard.putNumber("Heading Rad", getHeading().getRadians());
-
-    return swerveDrive.swerveController.getTargetSpeeds(xInput, yInput, headingX, headingY,
-        getHeading().getRadians(), SwerveConstants.MAX_VEL);
+  private ChassisSpeeds getTargetSpeedsAngle(double xInput, double yInput, double angle) {
+    if (DriverStation.getAlliance().get() == Alliance.Blue) {
+      xInput = -xInput;
+      yInput = -yInput;
+    }
+    double angleTarget = angle;
+    ChassisSpeeds targetSpeeds;
+    SmartDashboard.putNumber("Angle Target Speeds", angleTarget);
+    double angleRadians = Units.degreesToRadians(angle);
+    targetSpeeds = swerveDrive.swerveController.getTargetSpeeds(xInput, yInput, angleRadians,
+        headingRadians, SwerveConstants.MAX_VEL);
+    return targetSpeeds;
   }
 
-  // Resolve o Skew
+  private ChassisSpeeds getTargetSpeedsAngleJoystick(double xInput, double yInput, double headingX, double headingY) {
+    if (DriverStation.getAlliance().get() == Alliance.Blue) {
+      xInput = -xInput;
+      yInput = -yInput;
+      headingX = -headingX;
+      headingY = -headingY;
+    }
+    double angleTarget = Math.atan2(headingX, headingY);
+    ChassisSpeeds targetSpeeds;
+    SmartDashboard.putNumber("Angle Target Speeds", Units.radiansToDegrees(angleTarget));
+    targetSpeeds = swerveDrive.swerveController.getTargetSpeeds(xInput, yInput, headingX, headingY,
+        headingRadians, SwerveConstants.MAX_VEL);
+    targetSpeeds = discretize(targetSpeeds);
+    return targetSpeeds;
+  }
+
+  // This is useful for compensating for translational skew when translating and
+  // rotating a swerve drivetrain.
   public ChassisSpeeds discretize(ChassisSpeeds speeds) {
     double dt = 0.02;
     var desiredDeltaPose = new Pose2d(
         speeds.vxMetersPerSecond * dt,
         speeds.vyMetersPerSecond * dt,
-        new Rotation2d(speeds.omegaRadiansPerSecond * dt * 7.5));
+        new Rotation2d(speeds.omegaRadiansPerSecond * dt * 4));
     var twist = new Pose2d().log(desiredDeltaPose);
 
     return new ChassisSpeeds((twist.dx / dt), (twist.dy / dt), (speeds.omegaRadiansPerSecond));
@@ -242,14 +306,6 @@ public class SwerveSubsystem extends SubsystemBase {
     return pidTrackApril.calculate(LimelightHelpers.getTX(""), 0);
   }
 
-  public void setTrackSpeaker() {
-    trackSpeaker = true;
-  }
-
-  public void setStopTrackSpeaker() {
-    trackSpeaker = false;
-  }
-
   /*
    * ANGLE CONTROL
    */
@@ -272,9 +328,5 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public void setAngle45() {
     angleAlign = new Rotation2d(Units.degreesToRadians(45));
-  }
-
-  public Rotation2d getAngleSP() {
-    return angleAlign;
   }
 }

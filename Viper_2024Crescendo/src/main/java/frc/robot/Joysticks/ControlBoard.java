@@ -17,7 +17,7 @@ public class ControlBoard implements IDriverController, IOperatorController {
   IOperatorController mOperatorController;
 
   private ControlBoard() {
-    // mDriverController = DriverController.getInstance();
+    mDriverController = DriverController.getInstance();
     mOperatorController = OperatorController.getInstance();
   }
 
@@ -57,6 +57,26 @@ public class ControlBoard implements IDriverController, IOperatorController {
   }
 
   @Override
+  public Trigger setHeadingBack() {
+    return mDriverController.setHeadingBack();
+  }
+
+  @Override
+  public Trigger setHeadingFront() {
+    return mDriverController.setHeadingFront();
+  }
+
+  @Override
+  public Trigger setHeadingLeft() {
+    return mDriverController.setHeadingLeft();
+  }
+
+  @Override
+  public Trigger setHeadingRight() {
+    return mDriverController.setHeadingRight();
+  }
+
+  @Override
   public Trigger getIntake() {
     return mOperatorController.getIntake();
   }
@@ -80,4 +100,5 @@ public class ControlBoard implements IDriverController, IOperatorController {
   public Trigger getShoot() {
     return mOperatorController.getShoot();
   }
+
 }
