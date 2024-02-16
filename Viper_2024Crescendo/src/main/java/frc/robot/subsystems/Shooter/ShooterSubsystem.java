@@ -10,6 +10,7 @@ import frc.Java_Is_UnderControl.Util.Util;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Motors.Motor;
 import frc.robot.subsystems.Motors.SparkMAXMotor;
+import frc.robot.subsystems.Motors.VortexMotor;
 import frc.robot.subsystems.Sensors.DigitalInput;
 import frc.robot.subsystems.Sensors.InfraRed;
 
@@ -25,9 +26,9 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private double goal = 0;
 
-  private Motor upperFlywheelMotor = new SparkMAXMotor(ShooterConstants.ID_shooterUp);
+  private Motor upperFlywheelMotor = new VortexMotor(ShooterConstants.ID_shooterUp);
 
-  private Motor lowerFlywheelMotor = new SparkMAXMotor(ShooterConstants.ID_shooterDown);
+  private Motor lowerFlywheelMotor = new VortexMotor(ShooterConstants.ID_shooterDown);
 
   private Motor feederMotor = new SparkMAXMotor(ShooterConstants.ID_feeder);
 
