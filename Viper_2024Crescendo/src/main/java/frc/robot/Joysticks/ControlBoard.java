@@ -17,7 +17,7 @@ public class ControlBoard implements IDriverController, IOperatorController {
   IOperatorController mOperatorController;
 
   private ControlBoard() {
-    // mDriverController = DriverController.getInstance();
+    mDriverController = DriverController.getInstance();
     mOperatorController = OperatorController.getInstance();
   }
 

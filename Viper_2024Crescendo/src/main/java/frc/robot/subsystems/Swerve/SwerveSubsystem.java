@@ -13,6 +13,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
@@ -76,6 +77,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     SmartDashboard.putData("POSE APRIL", aprField2d);
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     setupYAGSL_JSON(directory);
+    setupGyroToAlliance();
     setupPathPlanner();
   }
 
@@ -128,6 +130,14 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   @Override
   public void lockSwerve() {
 
+  }
+
+  private void setupGyroToAlliance() {
+    if (DriverStation.getAlliance().get() == Alliance.Red) {
+      swerveDrive.setGyro(new Rotation3d(0, 0, Units.degreesToRadians(180)));
+    } else {
+      swerveDrive.zeroGyro();
+    }
   }
 
   private void setupYAGSL_JSON(File directory) {
