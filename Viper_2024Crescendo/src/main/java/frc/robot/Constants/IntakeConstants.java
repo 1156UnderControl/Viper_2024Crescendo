@@ -6,7 +6,7 @@ public class IntakeConstants {
 
   public static final int port_IR = 2;
 
-  public static final double intakeSpeed = 0.8;
+  public static final double intakeSpeed = 1;
   public static final double intakeCollectPosition = 180;
   public static final double intakeSafePosition = 0;
 
