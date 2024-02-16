@@ -6,21 +6,36 @@ public class IntakeConstants {
 
   public static final int port_IR = 2;
 
-  public static final double intakeSpeed = 1;
-  public static final double intakeCollectPosition = 180;
-  public static final double intakeSafePosition = 0;
-
-  public static final double pidPivotIntakeP = 0.1;
-  public static final double pidPivotIntakeI = 0.1;
-  public static final double pidPivotIntakeD = 0;
+  public static final double POSITION_FACTOR = 360;
+  public static final double VELOCITY_FACTOR = 6;
 
   public static final double pivotDeadband = 1;
 
+  public static final double ANGLE_PASSED_FOR_SHOOTER_MOVE = 90;
+
+  public class tunning_values {
+    public static final double KS = 0.28;
+    public static final double KV = 0.03;
+    public static final double MAX_VELOCITY = 400;
+    public static final double MAX_ACCELERATION = 2500;
+
+    public class PID {
+      public static final double P = 0.025;
+      public static final double I = 0;
+      public static final double D = 0;
+      public static final double F = 0;
+
+    }
+
+  }
+
   public class setpoints {
+    public static final double SPEED_INTAKE = 1;
+
     public static final double LIMIT_MAX = 140;
     public static final double LIMIT_MIN = 0;
 
-    public static final double ANGLE_SECURED = 1;
-    public static final double ANGLE_INTAKE = 1;
+    public static final double ANGLE_SECURED = 140;
+    public static final double ANGLE_INTAKE = 0;
   }
 }

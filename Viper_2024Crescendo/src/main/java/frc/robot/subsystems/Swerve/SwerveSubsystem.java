@@ -136,7 +136,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     if (DriverStation.getAlliance().get() == Alliance.Red) {
       swerveDrive.setGyro(new Rotation3d(0, 0, Units.degreesToRadians(180)));
     } else {
-      swerveDrive.zeroGyro();
+      swerveDrive.setGyro(new Rotation3d(0, 0, Units.degreesToRadians(0)));
     }
   }
 
