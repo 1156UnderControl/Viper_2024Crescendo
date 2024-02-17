@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CommandsConstants;
+import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Joysticks.ControlBoard;
 import swervelib.SwerveController;
@@ -42,6 +43,12 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   private ControlBoard controller = ControlBoard.getInstance();
 
   public boolean notUsingLLforOdometry;
+
+  private int lostFramesCounter = 0;
+
+  private final int MAX_LOST_SPEAKER_FRAMES = 5;
+
+  private double lastTxMeasurement;
 
   private static SwerveSubsystem mInstance = null;
 
@@ -89,8 +96,9 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     SmartDashboard.putNumber("Heading Degrees", headingDegrees);
     SmartDashboard.putNumber("Heading Radians", headingRadians);
     SmartDashboard.putNumber("Heading Odometry", swerveDrive.getOdometryHeading().getDegrees());
+    SmartDashboard.putNumber("Distance LL", LimelightConstants.getDistance());
     if (!notUsingLLforOdometry) {
-      LimelightHelpers.setPipelineIndex("", 0);
+      LimelightHelpers.setPipelineIndex("", 1);
       // poseVision = LimelightHelpers.getBotPose2d_wpiBlue("");
       // aprField2d.setRobotPose(poseVision);
     } else {
@@ -100,6 +108,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   @Override
   public void driveAlignAngleButton() {
+    notUsingLLforOdometry = false;
     if (controller.notUsingJoystick()) {
       ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(),
           angleAlign.getDegrees());
@@ -120,6 +129,22 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   @Override
   public void driveAlignSpeaker() {
+    notUsingLLforOdometry = true;
+    boolean isDetectingAprilTag = LimelightHelpers.getTV("");
+    if (isDetectingAprilTag) {
+      this.lostFramesCounter = 0;
+      this.lastTxMeasurement = LimelightHelpers.getTX("");
+      ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
+      driveOmegaPIDfo(speeds, 0, this.lastTxMeasurement, this.pidTrackApril, false);
+    } else {
+      this.lostFramesCounter++;
+      if (this.lostFramesCounter <= this.MAX_LOST_SPEAKER_FRAMES) {
+        ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
+        driveOmegaPIDfo(speeds, 0, this.lastTxMeasurement, this.pidTrackApril, false);
+      } else {
+        driveAlignAngleButton();
+      }
+    }
   }
 
   @Override
@@ -187,11 +212,12 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     swerveDrive.driveFieldOriented(speeds);
   }
 
-  private void driveOmegaPIDfo(ChassisSpeeds speeds, double setpoint, double measurement, PIDController pid) {
-    speeds = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond,
-        pid.calculate(measurement, setpoint));
-    SmartDashboard.putNumber("Omega PID", speeds.omegaRadiansPerSecond);
-    swerveDrive.driveFieldOriented(speeds);
+  private void driveOmegaPIDfo(ChassisSpeeds speeds, double setpoint, double measurement, PIDController pid,
+      boolean invertOmega) {
+    ChassisSpeeds speedsPID = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond,
+        invertOmega ? -pid.calculate(measurement, setpoint) : pid.calculate(measurement, setpoint));
+    SmartDashboard.putNumber("Omega PID", speedsPID.omegaRadiansPerSecond);
+    swerveDrive.driveFieldOriented(speedsPID);
   }
 
   public SwerveDriveKinematics getKinematics() {
