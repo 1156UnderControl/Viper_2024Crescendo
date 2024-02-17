@@ -92,7 +92,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     pivotMotor.setVelocityFactor(1 / 0.52);
     pivotMotor.setPositionFactor(264 / 2.32);
     pivotMotor.setInvertedEncoder(true);
-    pivotMotor.configurePIDF(0.025, 0, 0, 0);
+    pivotMotor.configurePIDF(0.05, 0.0000100, 0, 0, 45);
     pivotMotor.setPosition(0);
   }
 
@@ -183,8 +183,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public void prepareAmpShot() {
-    this.lowerFlywheelMotor.set(-0.5);
-    this.upperFlywheelMotor.set(-0.5);
+    setVelocityFlywheel(ShooterConstants.setpoints.VELOCITY_SHOOT_AMP);
     this.goal = ShooterConstants.setpoints.ANGLE_SHOOT_AMP;
   }
 
@@ -263,7 +262,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     shooterMap.put(null, null);
     shooterMap.put(null, null);
   }
-  
+
   private void setVelocityFlywheel(double velocity) {
     this.lowerFlywheelMotor.setVelocityReference(velocity, 0);
     this.upperFlywheelMotor.setVelocityReference(velocity, 0);
