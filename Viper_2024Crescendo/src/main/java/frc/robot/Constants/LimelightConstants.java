@@ -11,14 +11,11 @@ public final class LimelightConstants {
   private LimelightConstants() {
   }
 
-  // how many degrees back is your limelight rotated from perfectly vertical?
-  public static final double limelightMountAngleDegrees = 25.0;
+  public static final double limelightMountAngleDegrees = 20;
 
-  // distance from the center of the Limelight lens to the floor
-  public static final double limelightLensHeightInches = 20.0;
+  public static final double limelightLensHeightInches = 10.2362;
 
-  // distance from the target to the floor
-  public static final double goalHeightInches = 60.0;
+  public static final double goalHeightInches = 53.88;
 
   public static double getDistance() {
     double angleToGoalDegrees = limelightMountAngleDegrees + LimelightHelpers.getTY("");
