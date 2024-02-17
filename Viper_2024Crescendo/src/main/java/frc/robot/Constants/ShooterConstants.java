@@ -42,6 +42,7 @@ public class ShooterConstants {
 
     public static final double VELOCITY_SHOOT_SPEAKER = 8000;
     public static final double VELOCITY_SHOOT_AMP = 7500;
+    public static final double VELOCITY_SHOOTER_CORRECT_PASSED_NOTE = -0.1;
     public static final double VELOCITY_FEED_COLLECT = 1;
     public static final double VELOCITY_FEED_SHOOT = 0.8;
     public static final double VELOCITY_FEED_CORRECT_PASSED_NOTE = -0.1;
