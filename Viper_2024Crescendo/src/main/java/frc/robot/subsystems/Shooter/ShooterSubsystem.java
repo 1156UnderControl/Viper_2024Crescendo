@@ -203,7 +203,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public void goToSecuredPosition() {
-    if (noteSensor.getBoolean()) {
+    if (noteSensor.getBoolean() && this.hasNote) {
       this.lowerFlywheelMotor.set(0);
       this.upperFlywheelMotor.set(0);
       this.feederMotor.set(0);
