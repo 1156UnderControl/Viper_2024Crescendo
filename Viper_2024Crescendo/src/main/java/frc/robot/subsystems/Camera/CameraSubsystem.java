@@ -1,6 +1,7 @@
 package frc.robot.subsystems.Camera;
 
 import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -11,14 +12,13 @@ public class CameraSubsystem extends SubsystemBase implements ICamera {
   // Change PhotonCamera argument to the name written in the PhotonVision UI
   private PhotonCamera camera = new PhotonCamera("photonvision");
 
-  // private var PhotonVisionResults = camera.getLatestResult();
+  private PhotonPipelineResult PhotonVisionResults = camera.getLatestResult();
 
-  @Override
-  public void periodic() {
+  public CameraSubsystem() {
 
   }
 
-  private static CameraSubsystem getInstance() {
+  public CameraSubsystem getInstance() {
     if (cameraInstance == null) {
       cameraInstance = new CameraSubsystem();
     }
@@ -27,21 +27,12 @@ public class CameraSubsystem extends SubsystemBase implements ICamera {
 
   @Override
   public double targetPosition() {
-    // periodic()
-    return 22.2;
+    return this.PhotonVisionResults.getBestTarget().getYaw();
   }
 
   @Override
   public boolean hasTarget() {
-    return false;
+    return this.PhotonVisionResults.hasTargets();
   }
-
-  /*
-   * @Override
-   * private double targetPosition(){
-   * return 22.0;
-   * 
-   * }
-   */
 
 }
