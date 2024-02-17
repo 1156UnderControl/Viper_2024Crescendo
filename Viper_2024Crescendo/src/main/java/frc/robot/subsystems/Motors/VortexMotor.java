@@ -11,6 +11,11 @@ import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 
+import edu.wpi.first.util.datalog.BooleanLogEntry;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.util.datalog.IntegerLogEntry;
+import edu.wpi.first.util.datalog.StringLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class VortexMotor implements Motor {
@@ -22,6 +27,26 @@ public class VortexMotor implements Motor {
 
   private boolean factoryDefaultOccurred = false;
 
+  private DoubleLogEntry appliedOutputLog;
+
+  private DoubleLogEntry currentLog;
+
+  private DoubleLogEntry positionLog;
+
+  private DoubleLogEntry velocityLog;
+
+  private DoubleLogEntry temperatureLog;
+
+  private IntegerLogEntry faultsLog;
+
+  private double targetPosition = 0;
+
+  private DoubleLogEntry targetPositionLog;
+
+  private double targetSpeed = 0;
+
+  private DoubleLogEntry targetSpeedLog;
+
   public VortexMotor(int motorID) {
     this.motor = new CANSparkFlex(motorID, MotorType.kBrushless);
     factoryDefault();
@@ -29,6 +54,38 @@ public class VortexMotor implements Motor {
     encoder = motor.getEncoder();
     pid = motor.getPIDController();
     pid.setFeedbackDevice(encoder);
+    this.setupLogs(motorID, false);
+    this.updateLogs();
+  }
+
+  private void setupLogs(int motorId, boolean isAlternateEncoder) {
+    this.appliedOutputLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/appliedOutput");
+    this.currentLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/current");
+    this.positionLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/position");
+    this.velocityLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/velocity");
+    this.temperatureLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/temperature");
+    this.faultsLog = new IntegerLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/faults");
+    this.targetPositionLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/targetPosition");
+    this.targetSpeedLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/targetSpeed");
+    StringLogEntry firmwareVersionLog = new StringLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/firmwareVersion");
+    firmwareVersionLog.append(this.motor.getFirmwareString());
+    BooleanLogEntry isAlternateEncoderLog = new BooleanLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/isAlternateEncoder");
+    isAlternateEncoderLog.append(isAlternateEncoder);
+    BooleanLogEntry isFollowerLog = new BooleanLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/isFollower");
+    isFollowerLog.append(this.motor.isFollower());
+    BooleanLogEntry isInvertedLog = new BooleanLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/isInverted");
+    isInvertedLog.append(this.motor.getInverted());
+  }
+
+  private void updateLogs() {
+    this.appliedOutputLog.append(this.motor.getAppliedOutput());
+    this.currentLog.append(this.motor.getOutputCurrent());
+    this.positionLog.append(this.encoder.getPosition());
+    this.velocityLog.append(this.encoder.getVelocity());
+    this.temperatureLog.append(this.motor.getMotorTemperature());
+    this.faultsLog.append(this.motor.getFaults());
+    this.targetPositionLog.append(this.targetPosition);
+    this.targetSpeedLog.append(this.targetSpeed);
   }
 
   private void configureSparkFlex(Supplier<REVLibError> config) {
@@ -89,7 +146,6 @@ public class VortexMotor implements Motor {
 
   @Override
   public void configurePIDF(double P, double I, double D, double F, double Izone) {
-
     int pidSlot = 0;
     configureSparkFlex(() -> pid.setP(P, pidSlot));
     configureSparkFlex(() -> pid.setI(I, pidSlot));
@@ -153,22 +209,34 @@ public class VortexMotor implements Motor {
 
   @Override
   public void set(double percentOutput) {
+    this.targetPosition = Double.NaN;
+    this.targetSpeed = Double.NaN;
     motor.set(percentOutput);
+    this.updateLogs();
   }
 
   @Override
   public void setPositionReference(double position) {
+    this.targetPosition = position;
+    this.targetSpeed = Double.NaN;
     configureSparkFlex(() -> pid.setReference(position, ControlType.kPosition, 0));
+    this.updateLogs();
   }
 
   @Override
   public void setPositionReferenceArbFF(double setpoint, double feedforward) {
+    this.targetPosition = setpoint;
+    this.targetSpeed = Double.NaN;
     configureSparkFlex(() -> pid.setReference(setpoint, ControlType.kPosition, 0, feedforward));
+    this.updateLogs();
   }
 
   @Override
   public void setVelocityReference(double velocity, double feedforward) {
+    this.targetPosition = Double.NaN;
+    this.targetSpeed = velocity;
     configureSparkFlex(() -> pid.setReference(velocity, ControlType.kVelocity, 0, feedforward));
+    this.updateLogs();
   }
 
   @Override

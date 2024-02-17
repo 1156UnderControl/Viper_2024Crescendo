@@ -11,20 +11,45 @@ import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 
+import edu.wpi.first.util.datalog.BooleanLogEntry;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.util.datalog.IntegerLogEntry;
+import edu.wpi.first.util.datalog.StringLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class SparkMAXMotor implements Motor {
-  CANSparkMax motor;
+  private CANSparkMax motor;
 
-  SparkPIDController pid;
+  private SparkPIDController pid;
 
-  RelativeEncoder encoder;
+  private RelativeEncoder encoder;
 
   private Supplier<Double> velocity;
 
   private Supplier<Double> position;
 
-  boolean factoryDefaultOcurred = false;
+  private boolean factoryDefaultOcurred = false;
+
+  private DoubleLogEntry appliedOutputLog;
+
+  private DoubleLogEntry currentLog;
+
+  private DoubleLogEntry positionLog;
+
+  private DoubleLogEntry velocityLog;
+
+  private DoubleLogEntry temperatureLog;
+
+  private IntegerLogEntry faultsLog;
+
+  private double targetPosition = 0;
+
+  private DoubleLogEntry targetPositionLog;
+
+  private double targetSpeed = 0;
+
+  private DoubleLogEntry targetSpeedLog;
 
   public SparkMAXMotor(int motorId) {
     this(motorId, false);
@@ -33,13 +58,14 @@ public class SparkMAXMotor implements Motor {
   public SparkMAXMotor(int motorID, boolean usingAlternateEncoder) {
     this.motor = new CANSparkMax(motorID, MotorType.kBrushless);
     this.pid = motor.getPIDController();
-
-    factoryDefault();
-    clearStickyFaults();
-    setCurrentLimit(80);
-    setupMotorPid(usingAlternateEncoder);
-    velocity = encoder::getVelocity;
-    position = encoder::getPosition;
+    this.factoryDefault();
+    this.clearStickyFaults();
+    this.setCurrentLimit(80);
+    this.setupMotorPid(usingAlternateEncoder);
+    this.setupLogs(motorID, usingAlternateEncoder);
+    this.updateLogs();
+    velocity = this.encoder::getVelocity;
+    position = this.encoder::getPosition;
   }
 
   private void configureSparkMax(Supplier<REVLibError> config) {
@@ -58,10 +84,40 @@ public class SparkMAXMotor implements Motor {
 
   private void setAlternateEncoder(boolean usingAlternateEncoder) {
     if (usingAlternateEncoder) {
-      encoder = motor.getAlternateEncoder(8192);
+      this.encoder = motor.getAlternateEncoder(8192);
     } else {
-      encoder = motor.getEncoder();
+      this.encoder = motor.getEncoder();
     }
+  }
+
+  private void setupLogs(int motorId, boolean isAlternateEncoder) {
+    this.appliedOutputLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/appliedOutput");
+    this.currentLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/current");
+    this.positionLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/position");
+    this.velocityLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/velocity");
+    this.temperatureLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/temperature");
+    this.faultsLog = new IntegerLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/faults");
+    this.targetPositionLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/targetPosition");
+    this.targetSpeedLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/targetSpeed");
+    StringLogEntry firmwareVersionLog = new StringLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/firmwareVersion");
+    firmwareVersionLog.append(this.motor.getFirmwareString());
+    BooleanLogEntry isAlternateEncoderLog = new BooleanLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/isAlternateEncoder");
+    isAlternateEncoderLog.append(isAlternateEncoder);
+    BooleanLogEntry isFollowerLog = new BooleanLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/isFollower");
+    isFollowerLog.append(this.motor.isFollower());
+    BooleanLogEntry isInvertedLog = new BooleanLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/isInverted");
+    isInvertedLog.append(this.motor.getInverted());
+  }
+
+  private void updateLogs() {
+    this.appliedOutputLog.append(this.motor.getAppliedOutput());
+    this.currentLog.append(this.motor.getOutputCurrent());
+    this.positionLog.append(this.encoder.getPosition());
+    this.velocityLog.append(this.encoder.getVelocity());
+    this.temperatureLog.append(this.motor.getMotorTemperature());
+    this.faultsLog.append(this.motor.getFaults());
+    this.targetPositionLog.append(this.targetPosition);
+    this.targetSpeedLog.append(this.targetSpeed);
   }
 
   /*
@@ -115,7 +171,6 @@ public class SparkMAXMotor implements Motor {
     if (!factoryDefaultOcurred) {
       configureSparkMax(motor::restoreFactoryDefaults);
     }
-
     factoryDefaultOcurred = true;
   }
 
@@ -184,22 +239,34 @@ public class SparkMAXMotor implements Motor {
 
   @Override
   public void set(double percentOutput) {
+    this.targetPosition = Double.NaN;
+    this.targetSpeed = Double.NaN;
     motor.set(percentOutput);
+    this.updateLogs();
   }
 
   @Override
   public void setPositionReference(double position) {
+    this.targetPosition = position;
+    this.targetSpeed = Double.NaN;
     configureSparkMax(() -> pid.setReference(position, ControlType.kPosition, 0));
+    this.updateLogs();
   }
 
   @Override
   public void setPositionReferenceArbFF(double position, double feedforward) {
+    this.targetPosition = position;
+    this.targetSpeed = Double.NaN;
     configureSparkMax(() -> pid.setReference(position, ControlType.kPosition, 0, feedforward));
+    this.updateLogs();
   }
 
   @Override
   public void setVelocityReference(double velocity, double feedforward) {
+    this.targetPosition = Double.NaN;
+    this.targetSpeed = velocity;
     configureSparkMax(() -> pid.setReference(velocity, ControlType.kPosition, 0, feedforward));
+    this.updateLogs();
   }
 
   @Override
