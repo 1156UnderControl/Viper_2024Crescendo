@@ -5,6 +5,9 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.util.datalog.BooleanLogEntry;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.Java_Is_UnderControl.Util.Util;
@@ -53,6 +56,12 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   public static InterpolatingDoubleTreeMap shooterMap = new InterpolatingDoubleTreeMap();
 
+  private DoubleLogEntry pivotGoalLog = new DoubleLogEntry(DataLogManager.getLog(), "/ShooterSubsystem/PivotGoal");
+
+  private BooleanLogEntry isAtSetpointLog = new BooleanLogEntry(DataLogManager.getLog(), "/ShooterSubsystem/IsAtSetpoint");
+
+  private BooleanLogEntry hasNoteLog = new BooleanLogEntry(DataLogManager.getLog(), "/ShooterSubsystem/HasNote");
+
   public static ShooterSubsystem getInstance() {
     if (shooterInstance == null) {
       shooterInstance = new ShooterSubsystem();
@@ -68,6 +77,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     this.configurePivotMotor();
     this.goToSecuredPosition();
     this.initializeSmartDashboardVariables();
+    this.updateLogs();
   }
 
   private void configureFlywheelMotor(Motor flywheelMotor) {
@@ -82,18 +92,18 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   }
 
   private void configureFeederMotor() {
-    feederMotor.setMotorBrake(false);
-    feederMotor.setLoopRampRate(0.2);
+    this.feederMotor.setMotorBrake(false);
+    this.feederMotor.setLoopRampRate(0.2);
   }
 
   private void configurePivotMotor() {
-    pivotMotor.setMotorBrake(true);
-    pivotMotor.setLoopRampRate(0);
-    pivotMotor.setVelocityFactor(1 / 0.52);
-    pivotMotor.setPositionFactor(264 / 2.32);
-    pivotMotor.setInvertedEncoder(true);
-    pivotMotor.configurePIDF(0.05, 0.000011, 0, 0, 45);
-    pivotMotor.setPosition(0);
+    this.pivotMotor.setMotorBrake(true);
+    this.pivotMotor.setLoopRampRate(0);
+    this.pivotMotor.setVelocityFactor(1 / 0.52);
+    this.pivotMotor.setPositionFactor(264 / 2.32);
+    this.pivotMotor.setInvertedEncoder(true);
+    this.pivotMotor.configurePIDF(0.05, 0.000011, 0, 0, 45);
+    this.pivotMotor.setPosition(0);
   }
 
   private void initializeSmartDashboardVariables() {
@@ -112,6 +122,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     this.updateManualValuesFromDashboard();
     this.updateSmartDashboard();
     this.pivotMotor.setPositionReferenceArbFF(profilePosition(goal), getFeedForwardProfiled());
+    this.updateLogs();
   }
 
   private void updateManualValuesFromDashboard() {
@@ -286,5 +297,11 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private double verifyManualValue(double value, String nameSmartDashboard) {
     return manualValues ? SmartDashboard.getNumber(nameSmartDashboard, 0) : value;
+  }
+
+  private void updateLogs() {
+    this.pivotGoalLog.append(this.goal);
+    this.isAtSetpointLog.append(this.isAtSetpoint());
+    this.hasNoteLog.append(this.hasNote);
   }
 }
