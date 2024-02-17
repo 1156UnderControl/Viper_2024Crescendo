@@ -16,18 +16,21 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
 
   private double kDt = 0.02;
 
-  private double goal = 140;
+  private double goal = IntakeConstants.setpoints.ANGLE_SECURED;
 
   private Motor rollerMotor = new SparkMAXMotor(IntakeConstants.ID_intake);
 
   private Motor pivotMotor = new SparkMAXMotor(IntakeConstants.ID_pivotIntake, true);
 
-  private SimpleMotorFeedforward pivotFeedforward = new SimpleMotorFeedforward(0.28, 0.03);
+  private SimpleMotorFeedforward pivotFeedforward = new SimpleMotorFeedforward(IntakeConstants.tunning_values.KS,
+      IntakeConstants.tunning_values.KV);
 
-  private TrapezoidProfile pivotMotionProfile = new TrapezoidProfile(new Constraints(400, 2500));
+  private TrapezoidProfile pivotMotionProfile = new TrapezoidProfile(
+      new Constraints(IntakeConstants.tunning_values.MAX_VELOCITY,
+          IntakeConstants.tunning_values.MAX_ACCELERATION));
 
   private TrapezoidProfile.State pivotCurrentSetpoint = new TrapezoidProfile.State();
-  
+
   private TrapezoidProfile.State pivotGoal = new TrapezoidProfile.State();
 
   public static IntakeSubsystem getInstance() {
@@ -50,7 +53,8 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
     this.pivotMotor.setLoopRampRate(0);
     this.pivotMotor.setPositionFactor(360);
     this.pivotMotor.setVelocityFactor(6);
-    this.pivotMotor.configurePIDF(0.025, 0, 0, 0);
+    this.pivotMotor.configurePIDF(IntakeConstants.tunning_values.PID.P, IntakeConstants.tunning_values.PID.I,
+        IntakeConstants.tunning_values.PID.D, IntakeConstants.tunning_values.PID.F);
     this.pivotMotor.setPosition(0);
   }
 
@@ -77,7 +81,7 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
   @Override
   public void intake() {
     this.goToIntakePosition();
-    this.rollerMotor.set(IntakeConstants.intakeSpeed);
+    this.rollerMotor.set(IntakeConstants.setpoints.SPEED_INTAKE);
   }
 
   @Override
@@ -87,7 +91,7 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
 
   @Override
   public void goToIntakePosition() {
-    this.goal = 0;
+    this.goal = IntakeConstants.setpoints.ANGLE_INTAKE;
   }
 
   @Override
@@ -98,12 +102,12 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
   @Override
   public void goToSecuredPosition() {
     this.rollerMotor.set(0);
-    this.goal = 140;
+    this.goal = IntakeConstants.setpoints.ANGLE_SECURED;
   }
 
   @Override
   public boolean isSecureForShooter() {
-    return this.pivotMotor.getPosition() < 90;
+    return this.pivotMotor.getPosition() < IntakeConstants.ANGLE_PASSED_FOR_SHOOTER_MOVE;
   }
 
   @Override
