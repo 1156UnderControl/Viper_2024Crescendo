@@ -203,15 +203,22 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public void goToSecuredPosition() {
-    if (noteSensor.getBoolean() && this.hasNote) {
+    if (this.hasNote) {
+      if (noteSensor.getBoolean()) {
+        this.lowerFlywheelMotor.set(0);
+        this.upperFlywheelMotor.set(0);
+        this.feederMotor.set(0);
+      } else {
+        this.lowerFlywheelMotor.set(ShooterConstants.setpoints.VELOCITY_SHOOTER_CORRECT_PASSED_NOTE);
+        this.upperFlywheelMotor.set(ShooterConstants.setpoints.VELOCITY_SHOOTER_CORRECT_PASSED_NOTE);
+        this.feederMotor.set(ShooterConstants.setpoints.VELOCITY_FEED_CORRECT_PASSED_NOTE);
+      }
+    } else {
       this.lowerFlywheelMotor.set(0);
       this.upperFlywheelMotor.set(0);
       this.feederMotor.set(0);
-    } else {
-      this.lowerFlywheelMotor.set(ShooterConstants.setpoints.VELOCITY_SHOOTER_CORRECT_PASSED_NOTE);
-      this.upperFlywheelMotor.set(ShooterConstants.setpoints.VELOCITY_SHOOTER_CORRECT_PASSED_NOTE);
-      this.feederMotor.set(ShooterConstants.setpoints.VELOCITY_FEED_CORRECT_PASSED_NOTE);
     }
+
     this.goal = ShooterConstants.setpoints.ANGLE_SECURED;
     this.maxVelocityFeeder = 0;
   }
