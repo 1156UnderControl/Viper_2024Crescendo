@@ -23,6 +23,7 @@ import frc.robot.commands.States.CollectPosition;
 import frc.robot.commands.States.SecuredPosition;
 import frc.robot.commands.States.ShootAmpPosition;
 import frc.robot.commands.States.ShootSpeakerPosition;
+import frc.robot.commands.Swerve.SwerveAlignSpeaker;
 import frc.robot.commands.Swerve.SwerveTeleopControl;
 import frc.robot.subsystems.Climber.ClimberSubsystem;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
@@ -75,8 +76,10 @@ public class RobotContainer {
 
     mControlBoard.getIntake().onTrue(new CollectPosition(robot));
     mControlBoard.getSecured().onTrue(new SecuredPosition(robot));
+    mControlBoard.getSecured().onTrue(new SwerveTeleopControl(swerve));
     mControlBoard.getPrepareAmp().and(() -> robot.shooter.hasNote()).onTrue(new ShootAmpPosition(robot));
     mControlBoard.getPrepareSpeaker().and(() -> robot.shooter.hasNote()).onTrue(new ShootSpeakerPosition(robot));
+    mControlBoard.getPrepareSpeaker().and(() -> robot.shooter.hasNote()).onTrue(new SwerveAlignSpeaker(swerve));
     mControlBoard.climb().onTrue(Commands.run(() -> climber.climb(), climber));
     mControlBoard.release().onTrue(Commands.run(() -> climber.release(), climber));
     mControlBoard.climb().or(mControlBoard.release()).onFalse(Commands.run(() -> climber.stop(), climber));

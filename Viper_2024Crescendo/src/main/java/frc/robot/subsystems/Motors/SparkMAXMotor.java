@@ -149,7 +149,6 @@ public class SparkMAXMotor implements Motor {
     configureSparkMax(() -> pid.setI(I, 0));
     configureSparkMax(() -> pid.setD(D, 0));
     configureSparkMax(() -> pid.setFF(F, 0));
-    DriverStation.reportWarning("P configured " + P + "ID" + motor.getDeviceId(), true);
   }
 
   @Override
