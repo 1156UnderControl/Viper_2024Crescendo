@@ -4,6 +4,9 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.util.datalog.BooleanLogEntry;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.Java_Is_UnderControl.Util.Util;
@@ -33,6 +36,10 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
 
   private TrapezoidProfile.State pivotGoal = new TrapezoidProfile.State();
 
+  private DoubleLogEntry pivotGoalLog = new DoubleLogEntry(DataLogManager.getLog(), "/IntakeSubsystem/PivotGoal");
+
+  private BooleanLogEntry isAtSetpointLog = new BooleanLogEntry(DataLogManager.getLog(), "/IntakeSubsystem/IsAtSetpoint");
+
   public static IntakeSubsystem getInstance() {
     if (intakeInstance == null) {
       intakeInstance = new IntakeSubsystem();
@@ -45,6 +52,7 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
     this.configureRollerMotor();
     SmartDashboard.putNumber("Position Manual Setpoint Shooter", 0);
     this.updateSmartDashboard();
+    this.updateLogs();
   }
 
   private void configurePivotMotor() {
@@ -68,6 +76,7 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
   public void periodic() {
     this.pivotMotor.setPositionReferenceArbFF(profilePosition(goal), getFeedForwardProfiled());
     this.updateSmartDashboard();
+    this.updateLogs();
   }
 
   private void updateSmartDashboard() {
@@ -96,7 +105,7 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
 
   @Override
   public void shootingPosition() {
-    goal = 0;
+    this.goal = 0;
   }
 
   @Override
@@ -142,6 +151,11 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
 
   private double getFeedForwardProfiled() {
     return this.pivotFeedforward.calculate(pivotCurrentSetpoint.velocity / 12);
+  }
+
+  private void updateLogs() {
+    this.pivotGoalLog.append(this.goal);
+    this.isAtSetpointLog.append(this.isAtSetpoint());
   }
 
 }
