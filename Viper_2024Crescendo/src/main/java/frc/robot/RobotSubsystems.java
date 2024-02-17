@@ -14,6 +14,8 @@ public class RobotSubsystems extends SubsystemBase {
   private SubsystemBase intakeSubsystem;
   private SubsystemBase shooterSubsystem;
 
+  public static boolean shootFinished;
+
   public RobotSubsystems() {
     this.intake = IntakeSubsystem.getInstance();
     this.shooter = ShooterSubsystem.getInstance();
