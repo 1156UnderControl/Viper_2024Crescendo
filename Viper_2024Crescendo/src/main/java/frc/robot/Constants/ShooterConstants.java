@@ -36,7 +36,7 @@ public class ShooterConstants {
     public static final double LIMIT_MIN = 0;
 
     public static final double ANGLE_SECURED = 0;
-    public static final double ANGLE_INTAKE = 46;
+    public static final double ANGLE_INTAKE = 41;
     public static final double ANGLE_SHOOT_AMP = 127;
     public static final double ANGLE_SHOOT_SPEAKER = 1;
 
