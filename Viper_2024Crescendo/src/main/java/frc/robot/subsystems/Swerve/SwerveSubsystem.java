@@ -26,9 +26,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CommandsConstants;
-import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Joysticks.ControlBoard;
+import frc.robot.subsystems.Limelight;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.parser.SwerveDriveConfiguration;
@@ -96,7 +96,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     SmartDashboard.putNumber("Heading Degrees", headingDegrees);
     SmartDashboard.putNumber("Heading Radians", headingRadians);
     SmartDashboard.putNumber("Heading Odometry", swerveDrive.getOdometryHeading().getDegrees());
-    SmartDashboard.putNumber("Distance LL", LimelightConstants.getDistance());
+    SmartDashboard.putNumber("Distance LL", Limelight.getDistance());
     if (!notUsingLLforOdometry) {
       LimelightHelpers.setPipelineIndex("", 1);
       // poseVision = LimelightHelpers.getBotPose2d_wpiBlue("");

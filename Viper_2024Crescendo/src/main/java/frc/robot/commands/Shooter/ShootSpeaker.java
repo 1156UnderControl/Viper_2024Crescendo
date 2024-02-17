@@ -2,9 +2,11 @@ package frc.robot.commands.Shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotSubsystems;
+import frc.robot.Joysticks.ControlBoard;
 
 public class ShootSpeaker extends Command {
   private RobotSubsystems robot;
+  ControlBoard mControlBoard = ControlBoard.getInstance();
 
   public ShootSpeaker(RobotSubsystems robot) {
     this.robot = robot;
@@ -18,6 +20,6 @@ public class ShootSpeaker extends Command {
 
   @Override
   public boolean isFinished() {
-    return this.robot.shooter.isAtSetpoint();
+    return this.robot.shooter.isAtSetpoint() && mControlBoard.getShoot().getAsBoolean();
   }
 }

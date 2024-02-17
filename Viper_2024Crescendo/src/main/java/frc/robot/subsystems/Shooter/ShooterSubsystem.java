@@ -8,8 +8,8 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.Java_Is_UnderControl.Util.Util;
-import frc.robot.Constants.LimelightConstants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Motors.Motor;
 import frc.robot.subsystems.Motors.SparkMAXMotor;
 import frc.robot.subsystems.Motors.VortexMotor;
@@ -191,7 +191,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   public void prepareSpeakerShot() {
     setVelocityFlywheel(verifyManualValue(ShooterConstants.setpoints.VELOCITY_SHOOT_SPEAKER,
         "Setpoint Vel Shooter"));
-    goal = verifyManualValue(46, "Setpoint Pos Shoot Pivot");
+    goal = verifyManualValue(calculateGoalSpeaker(), "Setpoint Pos Shoot Pivot");
   }
 
   @Override
@@ -252,15 +252,19 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private static double calculateGoalSpeaker() {
     interpolationTree();
-    return shooterMap.get(LimelightConstants.getDistance());
+    return shooterMap.get(Limelight.getDistance());
   }
 
   private static void interpolationTree() {
-    shooterMap.put(null, null);
-    shooterMap.put(null, null);
-    shooterMap.put(null, null);
-    shooterMap.put(null, null);
-    shooterMap.put(null, null);
+    shooterMap.put(1.29, 51.0);
+    shooterMap.put(1.626, 57.0);
+    shooterMap.put(2.02, 62.0);
+    shooterMap.put(2.43, 66.0);
+    shooterMap.put(2.77, 69.0);
+    shooterMap.put(3.16, 71.0);
+    shooterMap.put(3.46, 72.0);
+    shooterMap.put(3.84, 72.0);
+
   }
 
   private void setVelocityFlywheel(double velocity) {

@@ -14,7 +14,6 @@ public class ShootSpeakerPosition extends SequentialCommandGroup {
     addCommands(
         new GoToShootIntake(robot),
         new ShootSpeaker(robot),
-        Commands.waitUntil(mControlBoard.getShoot()),
         Commands.runOnce(() -> robot.shooter.shoot(), robot),
         Commands.waitSeconds(1));
   }
