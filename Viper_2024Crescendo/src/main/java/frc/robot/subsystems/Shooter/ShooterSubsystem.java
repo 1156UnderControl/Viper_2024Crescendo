@@ -92,7 +92,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     pivotMotor.setVelocityFactor(1 / 0.52);
     pivotMotor.setPositionFactor(264 / 2.32);
     pivotMotor.setInvertedEncoder(true);
-    pivotMotor.configurePIDF(0.05, 0.0000100, 0, 0, 45);
+    pivotMotor.configurePIDF(0.05, 0.000011, 0, 0, 45);
     pivotMotor.setPosition(0);
   }
 
