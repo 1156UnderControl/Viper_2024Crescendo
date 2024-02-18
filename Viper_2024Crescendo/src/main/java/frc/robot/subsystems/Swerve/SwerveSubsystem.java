@@ -104,7 +104,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     SmartDashboard.putData("POSE APRIL", aprField2d);
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     setupYAGSL_JSON(directory);
-    setupGyroToAlliance();
+    // setupGyroToAlliance();
     setupPathPlanner();
     this.updateLogs();
   }
