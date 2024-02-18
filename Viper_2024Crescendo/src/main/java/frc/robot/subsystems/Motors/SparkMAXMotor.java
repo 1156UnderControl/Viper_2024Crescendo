@@ -33,6 +33,8 @@ public class SparkMAXMotor implements Motor {
 
   private DoubleLogEntry appliedOutputLog;
 
+  private DoubleLogEntry targetOutputLog;
+
   private DoubleLogEntry currentLog;
 
   private DoubleLogEntry positionLog;
@@ -43,13 +45,39 @@ public class SparkMAXMotor implements Motor {
 
   private IntegerLogEntry faultsLog;
 
-  private double targetPosition = 0;
-
   private DoubleLogEntry targetPositionLog;
-
-  private double targetSpeed = 0;
-
+  
   private DoubleLogEntry targetSpeedLog;
+
+  private double targetPercentage = Double.NaN;
+
+  private double targetPosition = Double.NaN;
+  
+  private double targetSpeed = Double.NaN;
+
+  private double pidP = Double.NaN;
+
+  private double pidI = Double.NaN;
+
+  private double pidD = Double.NaN;
+
+  private double pidF = Double.NaN;
+
+  private double pidIZone = Double.NaN;
+
+  private double wrappingMinInput = Double.NaN;
+
+  private double wrappingMaxInput = Double.NaN;
+
+  private double encoderPositionFactor = Double.NaN;
+
+  private double encoderVelocityFactor = Double.NaN;
+
+  private double nominalVoltage = Double.NaN;
+
+  private double currentLimit = Double.NaN;
+
+  private double rampRate = Double.NaN;
 
   public SparkMAXMotor(int motorId) {
     this(motorId, false);
@@ -92,6 +120,7 @@ public class SparkMAXMotor implements Motor {
 
   private void setupLogs(int motorId, boolean isAlternateEncoder) {
     this.appliedOutputLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/appliedOutput");
+    this.targetOutputLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/targetOutput");
     this.currentLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/current");
     this.positionLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/position");
     this.velocityLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/velocity");
@@ -111,6 +140,7 @@ public class SparkMAXMotor implements Motor {
 
   private void updateLogs() {
     this.appliedOutputLog.append(this.motor.getAppliedOutput());
+    this.targetOutputLog.append(this.targetPercentage);
     this.currentLog.append(this.motor.getOutputCurrent());
     this.positionLog.append(this.encoder.getPosition());
     this.velocityLog.append(this.encoder.getVelocity());
@@ -147,18 +177,27 @@ public class SparkMAXMotor implements Motor {
 
   @Override
   public void setVoltageCompensation(double nominalVoltage) {
-    configureSparkMax(() -> motor.enableVoltageCompensation(nominalVoltage));
+    if (nominalVoltage != this.nominalVoltage){
+      configureSparkMax(() -> motor.enableVoltageCompensation(nominalVoltage));
+    }
+    this.nominalVoltage = nominalVoltage;
   }
 
   @Override
   public void setCurrentLimit(int currentLimit) {
-    configureSparkMax(() -> motor.setSmartCurrentLimit(currentLimit));
+    if (currentLimit != this.currentLimit){
+      configureSparkMax(() -> motor.setSmartCurrentLimit(currentLimit));
+    }
+    this.currentLimit = currentLimit;
   }
 
   @Override
   public void setLoopRampRate(double rampRate) {
-    configureSparkMax(() -> motor.setClosedLoopRampRate(rampRate));
-    configureSparkMax(() -> motor.setOpenLoopRampRate(rampRate));
+    if (rampRate != this.rampRate){
+      configureSparkMax(() -> motor.setClosedLoopRampRate(rampRate));
+      configureSparkMax(() -> motor.setOpenLoopRampRate(rampRate));
+    }
+    this.rampRate = rampRate;
   }
 
   @Override
@@ -181,36 +220,58 @@ public class SparkMAXMotor implements Motor {
 
   @Override
   public void setPositionFactor(double factor) {
-    configureSparkMax(() -> encoder.setPositionConversionFactor(factor));
+    if (factor != this.encoderPositionFactor){
+      configureSparkMax(() -> encoder.setPositionConversionFactor(factor));
+    }
+    this.encoderPositionFactor = factor;
   }
 
   @Override
   public void setVelocityFactor(double factor) {
-    configureSparkMax(() -> encoder.setVelocityConversionFactor(factor));
+    if (factor != this.encoderVelocityFactor){
+      configureSparkMax(() -> encoder.setVelocityConversionFactor(factor));
+    }
+    this.encoderVelocityFactor = factor;
   }
 
   @Override
-  public void configurePIDF(double P, double I, double D, double F, double Izone) {
-    configureSparkMax(() -> pid.setP(P, 0));
-    configureSparkMax(() -> pid.setI(I, 0));
-    configureSparkMax(() -> pid.setD(D, 0));
-    configureSparkMax(() -> pid.setFF(F, 0));
-    configureSparkMax(() -> pid.setIZone(Izone, 0));
+  public void configurePIDF(double p, double i, double d, double f, double iZone) {
+    this.configurePIDF(p, i, d, f);
+    if (iZone != this.pidIZone) {
+      configureSparkMax(() -> pid.setIZone(iZone, 0));
+    }
+    this.pidIZone = iZone;
   }
 
   @Override
-  public void configurePIDF(double P, double I, double D, double F) {
-    configureSparkMax(() -> pid.setP(P, 0));
-    configureSparkMax(() -> pid.setI(I, 0));
-    configureSparkMax(() -> pid.setD(D, 0));
-    configureSparkMax(() -> pid.setFF(F, 0));
+  public void configurePIDF(double p, double i, double d, double f) {
+    if (p != this.pidP){
+      configureSparkMax(() -> pid.setP(p, 0));
+    }
+    if (i != this.pidI){
+      configureSparkMax(() -> pid.setI(i, 0));
+    }
+    if (d != this.pidD){
+      configureSparkMax(() -> pid.setD(d, 0));
+    }
+    if (f != this.pidF){
+      configureSparkMax(() -> pid.setFF(f, 0));
+    }
+    this.pidP = p;
+    this.pidI = i;
+    this.pidD = d;
+    this.pidF = f;
   }
 
   @Override
   public void configurePIDWrapping(double minInput, double maxInput) {
-    configureSparkMax(() -> pid.setPositionPIDWrappingEnabled(true));
-    configureSparkMax(() -> pid.setPositionPIDWrappingMaxInput(maxInput));
-    configureSparkMax(() -> pid.setPositionPIDWrappingMinInput(minInput));
+    if (minInput != this.wrappingMinInput || maxInput != this.wrappingMaxInput){
+      configureSparkMax(() -> pid.setPositionPIDWrappingEnabled(true));
+      configureSparkMax(() -> pid.setPositionPIDWrappingMaxInput(maxInput));
+      configureSparkMax(() -> pid.setPositionPIDWrappingMinInput(minInput));
+    }
+    this.wrappingMinInput = minInput;
+    this.wrappingMaxInput = maxInput;
   }
 
   @Override
@@ -239,33 +300,45 @@ public class SparkMAXMotor implements Motor {
 
   @Override
   public void set(double percentOutput) {
+    if (percentOutput != this.targetPercentage) {
+      this.motor.set(percentOutput);
+    }
+    this.targetPercentage = percentOutput;
     this.targetPosition = Double.NaN;
     this.targetSpeed = Double.NaN;
-    motor.set(percentOutput);
     this.updateLogs();
   }
 
   @Override
   public void setPositionReference(double position) {
+    if (position != this.targetPosition) {
+      configureSparkMax(() -> pid.setReference(position, ControlType.kPosition, 0));
+    }
+    this.targetPercentage = Double.NaN;
     this.targetPosition = position;
     this.targetSpeed = Double.NaN;
-    configureSparkMax(() -> pid.setReference(position, ControlType.kPosition, 0));
     this.updateLogs();
   }
 
   @Override
   public void setPositionReferenceArbFF(double position, double feedforward) {
+    if (position != this.targetPosition) {
+      configureSparkMax(() -> pid.setReference(position, ControlType.kPosition, 0, feedforward));
+    }
+    this.targetPercentage = Double.NaN;
     this.targetPosition = position;
     this.targetSpeed = Double.NaN;
-    configureSparkMax(() -> pid.setReference(position, ControlType.kPosition, 0, feedforward));
     this.updateLogs();
   }
 
   @Override
   public void setVelocityReference(double velocity, double feedforward) {
+    if (velocity != this.targetSpeed) {
+      configureSparkMax(() -> pid.setReference(velocity, ControlType.kVelocity, 0, feedforward));
+    }
+    this.targetPercentage = Double.NaN;
     this.targetPosition = Double.NaN;
     this.targetSpeed = velocity;
-    configureSparkMax(() -> pid.setReference(velocity, ControlType.kPosition, 0, feedforward));
     this.updateLogs();
   }
 
@@ -296,6 +369,9 @@ public class SparkMAXMotor implements Motor {
 
   @Override
   public void setPosition(double position) {
+    // Here it should not have a check comparing to the previous
+    // call because the encoder could have moved, so calling setPosition
+    // twice with the same value could be a valid use case.
     configureSparkMax(() -> encoder.setPosition(position));
   }
 
