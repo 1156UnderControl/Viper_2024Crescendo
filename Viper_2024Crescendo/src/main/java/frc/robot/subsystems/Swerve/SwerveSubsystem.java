@@ -68,11 +68,11 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   Field2d aprField2d = new Field2d();
 
-  private DoubleLogEntry poseXLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/Pose/X");
+  private DoubleLogEntry poseXLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/Pose/0");
 
-  private DoubleLogEntry poseYLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/Pose/Y");
+  private DoubleLogEntry poseYLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/Pose/1");
 
-  private DoubleLogEntry poseRotationLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/Pose/Rotation");
+  private DoubleLogEntry poseRotationLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/Pose/2");
 
   private ChassisSpeeds targetSpeeds = new ChassisSpeeds();
 
