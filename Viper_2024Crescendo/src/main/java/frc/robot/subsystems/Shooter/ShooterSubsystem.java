@@ -171,14 +171,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   }
 
   private void runNoteDetection() {
-    double velocityFeeder = this.feederMotor.getVelocity();
-    if (velocityFeeder > this.maxVelocityFeeder) {
-      this.maxVelocityFeeder = velocityFeeder;
-    }
     if (noteSensor.getBoolean()) {
-      if (velocityFeeder < this.maxVelocityFeeder - 200) {
-        hasNote = true;
-      }
+      hasNote = true;
     }
   }
 
