@@ -74,7 +74,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   private DoubleLogEntry poseRotationLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/Pose/Rotation");
 
-  private ChassisSpeeds targetSpeeds;
+  private ChassisSpeeds targetSpeeds = new ChassisSpeeds();
 
   private DoubleLogEntry targetXSpeedLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/TargetSpeeds/X");
 
