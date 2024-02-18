@@ -54,6 +54,9 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   PIDController pidTrackApril = new PIDController(CommandsConstants.P_TrackSpeaker, CommandsConstants.I_TrackSpeaker,
       CommandsConstants.D_TrackSpeaker);
 
+  PIDController pidTrackNotes = new PIDController(CommandsConstants.P_TrackNotes, CommandsConstants.I_TrackNotes,
+      CommandsConstants.D_TrackNotes);
+
   Pose2d poseVision;
 
   Field2d aprField2d = new Field2d();
@@ -315,6 +318,12 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     LimelightHelpers.setPipelineIndex("", 1);
     return pidTrackApril.calculate(LimelightHelpers.getTX(""), 0);
   }
+
+  /*
+   * public double trackNote() {
+   * return pidTrackNotes.calculate();
+   * }
+   */
 
   /*
    * ANGLE CONTROL
