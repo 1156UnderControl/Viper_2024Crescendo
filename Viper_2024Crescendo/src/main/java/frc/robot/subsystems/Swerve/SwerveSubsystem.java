@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
+import frc.Java_Is_UnderControl.PhotonVision.PhotonVision;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CommandsConstants;
 import frc.robot.Constants.SwerveConstants;
@@ -64,8 +65,8 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   PIDController pidTrackApril = new PIDController(CommandsConstants.P_TrackSpeaker, CommandsConstants.I_TrackSpeaker,
       CommandsConstants.D_TrackSpeaker);
 
-  PIDController pidTrackNotes = new PIDController(CommandsConstants.P_TrackNotes, CommandsConstants.I_TrackNotes,
-      CommandsConstants.D_TrackNotes);
+  PIDController pidTrackNote = new PIDController(CommandsConstants.P_TrackNote, CommandsConstants.I_TrackNote,
+      CommandsConstants.D_TrackNote);
 
   Pose2d poseVision;
 
@@ -75,15 +76,19 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   private DoubleLogEntry poseYLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/Pose/Y");
 
-  private DoubleLogEntry poseRotationLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/Pose/Rotation");
+  private DoubleLogEntry poseRotationLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
+      "/SwerveSubsystem/Pose/Rotation");
 
   private ChassisSpeeds targetSpeeds = new ChassisSpeeds();
 
-  private DoubleLogEntry targetXSpeedLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/TargetSpeeds/X");
+  private DoubleLogEntry targetXSpeedLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
+      "/SwerveSubsystem/TargetSpeeds/X");
 
-  private DoubleLogEntry targetYSpeedLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/TargetSpeeds/Y");
+  private DoubleLogEntry targetYSpeedLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
+      "/SwerveSubsystem/TargetSpeeds/Y");
 
-  private DoubleLogEntry targetOmegaSpeedLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/TargetSpeeds/Omega");
+  private DoubleLogEntry targetOmegaSpeedLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
+      "/SwerveSubsystem/TargetSpeeds/Omega");
 
   private String state = "DRIVE_ALIGN_ANGLE_BUTTON";
 
@@ -173,6 +178,26 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
       }
     }
     this.state = "DRIVE_ALIGN_SPEAKER";
+  }
+
+  @Override
+  public void driveAlignNote() {
+    boolean isDetectingNote = PhotonVision.hasTarget();
+    if (isDetectingNote) {
+      this.lostFramesCounter = 0;
+      this.lastTxMeasurement = PhotonVision.targetPositionX();
+      ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
+      driveOmegaPIDfo(speeds, 0, this.lastTxMeasurement, this.pidTrackNote, false);
+    } else {
+      this.lostFramesCounter++;
+      if (this.lostFramesCounter <= this.MAX_LOST_SPEAKER_FRAMES) {
+        ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
+        driveOmegaPIDfo(speeds, 0, this.lastTxMeasurement, this.pidTrackApril, false);
+      } else {
+        driveAlignAngleButton();
+      }
+    }
+    this.state = "DRIVE_ALIGN_NOTE"; // Add to the log entry
   }
 
   @Override
