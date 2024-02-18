@@ -1,6 +1,7 @@
 package frc.robot.commands.States;
 
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotSubsystems;
 import frc.robot.Joysticks.ControlBoard;
@@ -12,10 +13,11 @@ public class ShootSpeakerPosition extends SequentialCommandGroup {
 
   public ShootSpeakerPosition(RobotSubsystems robot) {
     addCommands(
+        new InstantCommand(() -> RobotSubsystems.shootFinished = false),
         new GoToShootIntake(robot),
         new ShootSpeaker(robot),
-        Commands.waitUntil(mControlBoard.getShoot()),
         Commands.runOnce(() -> robot.shooter.shoot(), robot),
-        Commands.waitSeconds(1));
+        Commands.waitSeconds(1),
+        new InstantCommand(() -> RobotSubsystems.shootFinished = true));
   }
 }

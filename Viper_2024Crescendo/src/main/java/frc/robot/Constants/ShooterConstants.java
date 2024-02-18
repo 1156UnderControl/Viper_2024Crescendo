@@ -36,13 +36,14 @@ public class ShooterConstants {
     public static final double LIMIT_MIN = 0;
 
     public static final double ANGLE_SECURED = 0;
-    public static final double ANGLE_INTAKE = 46;
-    public static final double ANGLE_SHOOT_AMP = 127;
+    public static final double ANGLE_INTAKE = 41;
+    public static final double ANGLE_SHOOT_AMP = 125;
     public static final double ANGLE_SHOOT_SPEAKER = 1;
 
-    public static final double VELOCITY_SHOOT_SPEAKER = 0.8;
-    public static final double VELOCITY_SHOOT_AMP = 0.8;
-    public static final double VELOCITY_FEED_COLLECT = 1;
+    public static final double VELOCITY_SHOOT_SPEAKER = 8000;
+    public static final double VELOCITY_SHOOT_AMP = 7500;
+    public static final double VELOCITY_SHOOTER_CORRECT_PASSED_NOTE = -0.1;
+    public static final double VELOCITY_FEED_COLLECT = 0.8;
     public static final double VELOCITY_FEED_SHOOT = 0.8;
     public static final double VELOCITY_FEED_CORRECT_PASSED_NOTE = -0.1;
   }
