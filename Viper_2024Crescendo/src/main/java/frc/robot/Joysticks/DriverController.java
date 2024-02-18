@@ -25,12 +25,18 @@ public class DriverController implements IDriverController {
 
   @Override
   public double getXtranslation() {
-    return -MathUtil.applyDeadband(driverController.getLeftX(), JoystickConstants.DEADBAND);
+    if (turboActivate()) {
+      return -MathUtil.applyDeadband(driverController.getLeftX(), JoystickConstants.DEADBAND);
+    }
+    return -MathUtil.applyDeadband(driverController.getLeftX(), JoystickConstants.DEADBAND) * 0.6;
   }
 
   @Override
   public double getYtranslation() {
-    return -MathUtil.applyDeadband(driverController.getLeftY(), JoystickConstants.DEADBAND);
+    if (turboActivate()) {
+      return -MathUtil.applyDeadband(driverController.getLeftY(), JoystickConstants.DEADBAND);
+    }
+    return -MathUtil.applyDeadband(driverController.getLeftY(), JoystickConstants.DEADBAND) * 0.6;
   }
 
   @Override
@@ -50,7 +56,7 @@ public class DriverController implements IDriverController {
 
   @Override
   public boolean turboActivate() {
-    return 0.2 < driverController.getLeftTriggerAxis();
+    return 0.2 < driverController.getRightTriggerAxis();
   }
 
   @Override
