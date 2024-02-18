@@ -7,6 +7,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.util.datalog.BooleanLogEntry;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -61,6 +62,10 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   private BooleanLogEntry isAtSetpointLog = new BooleanLogEntry(DataLogManager.getLog(), "/ShooterSubsystem/IsAtSetpoint");
 
   private BooleanLogEntry hasNoteLog = new BooleanLogEntry(DataLogManager.getLog(), "/ShooterSubsystem/HasNote");
+
+  private String state = "SAFE_POSITION";
+
+  private StringLogEntry stateLog = new StringLogEntry(DataLogManager.getLog(), "/ShooterSubsystem/State");
 
   public static ShooterSubsystem getInstance() {
     if (shooterInstance == null) {
@@ -162,6 +167,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     this.goToIntakePosition();
     this.runNoteDetection();
     this.feederMotor.set(this.hasNote ? 0 : ShooterConstants.setpoints.VELOCITY_FEED_COLLECT);
+    this.state = "INTAKING";
   }
 
   private void runNoteDetection() {
@@ -196,6 +202,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   public void prepareAmpShot() {
     setVelocityFlywheel(ShooterConstants.setpoints.VELOCITY_SHOOT_AMP);
     this.goal = ShooterConstants.setpoints.ANGLE_SHOOT_AMP;
+    this.state = "PREPARING_AMP_SHOT";
   }
 
   @Override
@@ -203,6 +210,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     setVelocityFlywheel(verifyManualValue(ShooterConstants.setpoints.VELOCITY_SHOOT_SPEAKER,
         "Setpoint Vel Shooter"));
     goal = verifyManualValue(calculateGoalSpeaker(), "Setpoint Pos Shoot Pivot");
+    this.state = "PREPARING_SPEAKER_SHOT";
   }
 
   @Override
@@ -210,6 +218,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     this.feederMotor.set(ShooterConstants.setpoints.VELOCITY_FEED_SHOOT);
     this.hasNote = false;
     this.maxVelocityFeeder = 0;
+    this.state = "SHOOTING";
   }
 
   @Override
@@ -229,9 +238,9 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
       this.upperFlywheelMotor.set(0);
       this.feederMotor.set(0);
     }
-
     this.goal = ShooterConstants.setpoints.ANGLE_SECURED;
     this.maxVelocityFeeder = 0;
+    this.state = "SAFE_POSITION";
   }
 
   @Override
@@ -303,5 +312,6 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     this.pivotGoalLog.append(this.goal);
     this.isAtSetpointLog.append(this.isAtSetpoint());
     this.hasNoteLog.append(this.hasNote);
+    this.stateLog.append(this.state);
   }
 }

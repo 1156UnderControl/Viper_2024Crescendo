@@ -6,6 +6,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.util.datalog.BooleanLogEntry;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -39,6 +40,10 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
   private DoubleLogEntry pivotGoalLog = new DoubleLogEntry(DataLogManager.getLog(), "/IntakeSubsystem/PivotGoal");
 
   private BooleanLogEntry isAtSetpointLog = new BooleanLogEntry(DataLogManager.getLog(), "/IntakeSubsystem/IsAtSetpoint");
+
+  private String state = "SAFE_POSITION";
+
+  private StringLogEntry stateLog = new StringLogEntry(DataLogManager.getLog(), "/IntakeSubsystem/State");
 
   public static IntakeSubsystem getInstance() {
     if (intakeInstance == null) {
@@ -101,17 +106,20 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
   @Override
   public void goToIntakePosition() {
     this.goal = IntakeConstants.setpoints.ANGLE_INTAKE;
+    this.state = "INTAKING";
   }
 
   @Override
   public void shootingPosition() {
     this.goal = 0;
+    this.state = "SHOOTING_POSITION";
   }
 
   @Override
   public void goToSecuredPosition() {
     this.rollerMotor.set(0);
     this.goal = IntakeConstants.setpoints.ANGLE_SECURED;
+    this.state = "SAFE_POSITION";
   }
 
   @Override
@@ -134,6 +142,7 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
   @Override
   public void setManualPivotPosition(double goal) {
     this.goal = goal;
+    this.state = "MANUAL";
     this.periodic();
   }
 
@@ -156,6 +165,7 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
   private void updateLogs() {
     this.pivotGoalLog.append(this.goal);
     this.isAtSetpointLog.append(this.isAtSetpoint());
+    this.stateLog.append(this.state);
   }
 
 }

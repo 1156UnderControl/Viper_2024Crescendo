@@ -18,6 +18,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -81,6 +82,10 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   private DoubleLogEntry targetOmegaSpeedLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/TargetSpeeds/Omega");
 
+  private String state = "DRIVE_ALIGN_ANGLE_BUTTON";
+
+  private StringLogEntry stateLogEntry = new StringLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/State");
+
   public static SwerveSubsystem getInstance(File directory) {
     if (swerveInstance == null) {
       swerveInstance = new SwerveSubsystem(directory);
@@ -131,6 +136,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
           angleAlign.getDegrees());
       SmartDashboard.putString("Chassis Speed", speeds.toString());
       driveFO(speeds);
+      this.state = "DRIVE_ALIGN_ANGLE_BUTTON";
     } else {
       driveAlignAngleJoy();
     }
@@ -142,6 +148,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
         controller.getCOS_Joystick(), controller.getSIN_Joystick());
     SmartDashboard.putString("Chassis Speed", speeds.toString());
     driveFO(speeds);
+    this.state = "DRIVE_ALIGN_ANGLE_JOY";
   }
 
   @Override
@@ -162,6 +169,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
         driveAlignAngleButton();
       }
     }
+    this.state = "DRIVE_ALIGN_SPEAKER";
   }
 
   @Override
@@ -394,5 +402,6 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     this.targetXSpeedLogEntry.append(this.targetSpeeds.vxMetersPerSecond);
     this.targetYSpeedLogEntry.append(this.targetSpeeds.vyMetersPerSecond);
     this.targetOmegaSpeedLogEntry.append(this.targetSpeeds.omegaRadiansPerSecond);
+    this.stateLogEntry.append(this.state);
   }
 }
