@@ -11,9 +11,11 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
@@ -67,6 +69,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   Pose2d poseVision;
 
   Field2d aprField2d = new Field2d();
+  MedianFilter filter = new MedianFilter(3);
 
   private DoubleLogEntry poseXLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/Pose/0");
 
@@ -76,11 +79,14 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   private ChassisSpeeds targetSpeeds = new ChassisSpeeds();
 
-  private DoubleLogEntry targetXSpeedLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/TargetSpeeds/X");
+  private DoubleLogEntry targetXSpeedLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
+      "/SwerveSubsystem/TargetSpeeds/X");
 
-  private DoubleLogEntry targetYSpeedLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/TargetSpeeds/Y");
+  private DoubleLogEntry targetYSpeedLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
+      "/SwerveSubsystem/TargetSpeeds/Y");
 
-  private DoubleLogEntry targetOmegaSpeedLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/TargetSpeeds/Omega");
+  private DoubleLogEntry targetOmegaSpeedLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
+      "/SwerveSubsystem/TargetSpeeds/Omega");
 
   private String state = "DRIVE_ALIGN_ANGLE_BUTTON";
 
@@ -349,17 +355,15 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     swerveDrive.lockPose();
   }
 
-  public void addVisionReading() {
+  public void addVisionReading(Pose2d poseVision) {
 
-    // Pose2d poseVision = new Pose2d(3, 3, Rotation2d.fromDegrees(0));
-    /*
-     * poseVision = new Pose2d(
-     * new Translation2d(
-     * filter.calculate(poseVision.getX()),
-     * filter.calculate(poseVision.getY())),
-     * new Rotation2d(
-     * filter.calculate(poseVision.getRotation().getDegrees())));
-     */
+    poseVision = new Pose2d(
+        new Translation2d(
+            filter.calculate(poseVision.getX()),
+            filter.calculate(poseVision.getY())),
+        new Rotation2d(
+            filter.calculate(poseVision.getRotation().getDegrees())));
+
     if (LimelightHelpers.getTV("")) {
       swerveDrive.addVisionMeasurement(poseVision, Timer.getFPGATimestamp());
     }
