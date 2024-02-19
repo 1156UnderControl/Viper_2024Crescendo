@@ -28,6 +28,7 @@ public class ShooterConstants {
       public static final double I = 0;
       public static final double D = 0;
       public static final double F = 0.00009;
+      public static final double IZone = 1000;
     }
   }
 

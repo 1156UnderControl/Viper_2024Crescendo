@@ -57,7 +57,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private DoubleLogEntry pivotGoalLog = new DoubleLogEntry(DataLogManager.getLog(), "/ShooterSubsystem/PivotGoal");
 
-  private BooleanLogEntry isAtSetpointLog = new BooleanLogEntry(DataLogManager.getLog(), "/ShooterSubsystem/IsAtSetpoint");
+  private BooleanLogEntry isAtSetpointLog = new BooleanLogEntry(DataLogManager.getLog(),
+      "/ShooterSubsystem/IsAtSetpoint");
 
   private BooleanLogEntry hasNoteLog = new BooleanLogEntry(DataLogManager.getLog(), "/ShooterSubsystem/HasNote");
 
@@ -91,7 +92,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     flywheelMotor.configurePIDF(ShooterConstants.tunning_values_shooter.PID.P,
         ShooterConstants.tunning_values_shooter.PID.I,
         ShooterConstants.tunning_values_shooter.PID.D,
-        ShooterConstants.tunning_values_shooter.PID.F);
+        ShooterConstants.tunning_values_shooter.PID.F,
+        ShooterConstants.tunning_values_shooter.PID.IZone);
   }
 
   private void configureFeederMotor() {
