@@ -17,6 +17,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.util.datalog.DoubleArrayLogEntry;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -430,9 +431,8 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   private void updateLogs() {
     Pose2d currentPose = this.swerveDrive.getPose();
-    this.poseXLogEntry.append(currentPose.getX());
-    this.poseYLogEntry.append(currentPose.getY());
-    this.poseRotationLogEntry.append(currentPose.getRotation().getRadians());
+    double[] poseArray = { currentPose.getX(), currentPose.getY(), currentPose.getRotation().getRadians() };
+    this.poseLogEntry.append(poseArray);
     this.targetXSpeedLogEntry.append(this.targetSpeeds.vxMetersPerSecond);
     this.targetYSpeedLogEntry.append(this.targetSpeeds.vyMetersPerSecond);
     this.targetOmegaSpeedLogEntry.append(this.targetSpeeds.omegaRadiansPerSecond);

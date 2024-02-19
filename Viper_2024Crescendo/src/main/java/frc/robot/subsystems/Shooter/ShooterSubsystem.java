@@ -24,8 +24,6 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private static ShooterSubsystem shooterInstance = null;
 
-  private double maxVelocityFeeder;
-
   private boolean hasNote;
 
   private boolean manualValues;
@@ -156,7 +154,6 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     SmartDashboard.putNumber("Velocity ShooterDown", this.lowerFlywheelMotor.getVelocity());
     SmartDashboard.putNumber("Setpoint Shooter", this.pivotCurrentSetpoint.position);
     SmartDashboard.putNumber("Velocity Feeder", this.feederMotor.getVelocity());
-    SmartDashboard.putNumber("Max Velocity Feeder", this.maxVelocityFeeder);
     SmartDashboard.putNumber("Output Shooter Flywheel", this.upperFlywheelMotor.getAppliedOutput());
     SmartDashboard.putBoolean("hasNote", this.hasNote);
     SmartDashboard.putBoolean("Shooter At Setpoint", this.isAtSetpoint());
@@ -171,20 +168,13 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   }
 
   private void runNoteDetection() {
-    double velocityFeeder = this.feederMotor.getVelocity();
-    if (velocityFeeder > this.maxVelocityFeeder) {
-      this.maxVelocityFeeder = velocityFeeder;
-    }
     if (noteSensor.getBoolean()) {
-      if (velocityFeeder < this.maxVelocityFeeder - 200) {
-        hasNote = true;
-      }
+      hasNote = true;
     }
   }
 
   @Override
   public void stopIntaking() {
-    this.maxVelocityFeeder = 0;
     this.feederMotor.set(0);
   }
 
@@ -217,7 +207,6 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   public void shoot() {
     this.feederMotor.set(ShooterConstants.setpoints.VELOCITY_FEED_SHOOT);
     this.hasNote = false;
-    this.maxVelocityFeeder = 0;
     this.state = "SHOOTING";
   }
 
@@ -239,7 +228,6 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
       this.feederMotor.set(0);
     }
     this.goal = ShooterConstants.setpoints.ANGLE_SECURED;
-    this.maxVelocityFeeder = 0;
     this.state = "SAFE_POSITION";
   }
 
