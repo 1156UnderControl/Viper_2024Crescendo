@@ -47,7 +47,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   private ControlBoard controller = ControlBoard.getInstance();
 
-  public boolean notUsingLLforOdometry;
+  public boolean notUsingLLforOdometry = false;
 
   private int lostFramesCounter = 0;
 
@@ -125,9 +125,9 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     SmartDashboard.putNumber("Heading Odometry", swerveDrive.getOdometryHeading().getDegrees());
     SmartDashboard.putNumber("Distance LL", Limelight.getDistance());
     if (!notUsingLLforOdometry) {
-      LimelightHelpers.setPipelineIndex("", 1);
-      // poseVision = LimelightHelpers.getBotPose2d_wpiBlue("");
-      // aprField2d.setRobotPose(poseVision);
+      LimelightHelpers.setPipelineIndex("", 0);
+      poseVision = LimelightHelpers.getBotPose2d_wpiBlue("");
+      aprField2d.setRobotPose(poseVision);
     } else {
       LimelightHelpers.setPipelineIndex("", 1);
     }
@@ -136,7 +136,6 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   @Override
   public void driveAlignAngleButton() {
-    notUsingLLforOdometry = false;
     if (controller.notUsingJoystick()) {
       ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(),
           angleAlign.getDegrees());
@@ -159,7 +158,6 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   @Override
   public void driveAlignSpeaker() {
-    notUsingLLforOdometry = true;
     boolean isDetectingAprilTag = LimelightHelpers.getTV("");
     if (isDetectingAprilTag) {
       this.lostFramesCounter = 0;
@@ -185,7 +183,6 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   @Override
   public void lockSwerve() {
-
   }
 
   private void setupGyroToAlliance() {
@@ -293,7 +290,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   }
 
   private ChassisSpeeds getTargetSpeedsAngle(double xInput, double yInput, double angle) {
-    if (DriverStation.getAlliance().get() == Alliance.Blue) {
+    if (DriverStation.getAlliance().get() == Alliance.Red) {
       xInput = -xInput;
       yInput = -yInput;
     }
