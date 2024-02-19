@@ -393,7 +393,8 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   private void updateLogs() {
     Pose2d currentPose = this.swerveDrive.getPose();
-    this.poseLogEntry.append([currentPose.getX(), currentPose.getY(), currentPose.getRotation().getRadians()]);
+    double[] poseArray = { currentPose.getX(), currentPose.getY(), currentPose.getRotation().getRadians() };
+    this.poseLogEntry.append(poseArray);
     this.targetXSpeedLogEntry.append(this.targetSpeeds.vxMetersPerSecond);
     this.targetYSpeedLogEntry.append(this.targetSpeeds.vyMetersPerSecond);
     this.targetOmegaSpeedLogEntry.append(this.targetSpeeds.omegaRadiansPerSecond);
