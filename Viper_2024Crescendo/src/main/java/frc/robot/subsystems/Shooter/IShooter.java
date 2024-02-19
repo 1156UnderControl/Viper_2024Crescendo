@@ -17,6 +17,8 @@ public interface IShooter {
 
   void shoot();
 
+  void cruise();
+
   boolean hasShooted();
 
   boolean isSecureForIntake();
