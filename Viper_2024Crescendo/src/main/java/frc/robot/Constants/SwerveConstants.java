@@ -6,7 +6,7 @@ import swervelib.math.Matter;
 import swervelib.math.SwerveMath;
 
 public class SwerveConstants {
-  public static final double MAX_VEL = Units.feetToMeters(14.5);
+  public static final double MAX_VEL = 5.2;
 
   public static final double DriveConversionFactor = SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(4),
       6.12, 1);
