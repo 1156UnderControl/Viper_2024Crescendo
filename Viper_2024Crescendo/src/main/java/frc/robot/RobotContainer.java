@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Joysticks.ControlBoard;
 import frc.robot.commands.States.CollectPosition;
 import frc.robot.commands.States.SecuredPosition;
@@ -72,7 +71,6 @@ public class RobotContainer {
     mControlBoard.setHeadingBack().onTrue(new InstantCommand(swerve::setAngle180));
     mControlBoard.setHeadingLeft().onTrue(new InstantCommand(swerve::setAngle90));
     mControlBoard.setHeadingRight().onTrue(new InstantCommand(swerve::setAngleNeg90));
-    new JoystickButton(driverXbox, 5).onTrue(new InstantCommand(swerve::setAngle45));
 
     mControlBoard.getIntake().onTrue(new CollectPosition(robot));
     mControlBoard.getSecured().onTrue(new SecuredPosition(robot));
