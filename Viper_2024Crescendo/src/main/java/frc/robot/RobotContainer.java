@@ -26,6 +26,7 @@ import frc.robot.commands.States.ShootAmpPosition;
 import frc.robot.commands.States.ShootSpeakerPosition;
 import frc.robot.commands.Swerve.SwerveAlignSpeaker;
 import frc.robot.commands.Swerve.SwerveTeleopControl;
+import frc.robot.subsystems.LEDs.LedSubsystem;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
 /**
@@ -40,6 +41,7 @@ public class RobotContainer {
 
   private final SwerveSubsystem swerve;
   public final RobotSubsystems robot = new RobotSubsystems();
+  public final LedSubsystem led = new LedSubsystem();
 
   private final SendableChooser<Command> autoChooser;
 
