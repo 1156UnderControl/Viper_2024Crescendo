@@ -13,7 +13,6 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
@@ -73,11 +72,14 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   private ChassisSpeeds targetSpeeds = new ChassisSpeeds();
 
-  private DoubleLogEntry targetXSpeedLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/TargetSpeeds/X");
+  private DoubleLogEntry targetXSpeedLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
+      "/SwerveSubsystem/TargetSpeeds/X");
 
-  private DoubleLogEntry targetYSpeedLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/TargetSpeeds/Y");
+  private DoubleLogEntry targetYSpeedLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
+      "/SwerveSubsystem/TargetSpeeds/Y");
 
-  private DoubleLogEntry targetOmegaSpeedLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/TargetSpeeds/Omega");
+  private DoubleLogEntry targetOmegaSpeedLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
+      "/SwerveSubsystem/TargetSpeeds/Omega");
 
   private String state = "DRIVE_ALIGN_ANGLE_BUTTON";
 
@@ -177,14 +179,6 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   @Override
   public void lockSwerve() {
 
-  }
-
-  private void setupGyroToAlliance() {
-    if (DriverStation.getAlliance().get() == Alliance.Red) {
-      swerveDrive.setGyro(new Rotation3d(0, 0, Units.degreesToRadians(180)));
-    } else {
-      swerveDrive.setGyro(new Rotation3d(0, 0, Units.degreesToRadians(0)));
-    }
   }
 
   private void setupYAGSL_JSON(File directory) {
