@@ -18,6 +18,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.util.datalog.DoubleArrayLogEntry;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -73,12 +74,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   Field2d aprField2d = new Field2d();
 
-  private DoubleLogEntry poseXLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/Pose/X");
-
-  private DoubleLogEntry poseYLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/Pose/Y");
-
-  private DoubleLogEntry poseRotationLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
-      "/SwerveSubsystem/Pose/Rotation");
+  private DoubleArrayLogEntry poseLogEntry = new DoubleArrayLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/Pose");
 
   private ChassisSpeeds targetSpeeds = new ChassisSpeeds();
 
@@ -193,7 +189,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
       this.lostFramesCounter++;
       if (this.lostFramesCounter <= this.MAX_LOST_SPEAKER_FRAMES) {
         ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
-        driveOmegaPIDfo(speeds, 0, this.lastTxMeasurement, this.pidTrackApril, false);
+        driveOmegaPIDfo(speeds, 0, this.lastTxMeasurement, this.pidTrackNote, false);
       } else {
         driveAlignAngleButton();
       }
@@ -456,7 +452,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   private void updateLogs() {
     Pose2d currentPose = this.swerveDrive.getPose();
     double[] poseArray = { currentPose.getX(), currentPose.getY(), currentPose.getRotation().getRadians() };
-    // this.poseLogEntry.append(poseArray);
+    this.poseLogEntry.append(poseArray);
     this.targetXSpeedLogEntry.append(this.targetSpeeds.vxMetersPerSecond);
     this.targetYSpeedLogEntry.append(this.targetSpeeds.vyMetersPerSecond);
     this.targetOmegaSpeedLogEntry.append(this.targetSpeeds.omegaRadiansPerSecond);
