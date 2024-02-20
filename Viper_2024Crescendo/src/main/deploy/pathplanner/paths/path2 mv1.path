@@ -3,35 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.496814123442796,
-        "y": 5.539225686154654
+        "x": 2.2391757194356026,
+        "y": 4.19247948338978
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.7473205845127793,
-        "y": 5.609490705429342
+        "x": 3.468813556742661,
+        "y": 4.157346973752435
       },
       "isLocked": false,
       "linkedName": "end path1 mv1"
     },
     {
       "anchor": {
-        "x": 2.496814123442796,
-        "y": 4.087081954477746
+        "x": 2.5436574696259218,
+        "y": 5.527514849608872
       },
       "prevControl": {
-        "x": 1.496814123442796,
-        "y": 4.087081954477746
+        "x": 1.1149354110405778,
+        "y": 5.527514849608872
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "end path2 mv1"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.4,
-      "rotationDegrees": -26.31385185113218,
+      "waypointRelativePos": 0.55,
+      "rotationDegrees": -5.77516836962204,
       "rotateFast": false
     }
   ],
@@ -50,12 +50,48 @@
   ],
   "eventMarkers": [
     {
-      "name": "shoot intake",
-      "waypointRelativePos": 0.35,
+      "name": "Shoot intake aim",
+      "waypointRelativePos": 0.5,
       "command": {
         "type": "sequential",
         "data": {
-          "commands": []
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Shoot"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Intake aim",
+      "waypointRelativePos": 0.0,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Aim Shoot 2"
+              }
+            }
+          ]
         }
       }
     }
@@ -67,15 +103,15 @@
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 0,
+    "velocity": 0.5,
+    "rotation": 9.782407031807283,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "Auto MAX VERSTAPPEN v1",
   "previewStartingState": {
-    "rotation": 0,
-    "velocity": 0.5
+    "rotation": -30.96375653207344,
+    "velocity": 0.0
   },
   "useDefaultConstraints": true
 }

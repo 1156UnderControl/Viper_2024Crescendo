@@ -14,10 +14,12 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Joysticks.ControlBoard;
+import frc.robot.commands.Autonomous.AutonomousAim;
+import frc.robot.commands.Autonomous.AutonomousCollect;
+import frc.robot.commands.Autonomous.AutonomousShoot;
 import frc.robot.commands.States.CollectPosition;
 import frc.robot.commands.States.SecuredPosition;
 import frc.robot.commands.States.ShootAmpPosition;
@@ -50,14 +52,17 @@ public class RobotContainer {
   public RobotContainer() {
     this.swerve = SwerveSubsystem.getInstance(new File(Filesystem.getDeployDirectory(),
         "swerve/swerve"));
-    NamedCommands.registerCommand("Shoot", new PrintCommand("SHOOT"));
-    NamedCommands.registerCommand("Intake", new PrintCommand("INTAKING"));
+    NamedCommands.registerCommand("Intake", new AutonomousCollect(robot));
 
+    NamedCommands.registerCommand("Shoot", new AutonomousShoot(robot).andThen(Commands.waitSeconds(0.1)));
+    NamedCommands.registerCommand("Aim Shoot 1", new AutonomousAim(robot, 0));
+    NamedCommands.registerCommand("Aim Shoot 2", new AutonomousAim(robot, 1));
+    NamedCommands.registerCommand("Aim Shoot 3", new AutonomousAim(robot, 2));
+    NamedCommands.registerCommand("Aim Shoot 4", new AutonomousAim(robot, 3));
     autoChooser = AutoBuilder.buildAutoChooser("New Auto");
     SmartDashboard.putData("Aut Chooser", autoChooser);
 
     configureBindings();
-    robot.setDefaultCommand(new SecuredPosition(robot));
 
     swerve.setDefaultCommand(new SwerveTeleopControl(swerve));
 
@@ -68,8 +73,6 @@ public class RobotContainer {
     mControlBoard.setHeadingBack().onTrue(new InstantCommand(swerve::setAngle180));
     mControlBoard.setHeadingLeft().onTrue(new InstantCommand(swerve::setAngle90));
     mControlBoard.setHeadingRight().onTrue(new InstantCommand(swerve::setAngleNeg90));
-    new JoystickButton(driverXbox, 5).onTrue(new InstantCommand(swerve::setAngle45));
-
     mControlBoard.getIntake().onTrue(new CollectPosition(robot));
     mControlBoard.getSecured().onTrue(new SecuredPosition(robot));
     mControlBoard.getSecured().onTrue(new SwerveTeleopControl(swerve));
