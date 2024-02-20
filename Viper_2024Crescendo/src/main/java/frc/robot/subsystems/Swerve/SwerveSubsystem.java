@@ -17,6 +17,10 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.util.datalog.DoubleArrayLogEntry;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.util.datalog.StringLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
@@ -50,7 +54,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   private double lastTxMeasurement;
 
-  private static SwerveSubsystem mInstance = null;
+  private static SwerveSubsystem swerveInstance = null;
 
   private double headingDegrees;
 
@@ -65,27 +69,41 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   Field2d aprField2d = new Field2d();
 
-  public static SwerveSubsystem getInstance(File directory) {
-    if (mInstance == null) {
-      mInstance = new SwerveSubsystem(directory);
-    }
+  private DoubleArrayLogEntry poseLogEntry = new DoubleArrayLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/Pose");
 
-    return mInstance;
+  private ChassisSpeeds targetSpeeds = new ChassisSpeeds();
+
+  private DoubleLogEntry targetXSpeedLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/TargetSpeeds/X");
+
+  private DoubleLogEntry targetYSpeedLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/TargetSpeeds/Y");
+
+  private DoubleLogEntry targetOmegaSpeedLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/TargetSpeeds/Omega");
+
+  private String state = "DRIVE_ALIGN_ANGLE_BUTTON";
+
+  private StringLogEntry stateLogEntry = new StringLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/State");
+
+  public static SwerveSubsystem getInstance(File directory) {
+    if (swerveInstance == null) {
+      swerveInstance = new SwerveSubsystem(directory);
+    }
+    return swerveInstance;
   }
 
   public static SwerveSubsystem getInstance() {
-    if (mInstance == null) {
+    if (swerveInstance == null) {
       DriverStation.reportError("YAGSL Configuration not provided", true);
     }
-    return mInstance;
+    return swerveInstance;
   }
 
   private SwerveSubsystem(File directory) {
     SmartDashboard.putData("POSE APRIL", aprField2d);
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     setupYAGSL_JSON(directory);
-    setupGyroToAlliance();
+    // setupGyroToAlliance();
     setupPathPlanner();
+    this.updateLogs();
   }
 
   @Override
@@ -104,6 +122,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     } else {
       LimelightHelpers.setPipelineIndex("", 1);
     }
+    this.updateLogs();
   }
 
   @Override
@@ -114,6 +133,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
           angleAlign.getDegrees());
       SmartDashboard.putString("Chassis Speed", speeds.toString());
       driveFO(speeds);
+      this.state = "DRIVE_ALIGN_ANGLE_BUTTON";
     } else {
       driveAlignAngleJoy();
     }
@@ -125,6 +145,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
         controller.getCOS_Joystick(), controller.getSIN_Joystick());
     SmartDashboard.putString("Chassis Speed", speeds.toString());
     driveFO(speeds);
+    this.state = "DRIVE_ALIGN_ANGLE_JOY";
   }
 
   @Override
@@ -145,6 +166,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
         driveAlignAngleButton();
       }
     }
+    this.state = "DRIVE_ALIGN_SPEAKER";
   }
 
   @Override
@@ -210,6 +232,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   private void driveFO(ChassisSpeeds speeds) {
     swerveDrive.driveFieldOriented(speeds);
+    this.targetSpeeds = speeds;
   }
 
   private void driveOmegaPIDfo(ChassisSpeeds speeds, double setpoint, double measurement, PIDController pid,
@@ -218,6 +241,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
         invertOmega ? -pid.calculate(measurement, setpoint) : pid.calculate(measurement, setpoint));
     SmartDashboard.putNumber("Omega PID", speedsPID.omegaRadiansPerSecond);
     swerveDrive.driveFieldOriented(speedsPID);
+    this.targetSpeeds = speedsPID;
   }
 
   public SwerveDriveKinematics getKinematics() {
@@ -240,6 +264,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     chassisSpeeds = new ChassisSpeeds(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond,
         chassisSpeeds.omegaRadiansPerSecond);
     swerveDrive.setChassisSpeeds(chassisSpeeds);
+    this.targetSpeeds = chassisSpeeds;
   }
 
   public void zeroGyro() {
@@ -364,5 +389,15 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   public void setAngle45() {
     angleAlign = new Rotation2d(Units.degreesToRadians(45));
+  }
+
+  private void updateLogs() {
+    Pose2d currentPose = this.swerveDrive.getPose();
+    double[] poseArray = { currentPose.getX(), currentPose.getY(), currentPose.getRotation().getRadians() };
+    this.poseLogEntry.append(poseArray);
+    this.targetXSpeedLogEntry.append(this.targetSpeeds.vxMetersPerSecond);
+    this.targetYSpeedLogEntry.append(this.targetSpeeds.vyMetersPerSecond);
+    this.targetOmegaSpeedLogEntry.append(this.targetSpeeds.omegaRadiansPerSecond);
+    this.stateLogEntry.append(this.state);
   }
 }

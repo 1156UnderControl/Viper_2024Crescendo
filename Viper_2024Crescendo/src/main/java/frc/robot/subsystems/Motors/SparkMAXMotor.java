@@ -11,20 +11,73 @@ import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 
+import edu.wpi.first.util.datalog.BooleanLogEntry;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.util.datalog.IntegerLogEntry;
+import edu.wpi.first.util.datalog.StringLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class SparkMAXMotor implements Motor {
-  CANSparkMax motor;
+  private CANSparkMax motor;
 
-  SparkPIDController pid;
+  private SparkPIDController pid;
 
-  RelativeEncoder encoder;
+  private RelativeEncoder encoder;
 
   private Supplier<Double> velocity;
 
   private Supplier<Double> position;
 
-  boolean factoryDefaultOcurred = false;
+  private boolean factoryDefaultOcurred = false;
+
+  private DoubleLogEntry appliedOutputLog;
+
+  private DoubleLogEntry targetOutputLog;
+
+  private DoubleLogEntry currentLog;
+
+  private DoubleLogEntry positionLog;
+
+  private DoubleLogEntry velocityLog;
+
+  private DoubleLogEntry temperatureLog;
+
+  private IntegerLogEntry faultsLog;
+
+  private DoubleLogEntry targetPositionLog;
+  
+  private DoubleLogEntry targetSpeedLog;
+
+  private double targetPercentage = Double.NaN;
+
+  private double targetPosition = Double.NaN;
+  
+  private double targetSpeed = Double.NaN;
+
+  private double pidP = Double.NaN;
+
+  private double pidI = Double.NaN;
+
+  private double pidD = Double.NaN;
+
+  private double pidF = Double.NaN;
+
+  private double pidIZone = Double.NaN;
+
+  private double wrappingMinInput = Double.NaN;
+
+  private double wrappingMaxInput = Double.NaN;
+
+  private double encoderPositionFactor = Double.NaN;
+
+  private double encoderVelocityFactor = Double.NaN;
+
+  private double nominalVoltage = Double.NaN;
+
+  private double currentLimit = Double.NaN;
+
+  private double rampRate = Double.NaN;
 
   public SparkMAXMotor(int motorId) {
     this(motorId, false);
@@ -33,13 +86,14 @@ public class SparkMAXMotor implements Motor {
   public SparkMAXMotor(int motorID, boolean usingAlternateEncoder) {
     this.motor = new CANSparkMax(motorID, MotorType.kBrushless);
     this.pid = motor.getPIDController();
-
-    factoryDefault();
-    clearStickyFaults();
-    setCurrentLimit(80);
-    setupMotorPid(usingAlternateEncoder);
-    velocity = encoder::getVelocity;
-    position = encoder::getPosition;
+    this.factoryDefault();
+    this.clearStickyFaults();
+    this.setCurrentLimit(80);
+    this.setupMotorPid(usingAlternateEncoder);
+    this.setupLogs(motorID, usingAlternateEncoder);
+    this.updateLogs();
+    velocity = this.encoder::getVelocity;
+    position = this.encoder::getPosition;
   }
 
   private void configureSparkMax(Supplier<REVLibError> config) {
@@ -58,10 +112,42 @@ public class SparkMAXMotor implements Motor {
 
   private void setAlternateEncoder(boolean usingAlternateEncoder) {
     if (usingAlternateEncoder) {
-      encoder = motor.getAlternateEncoder(8192);
+      this.encoder = motor.getAlternateEncoder(8192);
     } else {
-      encoder = motor.getEncoder();
+      this.encoder = motor.getEncoder();
     }
+  }
+
+  private void setupLogs(int motorId, boolean isAlternateEncoder) {
+    this.appliedOutputLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/appliedOutput");
+    this.targetOutputLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/targetOutput");
+    this.currentLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/current");
+    this.positionLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/position");
+    this.velocityLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/velocity");
+    this.temperatureLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/temperature");
+    this.faultsLog = new IntegerLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/faults");
+    this.targetPositionLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/targetPosition");
+    this.targetSpeedLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/targetSpeed");
+    StringLogEntry firmwareVersionLog = new StringLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/firmwareVersion");
+    firmwareVersionLog.append(this.motor.getFirmwareString());
+    BooleanLogEntry isAlternateEncoderLog = new BooleanLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/isAlternateEncoder");
+    isAlternateEncoderLog.append(isAlternateEncoder);
+    BooleanLogEntry isFollowerLog = new BooleanLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/isFollower");
+    isFollowerLog.append(this.motor.isFollower());
+    BooleanLogEntry isInvertedLog = new BooleanLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/isInverted");
+    isInvertedLog.append(this.motor.getInverted());
+  }
+
+  private void updateLogs() {
+    this.appliedOutputLog.append(this.motor.getAppliedOutput());
+    this.targetOutputLog.append(this.targetPercentage);
+    this.currentLog.append(this.motor.getOutputCurrent());
+    this.positionLog.append(this.encoder.getPosition());
+    this.velocityLog.append(this.encoder.getVelocity());
+    this.temperatureLog.append(this.motor.getMotorTemperature());
+    this.faultsLog.append(this.motor.getFaults());
+    this.targetPositionLog.append(this.targetPosition);
+    this.targetSpeedLog.append(this.targetSpeed);
   }
 
   /*
@@ -91,18 +177,27 @@ public class SparkMAXMotor implements Motor {
 
   @Override
   public void setVoltageCompensation(double nominalVoltage) {
-    configureSparkMax(() -> motor.enableVoltageCompensation(nominalVoltage));
+    if (nominalVoltage != this.nominalVoltage){
+      configureSparkMax(() -> motor.enableVoltageCompensation(nominalVoltage));
+    }
+    this.nominalVoltage = nominalVoltage;
   }
 
   @Override
   public void setCurrentLimit(int currentLimit) {
-    configureSparkMax(() -> motor.setSmartCurrentLimit(currentLimit));
+    if (currentLimit != this.currentLimit){
+      configureSparkMax(() -> motor.setSmartCurrentLimit(currentLimit));
+    }
+    this.currentLimit = currentLimit;
   }
 
   @Override
   public void setLoopRampRate(double rampRate) {
-    configureSparkMax(() -> motor.setClosedLoopRampRate(rampRate));
-    configureSparkMax(() -> motor.setOpenLoopRampRate(rampRate));
+    if (rampRate != this.rampRate){
+      configureSparkMax(() -> motor.setClosedLoopRampRate(rampRate));
+      configureSparkMax(() -> motor.setOpenLoopRampRate(rampRate));
+    }
+    this.rampRate = rampRate;
   }
 
   @Override
@@ -115,7 +210,6 @@ public class SparkMAXMotor implements Motor {
     if (!factoryDefaultOcurred) {
       configureSparkMax(motor::restoreFactoryDefaults);
     }
-
     factoryDefaultOcurred = true;
   }
 
@@ -126,36 +220,58 @@ public class SparkMAXMotor implements Motor {
 
   @Override
   public void setPositionFactor(double factor) {
-    configureSparkMax(() -> encoder.setPositionConversionFactor(factor));
+    if (factor != this.encoderPositionFactor){
+      configureSparkMax(() -> encoder.setPositionConversionFactor(factor));
+    }
+    this.encoderPositionFactor = factor;
   }
 
   @Override
   public void setVelocityFactor(double factor) {
-    configureSparkMax(() -> encoder.setVelocityConversionFactor(factor));
+    if (factor != this.encoderVelocityFactor){
+      configureSparkMax(() -> encoder.setVelocityConversionFactor(factor));
+    }
+    this.encoderVelocityFactor = factor;
   }
 
   @Override
-  public void configurePIDF(double P, double I, double D, double F, double Izone) {
-    configureSparkMax(() -> pid.setP(P, 0));
-    configureSparkMax(() -> pid.setI(I, 0));
-    configureSparkMax(() -> pid.setD(D, 0));
-    configureSparkMax(() -> pid.setFF(F, 0));
-    configureSparkMax(() -> pid.setIZone(Izone, 0));
+  public void configurePIDF(double p, double i, double d, double f, double iZone) {
+    this.configurePIDF(p, i, d, f);
+    if (iZone != this.pidIZone) {
+      configureSparkMax(() -> pid.setIZone(iZone, 0));
+    }
+    this.pidIZone = iZone;
   }
 
   @Override
-  public void configurePIDF(double P, double I, double D, double F) {
-    configureSparkMax(() -> pid.setP(P, 0));
-    configureSparkMax(() -> pid.setI(I, 0));
-    configureSparkMax(() -> pid.setD(D, 0));
-    configureSparkMax(() -> pid.setFF(F, 0));
+  public void configurePIDF(double p, double i, double d, double f) {
+    if (p != this.pidP){
+      configureSparkMax(() -> pid.setP(p, 0));
+    }
+    if (i != this.pidI){
+      configureSparkMax(() -> pid.setI(i, 0));
+    }
+    if (d != this.pidD){
+      configureSparkMax(() -> pid.setD(d, 0));
+    }
+    if (f != this.pidF){
+      configureSparkMax(() -> pid.setFF(f, 0));
+    }
+    this.pidP = p;
+    this.pidI = i;
+    this.pidD = d;
+    this.pidF = f;
   }
 
   @Override
   public void configurePIDWrapping(double minInput, double maxInput) {
-    configureSparkMax(() -> pid.setPositionPIDWrappingEnabled(true));
-    configureSparkMax(() -> pid.setPositionPIDWrappingMaxInput(maxInput));
-    configureSparkMax(() -> pid.setPositionPIDWrappingMinInput(minInput));
+    if (minInput != this.wrappingMinInput || maxInput != this.wrappingMaxInput){
+      configureSparkMax(() -> pid.setPositionPIDWrappingEnabled(true));
+      configureSparkMax(() -> pid.setPositionPIDWrappingMaxInput(maxInput));
+      configureSparkMax(() -> pid.setPositionPIDWrappingMinInput(minInput));
+    }
+    this.wrappingMinInput = minInput;
+    this.wrappingMaxInput = maxInput;
   }
 
   @Override
@@ -184,22 +300,46 @@ public class SparkMAXMotor implements Motor {
 
   @Override
   public void set(double percentOutput) {
-    motor.set(percentOutput);
+    if (percentOutput != this.targetPercentage) {
+      this.motor.set(percentOutput);
+    }
+    this.targetPercentage = percentOutput;
+    this.targetPosition = Double.NaN;
+    this.targetSpeed = Double.NaN;
+    this.updateLogs();
   }
 
   @Override
   public void setPositionReference(double position) {
-    configureSparkMax(() -> pid.setReference(position, ControlType.kPosition, 0));
+    if (position != this.targetPosition) {
+      configureSparkMax(() -> pid.setReference(position, ControlType.kPosition, 0));
+    }
+    this.targetPercentage = Double.NaN;
+    this.targetPosition = position;
+    this.targetSpeed = Double.NaN;
+    this.updateLogs();
   }
 
   @Override
   public void setPositionReferenceArbFF(double position, double feedforward) {
-    configureSparkMax(() -> pid.setReference(position, ControlType.kPosition, 0, feedforward));
+    if (position != this.targetPosition) {
+      configureSparkMax(() -> pid.setReference(position, ControlType.kPosition, 0, feedforward));
+    }
+    this.targetPercentage = Double.NaN;
+    this.targetPosition = position;
+    this.targetSpeed = Double.NaN;
+    this.updateLogs();
   }
 
   @Override
   public void setVelocityReference(double velocity, double feedforward) {
-    configureSparkMax(() -> pid.setReference(velocity, ControlType.kPosition, 0, feedforward));
+    if (velocity != this.targetSpeed) {
+      configureSparkMax(() -> pid.setReference(velocity, ControlType.kVelocity, 0, feedforward));
+    }
+    this.targetPercentage = Double.NaN;
+    this.targetPosition = Double.NaN;
+    this.targetSpeed = velocity;
+    this.updateLogs();
   }
 
   @Override
@@ -229,6 +369,9 @@ public class SparkMAXMotor implements Motor {
 
   @Override
   public void setPosition(double position) {
+    // Here it should not have a check comparing to the previous
+    // call because the encoder could have moved, so calling setPosition
+    // twice with the same value could be a valid use case.
     configureSparkMax(() -> encoder.setPosition(position));
   }
 
