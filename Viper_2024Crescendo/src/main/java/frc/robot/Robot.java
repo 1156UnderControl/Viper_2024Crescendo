@@ -115,6 +115,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    SwerveConstants.ACELL_CORREC = false;
 
     m_robotContainer.robot.setDefaultCommand(new AutonomousCollect(m_robotContainer.robot));
 
@@ -139,6 +140,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    SwerveConstants.ACELL_CORREC = true;
     m_robotContainer.robot.setDefaultCommand(new SecuredPosition(m_robotContainer.robot));
     isInAutonomous = false;
     m_robotContainer.setHeadingCorrection(true);
