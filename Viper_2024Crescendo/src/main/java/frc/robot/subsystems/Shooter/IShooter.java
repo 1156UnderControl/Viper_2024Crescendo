@@ -3,6 +3,8 @@ package frc.robot.subsystems.Shooter;
 public interface IShooter {
   void intake();
 
+  void intakeAuto();
+
   void stopIntaking();
 
   void goToIntakePosition();
