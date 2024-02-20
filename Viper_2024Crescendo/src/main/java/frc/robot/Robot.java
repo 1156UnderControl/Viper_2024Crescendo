@@ -103,10 +103,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    if (disabledTimer.hasElapsed(SwerveConstants.WHEEL_LOCK_TIME)) {
-      m_robotContainer.setMotorBrake(false);
-      disabledTimer.stop();
-    }
+    m_robotContainer.led.rainboww();
   }
 
   /**
@@ -120,7 +117,7 @@ public class Robot extends TimedRobot {
     m_robotContainer.robot.setDefaultCommand(new AutonomousCollect(m_robotContainer.robot));
 
     isInAutonomous = true;
-    m_robotContainer.setHeadingCorrection(false);
+    m_robotContainer.setHeadingCorrection(true);
     m_robotContainer.setMotorBrake(true);
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 

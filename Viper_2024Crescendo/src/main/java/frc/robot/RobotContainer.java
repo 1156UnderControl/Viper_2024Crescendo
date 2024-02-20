@@ -18,8 +18,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Joysticks.ControlBoard;
 import frc.robot.commands.Autonomous.AutonomousAim;
+import frc.robot.commands.Autonomous.AutonomousAimSubwoofer;
 import frc.robot.commands.Autonomous.AutonomousCollect;
 import frc.robot.commands.Autonomous.AutonomousShoot;
+import frc.robot.commands.Autonomous.AutonomousVisionUpdate;
 import frc.robot.commands.States.CollectPosition;
 import frc.robot.commands.States.SecuredPosition;
 import frc.robot.commands.States.ShootAmpPosition;
@@ -48,15 +50,14 @@ public class RobotContainer {
   XboxController driverXbox = new XboxController(0);
   public ControlBoard mControlBoard = ControlBoard.getInstance();
 
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
   public RobotContainer() {
     this.swerve = SwerveSubsystem.getInstance(new File(Filesystem.getDeployDirectory(),
         "swerve/swerve"));
+    this.led.rainboww();
+    NamedCommands.registerCommand("Vision Update", new AutonomousVisionUpdate(swerve));
     NamedCommands.registerCommand("Intake", new AutonomousCollect(robot));
-
     NamedCommands.registerCommand("Shoot", new AutonomousShoot(robot).andThen(Commands.waitSeconds(0.1)));
+    NamedCommands.registerCommand("Aim Shoot Subwoofer", new AutonomousAimSubwoofer(robot));
     NamedCommands.registerCommand("Aim Shoot 1", new AutonomousAim(robot, 0));
     NamedCommands.registerCommand("Aim Shoot 2", new AutonomousAim(robot, 1));
     NamedCommands.registerCommand("Aim Shoot 3", new AutonomousAim(robot, 2));

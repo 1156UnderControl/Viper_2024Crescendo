@@ -25,7 +25,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "end path3 mv3"
     }
   ],
   "rotationTargets": [
@@ -91,20 +91,20 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 5.2,
+    "maxVelocity": 4.0,
     "maxAcceleration": 5.0,
-    "maxAngularVelocity": 540.0,
+    "maxAngularVelocity": 200.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 27.349875780069752,
+    "velocity": 0.5,
+    "rotation": 27.35,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "Auto MAX VERSTAPPEN v1",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 27.35,
     "velocity": 0.5
   },
   "useDefaultConstraints": true
