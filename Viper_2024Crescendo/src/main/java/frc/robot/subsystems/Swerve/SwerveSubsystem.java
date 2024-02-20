@@ -120,7 +120,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     SmartDashboard.putNumber("Heading Radians", headingRadians);
     SmartDashboard.putNumber("Heading Odometry", swerveDrive.getOdometryHeading().getDegrees());
     SmartDashboard.putNumber("Distance LL", Limelight.getDistance());
-    if (!notUsingLLforOdometry) {
+    if (!Limelight.notUsingLLforOdometry) {
       LimelightHelpers.setPipelineIndex("", 0);
       poseVision = LimelightHelpers.getBotPose2d_wpiBlue("");
       aprField2d.setRobotPose(poseVision);
@@ -154,6 +154,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   @Override
   public void driveAlignSpeaker() {
+    swerveDrive.getFieldVelocity();
     boolean isDetectingAprilTag = LimelightHelpers.getTV("");
     if (isDetectingAprilTag) {
       this.lostFramesCounter = 0;
@@ -340,9 +341,9 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     swerveDrive.lockPose();
   }
 
-  public void addVisionReading(Pose2d poseVision) {
-
-    poseVision = new Pose2d(
+  public void addVisionReading() {
+    Limelight.notUsingLLforOdometry = false;
+    this.poseVision = new Pose2d(
         new Translation2d(
             filter.calculate(poseVision.getX()),
             filter.calculate(poseVision.getY())),
