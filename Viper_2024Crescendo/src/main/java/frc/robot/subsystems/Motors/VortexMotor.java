@@ -106,7 +106,8 @@ public class VortexMotor implements Motor {
     isInvertedLog.append(this.motor.getInverted());
   }
 
-  private void updateLogs() {
+  @Override
+  public void updateLogs() {
     this.appliedOutputLog.append(this.motor.getAppliedOutput());
     this.currentLog.append(this.motor.getOutputCurrent());
     this.positionLog.append(this.encoder.getPosition());

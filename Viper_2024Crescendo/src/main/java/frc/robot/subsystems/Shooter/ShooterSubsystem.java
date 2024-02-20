@@ -301,5 +301,9 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     this.isAtSetpointLog.append(this.isAtSetpoint());
     this.hasNoteLog.append(this.hasNote);
     this.stateLog.append(this.state);
+    this.pivotMotor.updateLogs();
+    this.feederMotor.updateLogs();
+    this.lowerFlywheelMotor.updateLogs();
+    this.upperFlywheelMotor.updateLogs();
   }
 }

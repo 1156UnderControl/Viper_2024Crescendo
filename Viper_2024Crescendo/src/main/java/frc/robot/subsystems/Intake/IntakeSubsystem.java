@@ -166,6 +166,8 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
     this.pivotGoalLog.append(this.goal);
     this.isAtSetpointLog.append(this.isAtSetpoint());
     this.stateLog.append(this.state);
+    this.pivotMotor.updateLogs();
+    this.rollerMotor.updateLogs();
   }
 
 }
