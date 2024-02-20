@@ -14,10 +14,10 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.util.datalog.DoubleArrayLogEntry;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -199,6 +199,30 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
       }
     }
     this.state = "DRIVE_ALIGN_NOTE"; // Add to the log entry
+  }
+
+  public void driveTowardsNote() {
+    boolean isDetectingNote = PhotonVision.hasTarget();
+    this.lostFramesCounter = 0;
+    if (isDetectingNote) {
+      this.lastTxMeasurement = PhotonVision.targetPositionX();
+      Translation2d speeds = new Translation2d(1, 0); // getTargetSpeedsAngle(controller.getYtranslation()
+      driveToNote(speeds, this.pidTrackNote.calculate(lastTxMeasurement, 0));
+    } else {
+      this.lostFramesCounter++;
+      if (this.lostFramesCounter <= this.MAX_LOST_SPEAKER_FRAMES) {
+        ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
+        driveOmegaPIDfo(speeds, 0, this.lastTxMeasurement, this.pidTrackNote, false);
+      } else {
+        driveAlignAngleButton();
+      }
+    }
+  }
+
+  private void driveToNote(Translation2d translation, double rotation) {
+    Translation2d centerOfRotation = new Translation2d(0, 0);
+    swerveDrive.drive(translation, rotation, false, true, centerOfRotation);
+    return;
   }
 
   @Override
@@ -432,7 +456,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   private void updateLogs() {
     Pose2d currentPose = this.swerveDrive.getPose();
     double[] poseArray = { currentPose.getX(), currentPose.getY(), currentPose.getRotation().getRadians() };
-    this.poseLogEntry.append(poseArray);
+    // this.poseLogEntry.append(poseArray);
     this.targetXSpeedLogEntry.append(this.targetSpeeds.vxMetersPerSecond);
     this.targetYSpeedLogEntry.append(this.targetSpeeds.vyMetersPerSecond);
     this.targetOmegaSpeedLogEntry.append(this.targetSpeeds.omegaRadiansPerSecond);
