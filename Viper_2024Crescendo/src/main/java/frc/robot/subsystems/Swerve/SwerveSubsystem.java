@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
+import frc.Java_Is_UnderControl.Logging.Pose2dLogEntry;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CommandsConstants;
 import frc.robot.Constants.SwerveConstants;
@@ -68,7 +69,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   Field2d aprField2d = new Field2d();
 
-  private DoubleArrayLogEntry poseLogEntry = new DoubleArrayLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/Pose");
+  private Pose2dLogEntry poseLogEntry = new Pose2dLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/Pose");
 
   private ChassisSpeeds targetSpeeds = new ChassisSpeeds();
 
@@ -386,9 +387,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   }
 
   private void updateLogs() {
-    Pose2d currentPose = this.swerveDrive.getPose();
-    double[] poseArray = { currentPose.getX(), currentPose.getY(), currentPose.getRotation().getRadians() };
-    this.poseLogEntry.append(poseArray);
+    this.poseLogEntry.appendRadians(this.swerveDrive.getPose());
     this.targetXSpeedLogEntry.append(this.targetSpeeds.vxMetersPerSecond);
     this.targetYSpeedLogEntry.append(this.targetSpeeds.vyMetersPerSecond);
     this.targetOmegaSpeedLogEntry.append(this.targetSpeeds.omegaRadiansPerSecond);
