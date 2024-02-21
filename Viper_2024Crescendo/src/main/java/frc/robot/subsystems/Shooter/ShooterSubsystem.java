@@ -28,6 +28,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private boolean manualValues;
 
+  private double setpointVelocityShooter;
+
   private double kDt = 0.02;
 
   private double goal = ShooterConstants.setpoints.ANGLE_SECURED;
@@ -65,6 +67,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   private String state = "SAFE_POSITION";
 
   private StringLogEntry stateLog = new StringLogEntry(DataLogManager.getLog(), "/ShooterSubsystem/State");
+
+  private frc.Java_Is_UnderControl.Util.StabilizeChecker stabilizeChecker = new frc.Java_Is_UnderControl.Util.StabilizeChecker();
 
   public static ShooterSubsystem getInstance() {
     if (shooterInstance == null) {
@@ -210,7 +214,11 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     this.feederMotor.set(0);
     setVelocityFlywheel(verifyManualValue(ShooterConstants.setpoints.VELOCITY_SHOOT_SPEAKER,
         "Setpoint Vel Shooter"));
-    goal = verifyManualValue(calculateGoalSpeaker(), "Setpoint Pos Shoot Pivot");
+    if (Limelight.tvAfterTweak) {
+      goal = verifyManualValue(calculateGoalSpeaker(), "Setpoint Pos Shoot Pivot");
+    } else {
+      goal = 47;
+    }
     this.state = "PREPARING_SPEAKER_SHOT";
   }
 
@@ -261,7 +269,9 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   public boolean isAtSetpoint() {
     double minPosition = this.goal - ShooterConstants.pivotGoalDeadband;
     double maxPosition = this.goal + ShooterConstants.pivotGoalDeadband;
-    return Util.inRange(this.pivotMotor.getPosition(), minPosition, maxPosition);
+    boolean atSP = Util.inRange(this.pivotMotor.getPosition(), minPosition, maxPosition);
+    ShooterConstants.ableToShoot.isShooterPivotAtSetpoint = atSP;
+    return atSP;
   }
 
   @Override
@@ -313,10 +323,21 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   private void setVelocityFlywheel(double velocity) {
     this.lowerFlywheelMotor.setVelocityReference(velocity, 0);
     this.upperFlywheelMotor.setVelocityReference(velocity, 0);
+    this.setpointVelocityShooter = velocity;
+    ShooterConstants.ableToShoot.isShooterAtRPM = isFlywheelAtSetpoint();
+  }
+
+  private boolean isFlywheelAtSetpoint() {
+    return stabilizeChecker.isStableInRange(this.lowerFlywheelMotor.getVelocity(),
+        setpointVelocityShooter,
+        50)
+        && stabilizeChecker.isStableInRange(this.upperFlywheelMotor.getVelocity(),
+            setpointVelocityShooter,
+            50);
   }
 
   private double verifyManualValue(double value, String nameSmartDashboard) {
-    return manualValues ? SmartDashboard.getNumber(nameSmartDashboard, 0) : value;
+    return manualValues ? SmartDashboard.getNumber(nameSmartDashboard, value) : value;
   }
 
   private void updateLogs() {

@@ -16,6 +16,8 @@ public final class Limelight {
 
   public static double tx = LimelightHelpers.getTX("");
   public static boolean tv = LimelightHelpers.getTV("");
+  public static boolean tvAfterTweak = LimelightHelpers.getTV("");
+
   public static Pose2d poseLL = LimelightHelpers.getBotPose2d_wpiBlue("");
 
   public static void setPipelineToOdometry() {
@@ -24,6 +26,21 @@ public final class Limelight {
 
   public static void setPipelineToTrackSpeaker() {
     LimelightHelpers.setPipelineIndex("", 1);
+  }
+
+  public static void ledBlink() {
+    LimelightHelpers.setLEDMode_ForceBlink("");
+    ;
+  }
+
+  public static void ledOn() {
+    LimelightHelpers.setLEDMode_ForceBlink("");
+    ;
+  }
+
+  public static void ledOff() {
+    LimelightHelpers.setLEDMode_ForceOff("");
+    ;
   }
 
   private static final double limelightMountAngleDegrees = 20;
