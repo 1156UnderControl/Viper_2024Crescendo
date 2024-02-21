@@ -1,0 +1,16 @@
+{
+  "robotWidth": 0.74,
+  "robotLength": 0.75,
+  "holonomicMode": true,
+  "pathFolders": [
+    "Auto 5 notes safe",
+    "Auto MAX VERSTAPPEN v1",
+    "New Folder"
+  ],
+  "autoFolders": [],
+  "defaultMaxVel": 4.0,
+  "defaultMaxAccel": 5.0,
+  "defaultMaxAngVel": 200.0,
+  "defaultMaxAngAccel": 720.0,
+  "maxModuleSpeed": 5.0
+}

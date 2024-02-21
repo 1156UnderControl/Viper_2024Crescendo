@@ -138,7 +138,8 @@ public class SparkMAXMotor implements Motor {
     isInvertedLog.append(this.motor.getInverted());
   }
 
-  private void updateLogs() {
+  @Override
+  public void updateLogs() {
     this.appliedOutputLog.append(this.motor.getAppliedOutput());
     this.targetOutputLog.append(this.targetPercentage);
     this.currentLog.append(this.motor.getOutputCurrent());

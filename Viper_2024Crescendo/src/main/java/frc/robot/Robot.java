@@ -16,6 +16,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.SwerveConstants;
+import frc.robot.commands.Autonomous.AutonomousCollect;
+import frc.robot.commands.States.SecuredPosition;
 import swervelib.parser.SwerveParser;
 
 /**
@@ -28,11 +30,15 @@ import swervelib.parser.SwerveParser;
 public class Robot extends TimedRobot {
 
   private static Robot instance;
-  private Command m_autonomousCommand;
+  private Command autonomousCommand;
 
-  private RobotContainer m_robotContainer;
+  private RobotContainer robotContainer;
 
   private Timer disabledTimer;
+
+  public static boolean isInAutonomous;
+
+  public static String autonomousState = "NONE";
 
   public Robot() {
     instance = this;
@@ -51,12 +57,12 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our
     // autonomous chooser on the dashboard.
-    m_robotContainer = new RobotContainer();
+    this.robotContainer = new RobotContainer();
 
     // Create a timer to disable motor brake a few seconds after disable. This will
     // let the robot stop
     // immediately when disabled, but then also let it be pushed more
-    disabledTimer = new Timer();
+    this.disabledTimer = new Timer();
     DataLogManager.start();
     DriverStation.startDataLog(DataLogManager.getLog());
   }
@@ -82,7 +88,7 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
-    SmartDashboard.putData("Robot", m_robotContainer.robot);
+    SmartDashboard.putData("Robot", robotContainer.robot);
   }
 
   /**
@@ -90,17 +96,14 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
-    m_robotContainer.setMotorBrake(true);
-    disabledTimer.reset();
-    disabledTimer.start();
+    this.robotContainer.setMotorBrake(false);
+    this.disabledTimer.reset();
+    this.disabledTimer.start();
   }
 
   @Override
   public void disabledPeriodic() {
-    if (disabledTimer.hasElapsed(SwerveConstants.WHEEL_LOCK_TIME)) {
-      m_robotContainer.setMotorBrake(false);
-      disabledTimer.stop();
-    }
+    this.robotContainer.led.rainbow();
   }
 
   /**
@@ -109,13 +112,16 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_robotContainer.setHeadingCorrection(false);
-    m_robotContainer.setMotorBrake(true);
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    SwerveConstants.ACELL_CORREC = false;
+    this.robotContainer.robot.setDefaultCommand(new AutonomousCollect(robotContainer.robot));
+    Robot.isInAutonomous = true;
+    this.robotContainer.setHeadingCorrection(true);
+    this.robotContainer.setMotorBrake(true);
+    this.autonomousCommand = robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
+    if (this.autonomousCommand != null) {
+      this.autonomousCommand.schedule();
     }
   }
 
@@ -124,20 +130,20 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
+    SmartDashboard.putString("Auto State", autonomousState);
   }
 
   @Override
   public void teleopInit() {
-    m_robotContainer.setHeadingCorrection(true);
-    // This makes sure that the autonomous stops running when
-    // teleop starts running. If you want the autonomous to
-    // continue until interrupted by another command, remove
-    // this line or comment it out.
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
+    SwerveConstants.ACELL_CORREC = true;
+    this.robotContainer.robot.setDefaultCommand(new SecuredPosition(robotContainer.robot));
+    isInAutonomous = false;
+    this.robotContainer.setHeadingCorrection(true);
+    if (this.autonomousCommand != null) {
+      autonomousCommand.cancel();
     }
     ;
-    m_robotContainer.setMotorBrake(true);
+    this.robotContainer.setMotorBrake(true);
   }
 
   /**

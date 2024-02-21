@@ -1,0 +1,70 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.255465449589956,
+        "y": 4.649202108675259
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.2554654495899555,
+        "y": 4.649202108675259
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.2391757194356026,
+        "y": 4.19247948338978
+      },
+      "prevControl": {
+        "x": 1.630212219054964,
+        "y": 4.309587848847595
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "end path1 mv1"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Aim Shoot 1"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 5.0,
+    "maxAngularVelocity": 200.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": -21.801409486351663,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Auto MAX VERSTAPPEN v1",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

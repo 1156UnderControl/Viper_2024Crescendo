@@ -15,6 +15,6 @@ public class SwerveConstants {
   public static final double ROBOT_MASS = 52;
   public static final Matter CHASSIS = new Matter(new Translation3d(0, 0, 0.173), ROBOT_MASS);
   public static final double LOOP_TIME = 0.13; // s, 20ms + 110ms sprk max velocity lag
-  public static final boolean ACELL_CORREC = true;
+  public static boolean ACELL_CORREC = true;
   public static final double WHEEL_LOCK_TIME = 10;
 }

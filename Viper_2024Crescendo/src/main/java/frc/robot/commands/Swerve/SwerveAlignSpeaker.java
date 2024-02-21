@@ -7,6 +7,7 @@ package frc.robot.commands.Swerve;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotSubsystems;
+import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Swerve.ISwerve;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
@@ -20,11 +21,13 @@ public class SwerveAlignSpeaker extends Command {
 
   @Override
   public void execute() {
+    Limelight.notUsingLLforOdometry = true;
     swerve.driveAlignSpeaker();
   }
 
   @Override
   public void end(boolean interrupted) {
+    Limelight.notUsingLLforOdometry = false;
   }
 
   @Override
