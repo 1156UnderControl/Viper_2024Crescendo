@@ -24,9 +24,9 @@ public class ShooterConstants {
     public static final double MAX_ACCELERATION = 0.04;
 
     public class PID {
-      public static final double P = 0.00006;
-      public static final double I = 0;
-      public static final double D = 0;
+      public static final double P = 0.00015;
+      public static final double I = 0.000001;
+      public static final double D = 0.005;
       public static final double F = 0.00009;
       public static final double IZone = 1000;
     }
