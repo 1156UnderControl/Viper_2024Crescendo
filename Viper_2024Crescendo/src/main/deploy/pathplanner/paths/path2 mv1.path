@@ -3,66 +3,45 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.308164214045973,
-        "y": 5.550936522700434
+        "x": 2.2391757194356026,
+        "y": 4.19247948338978
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3738503397120905,
-        "y": 5.340141464876368
+        "x": 3.468813556742661,
+        "y": 4.157346973752435
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "end path1 mv1"
     },
     {
       "anchor": {
-        "x": 2.9359704939096027,
-        "y": 5.550936522700434
+        "x": 2.5436574696259218,
+        "y": 5.527514849608872
       },
       "prevControl": {
-        "x": 2.6431995802650645,
-        "y": 5.199611426326989
-      },
-      "nextControl": {
-        "x": 3.2437168779652725,
-        "y": 5.920232183567237
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 2.9359704939096027,
-        "y": 6.991369417831561
-      },
-      "prevControl": {
-        "x": 1.0856583196761243,
-        "y": 6.885971888919526
+        "x": 1.1149354110405778,
+        "y": 5.527514849608872
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "End Path 1"
+      "linkedName": "end path2 mv1"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.0,
-      "rotationDegrees": 0,
-      "rotateFast": false
-    },
-    {
-      "waypointRelativePos": 1.4,
-      "rotationDegrees": 20.310827779941647,
+      "waypointRelativePos": 0.55,
+      "rotationDegrees": -5.77516836962204,
       "rotateFast": false
     }
   ],
   "constraintZones": [
     {
-      "name": "Shoot",
-      "minWaypointRelativePos": 1.2,
-      "maxWaypointRelativePos": 1.55,
+      "name": "shoot Constraint",
+      "minWaypointRelativePos": 0.0,
+      "maxWaypointRelativePos": 0.55,
       "constraints": {
-        "maxVelocity": 0.5,
+        "maxVelocity": 2.0,
         "maxAcceleration": 1.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0
@@ -71,8 +50,8 @@
   ],
   "eventMarkers": [
     {
-      "name": "Shoot",
-      "waypointRelativePos": 1.35,
+      "name": "Shoot intake aim",
+      "waypointRelativePos": 0.5,
       "command": {
         "type": "sequential",
         "data": {
@@ -94,8 +73,8 @@
       }
     },
     {
-      "name": "New Event Marker",
-      "waypointRelativePos": 0,
+      "name": "Intake aim",
+      "waypointRelativePos": 0.0,
       "command": {
         "type": "sequential",
         "data": {
@@ -105,6 +84,12 @@
               "data": {
                 "name": "Intake"
               }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Aim Shoot 2"
+              }
             }
           ]
         }
@@ -112,18 +97,21 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 5.0,
-    "maxAcceleration": 4.0,
-    "maxAngularVelocity": 540.0,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 5.0,
+    "maxAngularVelocity": 200.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 0,
+    "velocity": 0.5,
+    "rotation": 9.782407031807283,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Auto NonStop",
-  "previewStartingState": null,
-  "useDefaultConstraints": false
+  "folder": "Auto MAX VERSTAPPEN v1",
+  "previewStartingState": {
+    "rotation": -30.96375653207344,
+    "velocity": 0.0
+  },
+  "useDefaultConstraints": true
 }

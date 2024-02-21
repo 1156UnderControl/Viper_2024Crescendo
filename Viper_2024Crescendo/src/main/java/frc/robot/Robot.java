@@ -16,6 +16,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.SwerveConstants;
+import frc.robot.commands.Autonomous.AutonomousCollect;
+import frc.robot.commands.States.SecuredPosition;
 import swervelib.parser.SwerveParser;
 
 /**
@@ -33,6 +35,10 @@ public class Robot extends TimedRobot {
   private RobotContainer m_robotContainer;
 
   private Timer disabledTimer;
+
+  public static boolean isInAutonomous;
+
+  public static String autonomousState = "NONE";
 
   public Robot() {
     instance = this;
@@ -97,10 +103,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    if (disabledTimer.hasElapsed(SwerveConstants.WHEEL_LOCK_TIME)) {
-      m_robotContainer.setMotorBrake(false);
-      disabledTimer.stop();
-    }
+    m_robotContainer.led.rainboww();
   }
 
   /**
@@ -109,7 +112,12 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_robotContainer.setHeadingCorrection(false);
+    SwerveConstants.ACELL_CORREC = false;
+
+    m_robotContainer.robot.setDefaultCommand(new AutonomousCollect(m_robotContainer.robot));
+
+    isInAutonomous = true;
+    m_robotContainer.setHeadingCorrection(true);
     m_robotContainer.setMotorBrake(true);
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
@@ -124,10 +132,14 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
+    SmartDashboard.putString("Auto State", autonomousState);
   }
 
   @Override
   public void teleopInit() {
+    SwerveConstants.ACELL_CORREC = true;
+    m_robotContainer.robot.setDefaultCommand(new SecuredPosition(m_robotContainer.robot));
+    isInAutonomous = false;
     m_robotContainer.setHeadingCorrection(true);
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to

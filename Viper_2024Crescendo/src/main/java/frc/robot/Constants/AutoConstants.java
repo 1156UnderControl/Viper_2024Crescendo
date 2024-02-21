@@ -7,7 +7,7 @@ package frc.robot.Constants;
 import com.pathplanner.lib.util.PIDConstants;
 
 public final class AutoConstants {
-  public static final PIDConstants TranslationPID = new PIDConstants(6, 0, 0);
-  public static final PIDConstants angleAutoPID = new PIDConstants(5.5, 0, 0);
-  public static final double MAX_ACCELERATION_AUTO = 4;
+  public static final PIDConstants TranslationPID = new PIDConstants(5, 0, 0);
+  public static final PIDConstants angleAutoPID = new PIDConstants(5, 0, 0);
+  public static final double MAX_ACCELERATION_AUTO = 5;
 }

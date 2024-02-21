@@ -11,6 +11,8 @@ public final class Limelight {
   private Limelight() {
   }
 
+  public static boolean notUsingLLforOdometry = false;
+
   public static final double limelightMountAngleDegrees = 20;
 
   public static final double limelightLensHeightInches = 10.2362;

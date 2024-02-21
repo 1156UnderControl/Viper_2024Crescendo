@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.4896821805055864,
-      "y": 5.539225686154654
+      "x": 1.2745940876497153,
+      "y": 5.535354916863679
     },
     "rotation": 0
   },
@@ -14,32 +14,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Collect 1"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Intake"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Shoot1"
+            "name": "Aim Shoot Subwoofer"
           }
         },
         {
@@ -55,16 +30,59 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Collect&Shoot 3"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Intake"
+                  "pathName": "path 1 5 notes safe"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "path 2 5 notes safe"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "path 3 5 notes safe"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "path 3.5 5 notes safe"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "path 4 5 notes safe"
           }
         },
         {
