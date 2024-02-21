@@ -10,7 +10,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -26,6 +25,7 @@ import frc.robot.commands.States.CollectPosition;
 import frc.robot.commands.States.SecuredPosition;
 import frc.robot.commands.States.ShootAmpPosition;
 import frc.robot.commands.States.ShootSpeakerPosition;
+import frc.robot.commands.Swerve.SwerveAlignSpeaker;
 import frc.robot.commands.Swerve.SwerveTeleopControl;
 import frc.robot.subsystems.LEDs.LedSubsystem;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
@@ -41,18 +41,18 @@ import frc.robot.subsystems.Swerve.SwerveSubsystem;
 public class RobotContainer {
 
   private final SwerveSubsystem swerve;
+
   public final RobotSubsystems robot = new RobotSubsystems();
+
   public final LedSubsystem led = new LedSubsystem();
 
   private final SendableChooser<Command> autoChooser;
 
-  XboxController driverXbox = new XboxController(0);
   public ControlBoard mControlBoard = ControlBoard.getInstance();
 
   public RobotContainer() {
     this.swerve = SwerveSubsystem.getInstance(new File(Filesystem.getDeployDirectory(),
         "swerve/swerve"));
-    this.led.rainboww();
     NamedCommands.registerCommand("Vision Update", new AutonomousVisionUpdate(swerve));
     NamedCommands.registerCommand("Intake", new AutonomousCollect(robot));
     NamedCommands.registerCommand("Shoot", new AutonomousShoot(robot).andThen(Commands.waitSeconds(0.1)));
@@ -63,11 +63,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("Aim Shoot 4", new AutonomousAim(robot, 3));
     autoChooser = AutoBuilder.buildAutoChooser("New Auto");
     SmartDashboard.putData("Aut Chooser", autoChooser);
-
     configureBindings();
-
-    // swerve.setDefaultCommand(new SwerveTeleopControl(swerve));
-
+    swerve.setDefaultCommand(new SwerveTeleopControl(swerve));
   }
 
   private void configureBindings() {
@@ -80,8 +77,7 @@ public class RobotContainer {
     mControlBoard.getSecured().onTrue(new SwerveTeleopControl(swerve));
     mControlBoard.getPrepareAmp().and(() -> robot.shooter.hasNote()).onTrue(new ShootAmpPosition(robot));
     mControlBoard.getPrepareSpeaker().and(() -> robot.shooter.hasNote()).onTrue(new ShootSpeakerPosition(robot));
-    // mControlBoard.getPrepareSpeaker().and(() ->
-    // robot.shooter.hasNote()).onTrue(new SwerveAlignSpeaker(swerve));
+    mControlBoard.getPrepareSpeaker().and(() -> robot.shooter.hasNote()).onTrue(new SwerveAlignSpeaker(swerve));
   }
 
   public Command getAutonomousCommand() {

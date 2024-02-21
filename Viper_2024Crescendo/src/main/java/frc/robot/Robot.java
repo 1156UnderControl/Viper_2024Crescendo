@@ -30,9 +30,9 @@ import swervelib.parser.SwerveParser;
 public class Robot extends TimedRobot {
 
   private static Robot instance;
-  private Command m_autonomousCommand;
+  private Command autonomousCommand;
 
-  private RobotContainer m_robotContainer;
+  private RobotContainer robotContainer;
 
   private Timer disabledTimer;
 
@@ -57,12 +57,12 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our
     // autonomous chooser on the dashboard.
-    m_robotContainer = new RobotContainer();
+    this.robotContainer = new RobotContainer();
 
     // Create a timer to disable motor brake a few seconds after disable. This will
     // let the robot stop
     // immediately when disabled, but then also let it be pushed more
-    disabledTimer = new Timer();
+    this.disabledTimer = new Timer();
     DataLogManager.start();
     DriverStation.startDataLog(DataLogManager.getLog());
   }
@@ -88,7 +88,7 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
-    SmartDashboard.putData("Robot", m_robotContainer.robot);
+    SmartDashboard.putData("Robot", robotContainer.robot);
   }
 
   /**
@@ -96,14 +96,14 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
-    m_robotContainer.setMotorBrake(true);
-    disabledTimer.reset();
-    disabledTimer.start();
+    this.robotContainer.setMotorBrake(false);
+    this.disabledTimer.reset();
+    this.disabledTimer.start();
   }
 
   @Override
   public void disabledPeriodic() {
-    m_robotContainer.led.rainboww();
+    this.robotContainer.led.rainbow();
   }
 
   /**
@@ -113,17 +113,15 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     SwerveConstants.ACELL_CORREC = false;
-
-    m_robotContainer.robot.setDefaultCommand(new AutonomousCollect(m_robotContainer.robot));
-
-    isInAutonomous = true;
-    m_robotContainer.setHeadingCorrection(true);
-    m_robotContainer.setMotorBrake(true);
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    this.robotContainer.robot.setDefaultCommand(new AutonomousCollect(robotContainer.robot));
+    Robot.isInAutonomous = true;
+    this.robotContainer.setHeadingCorrection(true);
+    this.robotContainer.setMotorBrake(true);
+    this.autonomousCommand = robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
+    if (this.autonomousCommand != null) {
+      this.autonomousCommand.schedule();
     }
   }
 
@@ -138,18 +136,14 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     SwerveConstants.ACELL_CORREC = true;
-    m_robotContainer.robot.setDefaultCommand(new SecuredPosition(m_robotContainer.robot));
+    this.robotContainer.robot.setDefaultCommand(new SecuredPosition(robotContainer.robot));
     isInAutonomous = false;
-    m_robotContainer.setHeadingCorrection(true);
-    // This makes sure that the autonomous stops running when
-    // teleop starts running. If you want the autonomous to
-    // continue until interrupted by another command, remove
-    // this line or comment it out.
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
+    this.robotContainer.setHeadingCorrection(true);
+    if (this.autonomousCommand != null) {
+      autonomousCommand.cancel();
     }
     ;
-    m_robotContainer.setMotorBrake(true);
+    this.robotContainer.setMotorBrake(true);
   }
 
   /**
