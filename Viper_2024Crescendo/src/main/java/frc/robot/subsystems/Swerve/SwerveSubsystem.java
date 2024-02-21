@@ -27,7 +27,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
 import frc.Java_Is_UnderControl.Logging.Pose2dLogEntry;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CommandsConstants;
@@ -51,7 +50,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   private int lostFramesCounter = 0;
 
-  private final int MAX_LOST_SPEAKER_FRAMES = 5;
+  private final int MAX_LOST_SPEAKER_FRAMES = 2;
 
   private double lastTxMeasurement;
 
@@ -121,11 +120,11 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     SmartDashboard.putNumber("Heading Odometry", swerveDrive.getOdometryHeading().getDegrees());
     SmartDashboard.putNumber("Distance LL", Limelight.getDistance());
     if (!Limelight.notUsingLLforOdometry) {
-      LimelightHelpers.setPipelineIndex("", 0);
-      poseVision = LimelightHelpers.getBotPose2d_wpiBlue("");
+      Limelight.setPipelineToOdometry();
+      poseVision = Limelight.poseLL;
       aprField2d.setRobotPose(poseVision);
     } else {
-      LimelightHelpers.setPipelineIndex("", 1);
+      Limelight.setPipelineToTrackSpeaker();
     }
     this.updateLogs();
   }
@@ -155,10 +154,10 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   @Override
   public void driveAlignSpeaker() {
     swerveDrive.getFieldVelocity();
-    boolean isDetectingAprilTag = LimelightHelpers.getTV("");
+    boolean isDetectingAprilTag = Limelight.tv;
     if (isDetectingAprilTag) {
       this.lostFramesCounter = 0;
-      this.lastTxMeasurement = LimelightHelpers.getTX("");
+      this.lastTxMeasurement = Limelight.tx;
       ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
       driveOmegaPIDfo(speeds, 0, this.lastTxMeasurement, this.pidTrackApril, false);
     } else {
@@ -350,14 +349,9 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
         new Rotation2d(
             poseVision.getRotation().getDegrees()));
 
-    if (LimelightHelpers.getTV("")) {
+    if (Limelight.tv) {
       swerveDrive.addVisionMeasurement(poseVision, Timer.getFPGATimestamp());
     }
-  }
-
-  public double trackSpeaker() {
-    LimelightHelpers.setPipelineIndex("", 1);
-    return pidTrackApril.calculate(LimelightHelpers.getTX(""), 0);
   }
 
   /*

@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
 
@@ -13,19 +14,29 @@ public final class Limelight {
 
   public static boolean notUsingLLforOdometry = false;
 
-  public static final double limelightMountAngleDegrees = 20;
+  public static double tx = LimelightHelpers.getTX("");
+  public static boolean tv = LimelightHelpers.getTV("");
+  public static Pose2d poseLL = LimelightHelpers.getBotPose2d_wpiBlue("");
 
-  public static final double limelightLensHeightInches = 10.2362;
+  public static void setPipelineToOdometry() {
+    LimelightHelpers.setPipelineIndex("", 0);
+  }
 
-  public static final double goalHeightInches = 53.88;
+  public static void setPipelineToTrackSpeaker() {
+    LimelightHelpers.setPipelineIndex("", 1);
+  }
+
+  private static final double limelightMountAngleDegrees = 20;
+
+  private static final double limelightLensHeightInches = 10.2362;
+
+  private static final double goalHeightInches = 53.88;
 
   public static double getDistance() {
     double angleToGoalDegrees = limelightMountAngleDegrees + LimelightHelpers.getTY("");
     double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
     double distanceFromLimelightToGoalInches = (goalHeightInches - limelightLensHeightInches)
         / Math.tan(angleToGoalRadians);
-
     return Units.inchesToMeters(distanceFromLimelightToGoalInches);
-
   }
 }
