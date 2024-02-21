@@ -6,7 +6,6 @@ import frc.robot.RobotSubsystems;
 
 public class AutonomousShoot extends Command {
   private RobotSubsystems robot;
-  private boolean shoot;
 
   public AutonomousShoot(RobotSubsystems robot) {
     this.robot = robot;
