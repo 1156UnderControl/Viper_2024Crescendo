@@ -26,7 +26,6 @@ import frc.robot.commands.States.CollectPosition;
 import frc.robot.commands.States.SecuredPosition;
 import frc.robot.commands.States.ShootAmpPosition;
 import frc.robot.commands.States.ShootSpeakerPosition;
-import frc.robot.commands.Swerve.SwerveAlignSpeaker;
 import frc.robot.commands.Swerve.SwerveTeleopControl;
 import frc.robot.subsystems.LEDs.LedSubsystem;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
@@ -67,7 +66,7 @@ public class RobotContainer {
 
     configureBindings();
 
-    swerve.setDefaultCommand(new SwerveTeleopControl(swerve));
+    // swerve.setDefaultCommand(new SwerveTeleopControl(swerve));
 
   }
 
@@ -81,7 +80,8 @@ public class RobotContainer {
     mControlBoard.getSecured().onTrue(new SwerveTeleopControl(swerve));
     mControlBoard.getPrepareAmp().and(() -> robot.shooter.hasNote()).onTrue(new ShootAmpPosition(robot));
     mControlBoard.getPrepareSpeaker().and(() -> robot.shooter.hasNote()).onTrue(new ShootSpeakerPosition(robot));
-    mControlBoard.getPrepareSpeaker().and(() -> robot.shooter.hasNote()).onTrue(new SwerveAlignSpeaker(swerve));
+    // mControlBoard.getPrepareSpeaker().and(() ->
+    // robot.shooter.hasNote()).onTrue(new SwerveAlignSpeaker(swerve));
   }
 
   public Command getAutonomousCommand() {

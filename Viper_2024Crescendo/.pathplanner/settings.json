@@ -3,8 +3,9 @@
   "robotLength": 0.75,
   "holonomicMode": true,
   "pathFolders": [
+    "Auto 5 notes safe",
     "Auto MAX VERSTAPPEN v1",
-    "Auto 5 notes safe"
+    "New Folder"
   ],
   "autoFolders": [],
   "defaultMaxVel": 4.0,

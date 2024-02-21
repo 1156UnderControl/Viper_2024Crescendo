@@ -345,10 +345,10 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     Limelight.notUsingLLforOdometry = false;
     this.poseVision = new Pose2d(
         new Translation2d(
-            filter.calculate(poseVision.getX()),
-            filter.calculate(poseVision.getY())),
+            poseVision.getX(),
+            poseVision.getY()),
         new Rotation2d(
-            filter.calculate(poseVision.getRotation().getDegrees())));
+            poseVision.getRotation().getDegrees()));
 
     if (LimelightHelpers.getTV("")) {
       swerveDrive.addVisionMeasurement(poseVision, Timer.getFPGATimestamp());

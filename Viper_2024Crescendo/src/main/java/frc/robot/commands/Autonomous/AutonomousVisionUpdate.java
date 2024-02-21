@@ -1,7 +1,6 @@
 package frc.robot.commands.Autonomous;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
 import frc.robot.Robot;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
@@ -29,6 +28,6 @@ public class AutonomousVisionUpdate extends Command {
 
   @Override
   public boolean isFinished() {
-    return LimelightHelpers.getTV("");
+    return true;
   }
 }
