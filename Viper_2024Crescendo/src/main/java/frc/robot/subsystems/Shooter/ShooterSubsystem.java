@@ -199,6 +199,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public void prepareAmpShot() {
+    this.feederMotor.set(0);
     setVelocityFlywheel(ShooterConstants.setpoints.VELOCITY_SHOOT_AMP);
     this.goal = ShooterConstants.setpoints.ANGLE_SHOOT_AMP;
     this.state = "PREPARING_AMP_SHOT";
