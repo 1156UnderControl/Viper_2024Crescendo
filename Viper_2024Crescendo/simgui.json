@@ -1,0 +1,9 @@
+{
+  "HALProvider": {
+    "Addressable LEDs": {
+      "window": {
+        "visible": true
+      }
+    }
+  }
+}
