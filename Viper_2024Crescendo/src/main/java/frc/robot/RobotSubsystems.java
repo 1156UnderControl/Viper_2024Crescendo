@@ -22,6 +22,7 @@ public class RobotSubsystems extends SubsystemBase {
   private SubsystemBase climberSubsystem;
 
   public static boolean shootFinished;
+  public boolean climbing;
 
   private PowerDistribution powerDistributionHub;
 
@@ -48,6 +49,7 @@ public class RobotSubsystems extends SubsystemBase {
     SmartDashboard.putData("Subsystem Shooter", ShooterSubsystem.getInstance());
     this.intakeSubsystem.periodic();
     this.shooterSubsystem.periodic();
+    this.climberSubsystem.periodic();
     this.batteryVoltageLogEntry.append(this.powerDistributionHub.getVoltage());
     this.totalCurrentDrawLogEntry.append(this.powerDistributionHub.getTotalCurrent());
   }
