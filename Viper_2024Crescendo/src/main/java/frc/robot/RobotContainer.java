@@ -27,7 +27,6 @@ import frc.robot.commands.States.ShootAmpPosition;
 import frc.robot.commands.States.ShootSpeakerPosition;
 import frc.robot.commands.Swerve.SwerveAlignSpeaker;
 import frc.robot.commands.Swerve.SwerveTeleopControl;
-import frc.robot.subsystems.Climber.ClimberSubsystem;
 import frc.robot.subsystems.LEDs.LedSubsystem;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
@@ -42,7 +41,6 @@ import frc.robot.subsystems.Swerve.SwerveSubsystem;
 public class RobotContainer {
 
   private final SwerveSubsystem swerve;
-  private final ClimberSubsystem climber;
 
   public final RobotSubsystems robot = new RobotSubsystems();
 
@@ -53,7 +51,6 @@ public class RobotContainer {
   public ControlBoard mControlBoard = ControlBoard.getInstance();
 
   public RobotContainer() {
-    this.climber = ClimberSubsystem.getInstance();
     this.swerve = SwerveSubsystem.getInstance(new File(Filesystem.getDeployDirectory(),
         "swerve/swerve"));
     NamedCommands.registerCommand("Vision Update", new AutonomousVisionUpdate(swerve));
@@ -82,9 +79,6 @@ public class RobotContainer {
     mControlBoard.getPrepareAmp().and(() -> robot.shooter.hasNote()).onTrue(new ShootAmpPosition(robot));
     mControlBoard.getPrepareSpeaker().and(() -> robot.shooter.hasNote()).onTrue(new ShootSpeakerPosition(robot));
     mControlBoard.getPrepareSpeaker().and(() -> robot.shooter.hasNote()).onTrue(new SwerveAlignSpeaker(swerve));
-    mControlBoard.climb().onTrue(Commands.run(() -> climber.climb(), climber));
-    mControlBoard.release().onTrue(Commands.run(() -> climber.release(), climber));
-    mControlBoard.climb().or(mControlBoard.release()).onFalse(Commands.run(() -> climber.stop(), climber));
   }
 
   public Command getAutonomousCommand() {

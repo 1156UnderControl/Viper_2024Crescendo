@@ -1,12 +1,16 @@
 package frc.robot.subsystems.Climber;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.Java_Is_UnderControl.Util.Util;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.subsystems.Motors.Motor;
 import frc.robot.subsystems.Motors.SparkMAXMotor;
 
 public class ClimberSubsystem extends SubsystemBase implements IClimber {
   private static ClimberSubsystem climberInstance = null;
+
+  private double goal;
 
   private Motor climberMotor = new SparkMAXMotor(ClimberConstants.ID_climber);
 
@@ -19,20 +23,42 @@ public class ClimberSubsystem extends SubsystemBase implements IClimber {
   }
 
   private ClimberSubsystem() {
+    climberMotor.setPosition(0);
+    climberMotor.setMotorBrake(true);
+    goal = 0;
+  }
 
+  @Override
+  public void periodic() {
+    SmartDashboard.putNumber("Position Climber", climberMotor.getPosition());
   }
 
   @Override
   public void release() {
-    climberMotor.set(0.5);
+    goal = 80;
+    if (isAtSetpoint()) {
+      climberMotor.set(0);
+    } else {
+      climberMotor.set(0.5);
+    }
   }
 
   @Override
   public void climb() {
-    climberMotor.set(-0.5);
+    goal = 0;
+    if (isAtSetpoint()) {
+      climberMotor.set(0);
+    } else {
+      climberMotor.set(-0.5);
+    }
   }
 
   public void stop() {
     climberMotor.set(0);
+  }
+
+  @Override
+  public boolean isAtSetpoint() {
+    return Util.inRange(climberMotor.getPosition(), goal - 5, goal + 5);
   }
 }
