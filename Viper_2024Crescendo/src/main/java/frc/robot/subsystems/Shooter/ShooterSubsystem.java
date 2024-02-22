@@ -267,7 +267,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public boolean isSecureForIntake() {
-    return false;
+    return this.pivotMotor.getPosition() < 40;
   }
 
   @Override
@@ -315,13 +315,16 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   private static void interpolationTree() {
     shooterMap.put(1.29, 51.0);
     shooterMap.put(1.626, 57.0);
-    shooterMap.put(2.02, 62.0);
-    shooterMap.put(2.43, 66.0);
-    shooterMap.put(2.77, 69.0);
-    shooterMap.put(3.16, 71.0);
-    shooterMap.put(3.46, 72.0);
-    shooterMap.put(3.84, 72.0);
-
+    shooterMap.put(1.65, 57.6);
+    shooterMap.put(1.96, 59.5);
+    shooterMap.put(2.2, 61.0);
+    shooterMap.put(2.38, 63.0);
+    shooterMap.put(2.52, 63.5);
+    shooterMap.put(2.75, 63.5);
+    shooterMap.put(2.9, 65.0);
+    shooterMap.put(3.08, 66.5);
+    shooterMap.put(3.32, 68.0);
+    shooterMap.put(3.57, 68.5);
   }
 
   private void setVelocityFlywheel(double velocity) {
