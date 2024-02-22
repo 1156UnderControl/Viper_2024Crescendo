@@ -22,7 +22,7 @@ public class LedSubsystem extends SubsystemBase {
     m_led.setData(m_ledBuffer);
   }
 
-  private void rainbow() {
+  public void rainbow() {
     for (var i = 0; i < m_ledBuffer.getLength(); i++) {
       final var hue = (m_rainbowFirstPixelHue + (i * 180 / m_ledBuffer.getLength())) % 180;
       // Define o valor do pixel

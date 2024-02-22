@@ -21,6 +21,7 @@ import frc.robot.commands.Autonomous.AutonomousAimSubwoofer;
 import frc.robot.commands.Autonomous.AutonomousCollect;
 import frc.robot.commands.Autonomous.AutonomousShoot;
 import frc.robot.commands.Autonomous.AutonomousVisionUpdate;
+import frc.robot.commands.States.ClimbPosition;
 import frc.robot.commands.States.CollectPosition;
 import frc.robot.commands.States.SecuredPosition;
 import frc.robot.commands.States.ShootAmpPosition;
@@ -73,12 +74,14 @@ public class RobotContainer {
     mControlBoard.setHeadingBack().onTrue(new InstantCommand(swerve::setAngle180));
     mControlBoard.setHeadingLeft().onTrue(new InstantCommand(swerve::setAngle90));
     mControlBoard.setHeadingRight().onTrue(new InstantCommand(swerve::setAngleNeg90));
+
     mControlBoard.getIntake().onTrue(new CollectPosition(robot));
     mControlBoard.getSecured().onTrue(new SecuredPosition(robot));
     mControlBoard.getSecured().onTrue(new SwerveTeleopControl(swerve));
     mControlBoard.getPrepareAmp().and(() -> robot.shooter.hasNote()).onTrue(new ShootAmpPosition(robot));
     mControlBoard.getPrepareSpeaker().and(() -> robot.shooter.hasNote()).onTrue(new ShootSpeakerPosition(robot));
     mControlBoard.getPrepareSpeaker().and(() -> robot.shooter.hasNote()).onTrue(new SwerveAlignSpeaker(swerve));
+    mControlBoard.release().onTrue(new ClimbPosition(robot));
   }
 
   public Command getAutonomousCommand() {
