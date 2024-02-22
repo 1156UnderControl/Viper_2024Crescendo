@@ -14,12 +14,10 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.util.datalog.DoubleArrayLogEntry;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -31,9 +29,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
 import frc.Java_Is_UnderControl.Logging.Pose2dLogEntry;
-import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
 import frc.Java_Is_UnderControl.PhotonVision.PhotonVision;
-
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CommandsConstants;
 import frc.robot.Constants.SwerveConstants;
@@ -54,9 +50,13 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   public boolean notUsingLLforOdometry = false;
 
-  private int lostFramesCounter = 0;
-
   private final int MAX_LOST_SPEAKER_FRAMES = 2;
+
+  private final int MAX_LOST_NOTE_FRAMES = 2;
+
+  private int lostSpeakerFramesCounter = this.MAX_LOST_SPEAKER_FRAMES;
+
+  private int lostNotesFrameCounter = this.MAX_LOST_NOTE_FRAMES;
 
   private double lastTxMeasurement;
 
@@ -79,7 +79,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   Field2d aprField2d = new Field2d();
   MedianFilter filter = new MedianFilter(3);
 
-  private DoubleArrayLogEntry poseLogEntry = new DoubleArrayLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/Pose");
+  private Pose2dLogEntry poseLogEntry = new Pose2dLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/Pose");
 
   private ChassisSpeeds targetSpeeds = new ChassisSpeeds();
 
@@ -96,6 +96,10 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   private StringLogEntry stateLogEntry = new StringLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/State");
 
+  private PhotonVision photonVision;
+
+  private double targetNotePositionX;
+
   public static SwerveSubsystem getInstance(File directory) {
     if (swerveInstance == null) {
       swerveInstance = new SwerveSubsystem(directory);
@@ -111,6 +115,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   }
 
   private SwerveSubsystem(File directory) {
+    this.photonVision = new PhotonVision();
     SmartDashboard.putData("POSE APRIL", aprField2d);
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     setupYAGSL_JSON(directory);
@@ -165,13 +170,13 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     swerveDrive.getFieldVelocity();
     boolean isDetectingAprilTag = LimelightHelpers.getTV("");
     if (isDetectingAprilTag) {
-      this.lostFramesCounter = 0;
+      this.lostSpeakerFramesCounter = 0;
       this.lastTxMeasurement = LimelightHelpers.getTX("");
       ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
       driveOmegaPIDfo(speeds, 0, this.lastTxMeasurement, this.pidTrackApril, false);
     } else {
-      this.lostFramesCounter++;
-      if (this.lostFramesCounter <= this.MAX_LOST_SPEAKER_FRAMES) {
+      this.lostSpeakerFramesCounter++;
+      if (this.lostSpeakerFramesCounter <= this.MAX_LOST_NOTE_FRAMES) {
         ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
         driveOmegaPIDfo(speeds, 0, this.lastTxMeasurement, this.pidTrackApril, false);
       } else {
@@ -183,18 +188,17 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   @Override
   public void driveAlignNote() {
-    swerveDrive.getFieldVelocity();
-    boolean isDetectingNote = PhotonVision.hasTarget();
+    boolean isDetectingNote = photonVision.hasTarget();
     if (isDetectingNote) {
-      this.lostFramesCounter = 0;
-      this.lastTxMeasurement = PhotonVision.targetPositionX();
-      ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
-      driveOmegaPIDfo(speeds, 0, this.lastTxMeasurement, this.pidTrackNote, false);
+      this.lostNotesFrameCounter = 0;
+      this.targetNotePositionX = photonVision.targetPositionX();
+      Translation2d speeds = new Translation2d(1, 0);
+      driveToNoteCommand(speeds, this.pidTrackNote.calculate(this.targetNotePositionX, 0));
     } else {
-      this.lostFramesCounter++;
-      if (this.lostFramesCounter <= this.MAX_LOST_SPEAKER_FRAMES) {
-        ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
-        driveOmegaPIDfo(speeds, 0, this.lastTxMeasurement, this.pidTrackNote, false);
+      this.lostNotesFrameCounter++;
+      if (this.lostNotesFrameCounter <= this.MAX_LOST_SPEAKER_FRAMES) {
+        Translation2d speeds = new Translation2d(1, 0);
+        driveToNoteCommand(speeds, this.pidTrackNote.calculate(this.targetNotePositionX, 0));
       } else {
         driveAlignAngleButton();
       }
@@ -202,27 +206,9 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     this.state = "DRIVE_ALIGN_NOTE"; // Add to the log entry
   }
 
-  public void driveTowardsNote() {
-    boolean isDetectingNote = PhotonVision.hasTarget();
-    if (isDetectingNote) {
-      this.lostFramesCounter = 0;
-      double targetPositionX = PhotonVision.targetPositionX();
-      Translation2d speeds = new Translation2d(1, 0); // getTargetSpeedsAngle(controller.getYtranslation()
-      driveToNoteCommand(speeds, this.pidTrackNote.calculate(targetPositionX, 0));
-    } else {
-      this.lostFramesCounter++;
-      if (this.lostFramesCounter <= this.MAX_LOST_SPEAKER_FRAMES) {
-        ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
-        driveOmegaPIDfo(speeds, 0, this.lastTxMeasurement, this.pidTrackNote, false);
-      } else {
-        driveAlignAngleButton();
-      }
-    }
-  }
-
   private void driveToNoteCommand(Translation2d translation, double rotation) {
     Translation2d centerOfRotation = new Translation2d(0, 0);
-    swerveDrive.drive(translation, rotation, false, true, centerOfRotation);
+    swerveDrive.drive(translation, rotation, false, false, centerOfRotation);
     return;
   }
 
@@ -439,9 +425,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   }
 
   private void updateLogs() {
-    Pose2d currentPose = this.swerveDrive.getPose();
-    double[] poseArray = { currentPose.getX(), currentPose.getY(), currentPose.getRotation().getRadians() };
-    this.poseLogEntry.append(poseArray);
+    this.poseLogEntry.appendRadians(this.swerveDrive.getPose());
     this.targetXSpeedLogEntry.append(this.targetSpeeds.vxMetersPerSecond);
     this.targetYSpeedLogEntry.append(this.targetSpeeds.vyMetersPerSecond);
     this.targetOmegaSpeedLogEntry.append(this.targetSpeeds.omegaRadiansPerSecond);
