@@ -16,7 +16,6 @@ public class RobotSubsystems extends SubsystemBase {
 
   private SubsystemBase intakeSubsystem;
   private SubsystemBase shooterSubsystem;
-  private SubsystemBase cameraSubsystem;
 
   public static boolean shootFinished;
 
