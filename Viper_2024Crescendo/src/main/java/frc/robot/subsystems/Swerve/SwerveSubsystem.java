@@ -32,7 +32,6 @@ import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
 import frc.Java_Is_UnderControl.Logging.Pose2dLogEntry;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CommandsConstants;
-import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Joysticks.ControlBoard;
 import frc.robot.subsystems.Limelight;
@@ -66,7 +65,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   private Rotation2d angleAlign = new Rotation2d(Units.degreesToRadians(0));
 
   PIDController pidTrackApril = new PIDController(CommandsConstants.P_TrackSpeaker, CommandsConstants.I_TrackSpeaker,
-      CommandsConstants.D_TrackSpeaker, 0.3);
+      CommandsConstants.D_TrackSpeaker);
 
   Pose2d poseVision;
 
@@ -171,6 +170,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
       this.lostFramesCounter = 0;
       this.lastTxMeasurement = LimelightHelpers.getTX("");
       ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
+      Limelight.tvAfterTweak = true;
       driveOmegaPIDfo(speeds, 0, this.lastTxMeasurement, this.pidTrackApril, false);
     } else {
       this.lostFramesCounter++;
@@ -183,8 +183,12 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
         driveAlignAngleButton();
       }
     }
-    ShooterConstants.ableToShoot.isSwerveAlignedWithSpeaker = this.pidTrackApril.atSetpoint();
     this.state = "DRIVE_ALIGN_SPEAKER";
+  }
+
+  @Override
+  public boolean isSwerveAlignedWithSpeaker() {
+    return this.pidTrackApril.atSetpoint();
   }
 
   @Override
@@ -399,9 +403,9 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     this.targetXSpeedLogEntry.append(this.targetSpeeds.vxMetersPerSecond);
     this.targetYSpeedLogEntry.append(this.targetSpeeds.vyMetersPerSecond);
     this.targetOmegaSpeedLogEntry.append(this.targetSpeeds.omegaRadiansPerSecond);
-    this.isAlignedWithSpeakerLogEntry.append(ShooterConstants.ableToShoot.isSwerveAlignedWithSpeaker);
+    this.isAlignedWithSpeakerLogEntry.append(isSwerveAlignedWithSpeaker());
     this.txMeasurementLlLogEntry.append(this.lastTxMeasurement);
-    this.tvMeasurementLlLogEntry.append(Limelight.tv);
+    this.tvMeasurementLlLogEntry.append(LimelightHelpers.getTV(""));
     this.stateLogEntry.append(this.state);
   }
 }

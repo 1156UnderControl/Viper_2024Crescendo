@@ -9,10 +9,13 @@ import frc.robot.subsystems.Intake.IIntake;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
 import frc.robot.subsystems.Shooter.IShooter;
 import frc.robot.subsystems.Shooter.ShooterSubsystem;
+import frc.robot.subsystems.Swerve.ISwerve;
+import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
 public class RobotSubsystems extends SubsystemBase {
   public IIntake intake;
   public IShooter shooter;
+  public ISwerve swerve;
 
   private SubsystemBase intakeSubsystem;
   private SubsystemBase shooterSubsystem;
@@ -23,11 +26,13 @@ public class RobotSubsystems extends SubsystemBase {
 
   private DoubleLogEntry batteryVoltageLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/Robot/BatteryVoltage");
 
-  private DoubleLogEntry totalCurrentDrawLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/Robot/TotalCurrentDraw");
+  private DoubleLogEntry totalCurrentDrawLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
+      "/Robot/TotalCurrentDraw");
 
   public RobotSubsystems() {
     this.intake = IntakeSubsystem.getInstance();
     this.shooter = ShooterSubsystem.getInstance();
+    this.swerve = SwerveSubsystem.getInstance();
     this.intakeSubsystem = IntakeSubsystem.getInstance();
     this.shooterSubsystem = ShooterSubsystem.getInstance();
     this.powerDistributionHub = new PowerDistribution();
@@ -43,5 +48,9 @@ public class RobotSubsystems extends SubsystemBase {
     this.shooterSubsystem.periodic();
     this.batteryVoltageLogEntry.append(this.powerDistributionHub.getVoltage());
     this.totalCurrentDrawLogEntry.append(this.powerDistributionHub.getTotalCurrent());
+  }
+
+  public boolean isRobotAbleToShoot() {
+    return shooter.isPivotAtSetpoint() && shooter.isFlywheelAtSetpoint() && swerve.isSwerveAlignedWithSpeaker();
   }
 }

@@ -42,7 +42,7 @@ public class RobotContainer {
 
   private final SwerveSubsystem swerve;
 
-  public final RobotSubsystems robot = new RobotSubsystems();
+  public final RobotSubsystems robot;
 
   public final LedSubsystem led = new LedSubsystem();
 
@@ -53,6 +53,7 @@ public class RobotContainer {
   public RobotContainer() {
     this.swerve = SwerveSubsystem.getInstance(new File(Filesystem.getDeployDirectory(),
         "swerve/swerve"));
+    this.robot = new RobotSubsystems();
     NamedCommands.registerCommand("Vision Update", new AutonomousVisionUpdate(swerve));
     NamedCommands.registerCommand("Intake", new AutonomousCollect(robot));
     NamedCommands.registerCommand("Shoot", new AutonomousShoot(robot).andThen(Commands.waitSeconds(0.1)));

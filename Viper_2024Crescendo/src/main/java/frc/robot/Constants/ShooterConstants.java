@@ -10,13 +10,6 @@ public class ShooterConstants {
 
   public static final double pivotGoalDeadband = 5;
 
-  public class ableToShoot {
-    public static boolean isSwerveAlignedWithSpeaker = false;
-    public static boolean isShooterAtRPM = false;
-    public static boolean isShooterPivotAtSetpoint = false;
-    public static boolean ableToShoot = isShooterAtRPM && isShooterPivotAtSetpoint && isSwerveAlignedWithSpeaker;
-  }
-
   public class tunning_values_pivot {
     public static final double KS = 0.63;
     public static final double KV = 0.04;

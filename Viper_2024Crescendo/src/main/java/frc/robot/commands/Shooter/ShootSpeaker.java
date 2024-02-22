@@ -20,6 +20,6 @@ public class ShootSpeaker extends Command {
 
   @Override
   public boolean isFinished() {
-    return this.robot.shooter.isAtSetpoint() && mControlBoard.getShoot().getAsBoolean();
+    return this.robot.isRobotAbleToShoot() && !mControlBoard.getShoot().getAsBoolean();
   }
 }

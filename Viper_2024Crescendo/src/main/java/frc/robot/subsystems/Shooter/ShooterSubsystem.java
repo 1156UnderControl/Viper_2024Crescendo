@@ -11,6 +11,7 @@ import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.Java_Is_UnderControl.Util.StabilizeChecker;
 import frc.Java_Is_UnderControl.Util.Util;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Limelight;
@@ -62,13 +63,17 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   private BooleanLogEntry isAtSetpointLog = new BooleanLogEntry(DataLogManager.getLog(),
       "/ShooterSubsystem/IsAtSetpoint");
 
+  private BooleanLogEntry flywheelAtSetpointLog = new BooleanLogEntry(DataLogManager.getLog(),
+      "/ShooterSubsystem/FlywheelAtSetpoint");
+
   private BooleanLogEntry hasNoteLog = new BooleanLogEntry(DataLogManager.getLog(), "/ShooterSubsystem/HasNote");
 
   private String state = "SAFE_POSITION";
 
   private StringLogEntry stateLog = new StringLogEntry(DataLogManager.getLog(), "/ShooterSubsystem/State");
 
-  private frc.Java_Is_UnderControl.Util.StabilizeChecker stabilizeChecker = new frc.Java_Is_UnderControl.Util.StabilizeChecker();
+  private StabilizeChecker lowerFlywheelStability = new StabilizeChecker();
+  private StabilizeChecker upperFlywheelStability = new StabilizeChecker();
 
   public static ShooterSubsystem getInstance() {
     if (shooterInstance == null) {
@@ -162,7 +167,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     SmartDashboard.putNumber("Velocity Feeder", this.feederMotor.getVelocity());
     SmartDashboard.putNumber("Output Shooter Flywheel", this.upperFlywheelMotor.getAppliedOutput());
     SmartDashboard.putBoolean("hasNote", this.hasNote);
-    SmartDashboard.putBoolean("Shooter At Setpoint", this.isAtSetpoint());
+    SmartDashboard.putBoolean("Shooter At Setpoint", this.isPivotAtSetpoint());
   }
 
   @Override
@@ -266,11 +271,10 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   }
 
   @Override
-  public boolean isAtSetpoint() {
+  public boolean isPivotAtSetpoint() {
     double minPosition = this.goal - ShooterConstants.pivotGoalDeadband;
     double maxPosition = this.goal + ShooterConstants.pivotGoalDeadband;
     boolean atSP = Util.inRange(this.pivotMotor.getPosition(), minPosition, maxPosition);
-    ShooterConstants.ableToShoot.isShooterPivotAtSetpoint = atSP;
     return atSP;
   }
 
@@ -324,14 +328,13 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     this.lowerFlywheelMotor.setVelocityReference(velocity, 0);
     this.upperFlywheelMotor.setVelocityReference(velocity, 0);
     this.setpointVelocityShooter = velocity;
-    ShooterConstants.ableToShoot.isShooterAtRPM = isFlywheelAtSetpoint();
   }
 
-  private boolean isFlywheelAtSetpoint() {
-    return stabilizeChecker.isStableInRange(this.lowerFlywheelMotor.getVelocity(),
+  public boolean isFlywheelAtSetpoint() {
+    return lowerFlywheelStability.isStableInRange(this.lowerFlywheelMotor.getVelocity(),
         setpointVelocityShooter,
         50)
-        && stabilizeChecker.isStableInRange(this.upperFlywheelMotor.getVelocity(),
+        && upperFlywheelStability.isStableInRange(this.upperFlywheelMotor.getVelocity(),
             setpointVelocityShooter,
             50);
   }
@@ -342,7 +345,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private void updateLogs() {
     this.pivotGoalLog.append(this.goal);
-    this.isAtSetpointLog.append(this.isAtSetpoint());
+    this.isAtSetpointLog.append(this.isPivotAtSetpoint());
+    this.flywheelAtSetpointLog.append(isFlywheelAtSetpoint());
     this.hasNoteLog.append(this.hasNote);
     this.stateLog.append(this.state);
     this.pivotMotor.updateLogs();

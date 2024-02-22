@@ -9,4 +9,5 @@ public interface ISwerve {
 
   void intakeNote();
 
+  boolean isSwerveAlignedWithSpeaker();
 }
