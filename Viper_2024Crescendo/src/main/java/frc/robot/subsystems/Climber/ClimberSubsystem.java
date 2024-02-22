@@ -35,7 +35,7 @@ public class ClimberSubsystem extends SubsystemBase implements IClimber {
 
   @Override
   public void release() {
-    goal = 80;
+    goal = 133;
     if (isAtSetpoint()) {
       climberMotor.set(0);
     } else {
@@ -59,6 +59,6 @@ public class ClimberSubsystem extends SubsystemBase implements IClimber {
 
   @Override
   public boolean isAtSetpoint() {
-    return Util.inRange(climberMotor.getPosition(), goal - 5, goal + 5);
+    return Util.inRange(climberMotor.getPosition(), goal - 3, goal + 3);
   }
 }
