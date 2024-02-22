@@ -103,7 +103,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    this.robotContainer.led.rainbow();
+    this.robotContainer.led.setRainbow();
   }
 
   /**
