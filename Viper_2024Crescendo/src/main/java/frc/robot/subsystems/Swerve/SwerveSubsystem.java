@@ -204,9 +204,9 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     boolean isDetectingNote = PhotonVision.hasTarget();
     this.lostFramesCounter = 0;
     if (isDetectingNote) {
-      this.lastTxMeasurement = PhotonVision.targetPositionX();
+      double targetPositionX = PhotonVision.targetPositionX();
       Translation2d speeds = new Translation2d(1, 0); // getTargetSpeedsAngle(controller.getYtranslation()
-      driveToNote(speeds, this.pidTrackNote.calculate(lastTxMeasurement, 0));
+      driveToNoteCommand(speeds, this.pidTrackNote.calculate(targetPositionX, 0));
     } else {
       this.lostFramesCounter++;
       if (this.lostFramesCounter <= this.MAX_LOST_SPEAKER_FRAMES) {
@@ -218,7 +218,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     }
   }
 
-  private void driveToNote(Translation2d translation, double rotation) {
+  private void driveToNoteCommand(Translation2d translation, double rotation) {
     Translation2d centerOfRotation = new Translation2d(0, 0);
     swerveDrive.drive(translation, rotation, false, true, centerOfRotation);
     return;

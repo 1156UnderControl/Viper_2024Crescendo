@@ -9,6 +9,8 @@ public class PhotonVision {
 
   static private PhotonCamera camera = new PhotonCamera("photonvision");
 
+  static public double setPoint = 0.5;
+
   static private PhotonPipelineResult getResult() {
     return camera.getLatestResult();
   }
