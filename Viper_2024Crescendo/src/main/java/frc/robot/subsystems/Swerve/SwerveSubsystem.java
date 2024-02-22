@@ -182,6 +182,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   @Override
   public void driveAlignNote() {
+    swerveDrive.getFieldVelocity();
     boolean isDetectingNote = PhotonVision.hasTarget();
     if (isDetectingNote) {
       this.lostFramesCounter = 0;
@@ -202,8 +203,8 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   public void driveTowardsNote() {
     boolean isDetectingNote = PhotonVision.hasTarget();
-    this.lostFramesCounter = 0;
     if (isDetectingNote) {
+      this.lostFramesCounter = 0;
       double targetPositionX = PhotonVision.targetPositionX();
       Translation2d speeds = new Translation2d(1, 0); // getTargetSpeedsAngle(controller.getYtranslation()
       driveToNoteCommand(speeds, this.pidTrackNote.calculate(targetPositionX, 0));
