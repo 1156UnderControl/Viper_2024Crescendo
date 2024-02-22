@@ -1,5 +1,8 @@
 package frc.robot;
 
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Intake.IIntake;
@@ -17,11 +20,20 @@ public class RobotSubsystems extends SubsystemBase {
 
   public static boolean shootFinished;
 
+  private PowerDistribution powerDistributionHub;
+
+  private DoubleLogEntry batteryVoltageLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/Robot/BatteryVoltage");
+
+  private DoubleLogEntry totalCurrentDrawLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/Robot/TotalCurrentDraw");
+
   public RobotSubsystems() {
     this.intake = IntakeSubsystem.getInstance();
     this.shooter = ShooterSubsystem.getInstance();
     this.intakeSubsystem = IntakeSubsystem.getInstance();
     this.shooterSubsystem = ShooterSubsystem.getInstance();
+    this.powerDistributionHub = new PowerDistribution();
+    this.batteryVoltageLogEntry.append(this.powerDistributionHub.getVoltage());
+    this.totalCurrentDrawLogEntry.append(this.powerDistributionHub.getTotalCurrent());
   }
 
   @Override
@@ -30,5 +42,7 @@ public class RobotSubsystems extends SubsystemBase {
     SmartDashboard.putData("Subsystem Shooter", ShooterSubsystem.getInstance());
     this.intakeSubsystem.periodic();
     this.shooterSubsystem.periodic();
+    this.batteryVoltageLogEntry.append(this.powerDistributionHub.getVoltage());
+    this.totalCurrentDrawLogEntry.append(this.powerDistributionHub.getTotalCurrent());
   }
 }

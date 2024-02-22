@@ -1,0 +1,76 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.4148382676223252,
+        "y": 6.745441850370149
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.272282384793014,
+        "y": 7.471513716208602
+      },
+      "isLocked": false,
+      "linkedName": "end path3 mv3"
+    },
+    {
+      "anchor": {
+        "x": 7.875578828080734,
+        "y": 7.400207108106525
+      },
+      "prevControl": {
+        "x": 7.609171372188899,
+        "y": 7.262069908755202
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.05,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.05,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 5.0,
+    "maxAngularVelocity": 200.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Auto MAX VERSTAPPEN v1",
+  "previewStartingState": {
+    "rotation": 27.35,
+    "velocity": 0.5
+  },
+  "useDefaultConstraints": true
+}
