@@ -164,7 +164,6 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   @Override
   public void driveAlignSpeaker() {
-    swerveDrive.getFieldVelocity();
     boolean isDetectingAprilTag = LimelightHelpers.getTV("");
     if (isDetectingAprilTag) {
       this.lostFramesCounter = 0;
@@ -312,11 +311,11 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   }
 
   private ChassisSpeeds getTargetSpeedsAngleJoystick(double xInput, double yInput, double headingX, double headingY) {
-    if (DriverStation.getAlliance().get() == Alliance.Blue) {
+    if (DriverStation.getAlliance().get() == Alliance.Red) {
       xInput = -xInput;
       yInput = -yInput;
-      headingX = -headingX;
-      headingY = -headingY;
+      headingX = headingX;
+      headingY = headingY;
     }
     double angleTarget = Math.atan2(headingX, headingY);
     ChassisSpeeds targetSpeeds;
