@@ -140,6 +140,14 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     this.updateSmartDashboard();
     this.pivotMotor.setPositionReferenceArbFF(profilePosition(goal), getFeedForwardProfiled());
     this.updateLogs();
+    this.runNoteCorrection();
+  }
+
+  private void runNoteCorrection() {
+    if (state != "INTAKING" && state != "PREPARING_SPEAKER_SHOT" && state != "PREPARING_AMP_SHOT"
+        && state != "SHOOTING") {
+      correctNoteCollected();
+    }
   }
 
   private void updateManualValuesFromDashboard() {
@@ -244,9 +252,15 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public void goToSecuredPosition() {
+    correctNoteCollected();
+    this.goal = ShooterConstants.setpoints.ANGLE_SECURED;
+    this.state = "SAFE_POSITION";
+  }
+
+  private void correctNoteCollected() {
     if (this.hasNote) {
       if (noteSensor.getBoolean()) {
-        led.setOrange();
+        led.setGreen();
         this.lowerFlywheelMotor.set(0);
         this.upperFlywheelMotor.set(0);
         this.feederMotor.set(0);
@@ -262,8 +276,6 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
       this.upperFlywheelMotor.set(0);
       this.feederMotor.set(0);
     }
-    this.goal = ShooterConstants.setpoints.ANGLE_SECURED;
-    this.state = "SAFE_POSITION";
   }
 
   @Override

@@ -12,8 +12,6 @@ public class SecuredPosition extends SequentialCommandGroup {
     addCommands(
         new InstantCommand(() -> RobotSubsystems.shootFinished = false),
         new GoToSecuredShooter(robot),
-        new GoToSecuredIntake(robot)
-
-    );
+        new GoToSecuredIntake(robot));
   }
 }

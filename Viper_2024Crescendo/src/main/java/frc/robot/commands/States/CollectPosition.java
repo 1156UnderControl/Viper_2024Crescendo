@@ -14,7 +14,7 @@ public class CollectPosition extends SequentialCommandGroup {
     addCommands(
         new GoToIntakeIntake(robot, led),
         new CollectToShooter(robot),
-        new InstantCommand(() -> led.setOrange(), led),
+        new InstantCommand(() -> led.setGreen(), led),
         Commands.runOnce(() -> robot.intake.stopIntaking()));
   }
 }
