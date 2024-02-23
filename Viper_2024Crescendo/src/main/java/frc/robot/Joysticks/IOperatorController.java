@@ -16,4 +16,10 @@ public interface IOperatorController {
   Trigger climb();
 
   Trigger release();
+
+  Trigger falsePositive();
+
+  Trigger falseNegative();
+
+  Trigger expell();
 }

@@ -224,6 +224,16 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   }
 
   @Override
+  public void setHasNoteFalse() {
+    hasNote = false;
+  }
+
+  @Override
+  public void setHasNoteTrue() {
+    hasNote = true;
+  }
+
+  @Override
   public void prepareAmpShot() {
     this.feederMotor.set(0);
     setVelocityFlywheel(ShooterConstants.setpoints.VELOCITY_SHOOT_AMP);
@@ -255,6 +265,12 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   @Override
   public void cruise() {
     setVelocityFlywheel(ShooterConstants.setpoints.VELOCITY_CRUISE_SHOOTER);
+  }
+
+  @Override
+  public void expell() {
+    setVelocityFlywheel(ShooterConstants.setpoints.VELOCITY_CRUISE_SHOOTER);
+    feederMotor.set(1);
   }
 
   @Override
