@@ -68,12 +68,6 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "path 3.5 5 notes safe"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "Shoot"

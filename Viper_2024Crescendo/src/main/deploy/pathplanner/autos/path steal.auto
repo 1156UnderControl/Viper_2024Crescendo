@@ -1,0 +1,79 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.7636103146671328,
+      "y": 4.50867207012588
+    },
+    "rotation": -59.35000000000002
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Aim Shoot Subwoofer"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "path 1 steal"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "path 2 steal"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Aim Shoot Steal"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "path 3 steal"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "path 4 steal"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Aim Shoot Steal"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

@@ -25,7 +25,9 @@ public interface IShooter {
 
   boolean isSecureForIntake();
 
-  boolean isAtSetpoint();
+  boolean isPivotAtSetpoint();
+
+  boolean isFlywheelAtSetpoint();
 
   void setManualPivotPosition(double goal);
 }

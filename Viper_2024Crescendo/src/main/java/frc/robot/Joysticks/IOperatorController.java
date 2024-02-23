@@ -12,4 +12,8 @@ public interface IOperatorController {
   Trigger getPrepareSpeaker();
 
   Trigger getShoot();
+
+  Trigger climb();
+
+  Trigger release();
 }

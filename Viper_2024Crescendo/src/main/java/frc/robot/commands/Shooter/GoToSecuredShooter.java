@@ -18,6 +18,6 @@ public class GoToSecuredShooter extends Command {
 
   @Override
   public boolean isFinished() {
-    return this.robot.shooter.isAtSetpoint();
+    return this.robot.shooter.isSecureForIntake();
   }
 }

@@ -11,6 +11,5 @@ public interface ISwerve {
 
   void intakeNote();
 
-  void lockSwerve();
-
+  boolean isSwerveAlignedWithSpeaker();
 }
