@@ -39,7 +39,8 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
 
   private DoubleLogEntry pivotGoalLog = new DoubleLogEntry(DataLogManager.getLog(), "/IntakeSubsystem/PivotGoal");
 
-  private BooleanLogEntry isAtSetpointLog = new BooleanLogEntry(DataLogManager.getLog(), "/IntakeSubsystem/IsAtSetpoint");
+  private BooleanLogEntry isAtSetpointLog = new BooleanLogEntry(DataLogManager.getLog(),
+      "/IntakeSubsystem/IsAtSetpoint");
 
   private String state = "SAFE_POSITION";
 
@@ -129,7 +130,9 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
 
   @Override
   public void expell() {
-
+    this.goal = 0;
+    this.rollerMotor.set(IntakeConstants.setpoints.SPEED_EXPELL);
+    this.state = "EXPELL";
   }
 
   @Override

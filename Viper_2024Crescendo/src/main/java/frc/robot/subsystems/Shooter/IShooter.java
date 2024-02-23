@@ -21,6 +21,8 @@ public interface IShooter {
 
   void cruise();
 
+  void expell();
+
   boolean hasShooted();
 
   boolean isSecureForIntake();
@@ -30,4 +32,8 @@ public interface IShooter {
   boolean isFlywheelAtSetpoint();
 
   void setManualPivotPosition(double goal);
+
+  void setHasNoteFalse();
+
+  void setHasNoteTrue();
 }

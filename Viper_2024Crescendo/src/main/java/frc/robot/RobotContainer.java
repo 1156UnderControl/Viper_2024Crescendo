@@ -24,6 +24,7 @@ import frc.robot.commands.Autonomous.AutonomousShoot;
 import frc.robot.commands.Autonomous.AutonomousVisionUpdate;
 import frc.robot.commands.States.ClimbPosition;
 import frc.robot.commands.States.CollectPosition;
+import frc.robot.commands.States.ExpellPosition;
 import frc.robot.commands.States.SecuredPosition;
 import frc.robot.commands.States.ShootAmpPosition;
 import frc.robot.commands.States.ShootSpeakerPosition;
@@ -84,6 +85,9 @@ public class RobotContainer {
     mControlBoard.getPrepareSpeaker().onTrue(new ShootSpeakerPosition(robot));
     mControlBoard.getPrepareSpeaker().onTrue(new SwerveAlignSpeaker(swerve));
     mControlBoard.release().onTrue(new ClimbPosition(robot));
+    mControlBoard.expell().onTrue(new ExpellPosition(robot));
+    mControlBoard.falseNegative().onTrue(new InstantCommand(() -> robot.shooter.setHasNoteTrue()));
+    mControlBoard.falsePositive().onTrue(new InstantCommand(() -> robot.shooter.setHasNoteFalse()));
   }
 
   public Command getAutonomousCommand() {
