@@ -11,7 +11,7 @@ public class LedSubsystem extends SubsystemBase {
 
   public LedSubsystem() {
     this.m_led = new AddressableLED(0);
-    this.m_ledBuffer = new AddressableLEDBuffer(6 + 6 + 6 + 6);
+    this.m_ledBuffer = new AddressableLEDBuffer(26);
     this.m_led.setLength(m_ledBuffer.getLength());
     this.m_led.setData(m_ledBuffer);
     this.m_led.start();
@@ -71,7 +71,7 @@ public class LedSubsystem extends SubsystemBase {
 
   private void green() {
     for (var i = 0; i < m_ledBuffer.getLength(); i++) {
-      m_ledBuffer.setRGB(i, 0, 255, 0);
+      m_ledBuffer.setRGB(i, 0, 0, 255);
     }
   }
 
