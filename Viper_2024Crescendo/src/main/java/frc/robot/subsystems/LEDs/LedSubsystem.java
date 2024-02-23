@@ -8,13 +8,34 @@ public class LedSubsystem extends SubsystemBase {
   private AddressableLED m_led;
   private AddressableLEDBuffer m_ledBuffer;
   private int m_rainbowFirstPixelHue;
+  private boolean firstBlink = true;
+  private static LedSubsystem instance = null;
 
-  public LedSubsystem() {
+  public static LedSubsystem getInstance() {
+    if (instance == null) {
+      instance = new LedSubsystem();
+    }
+    return instance;
+  }
+
+  private LedSubsystem() {
     this.m_led = new AddressableLED(0);
-    this.m_ledBuffer = new AddressableLEDBuffer(60);
+    this.m_ledBuffer = new AddressableLEDBuffer(26);
     this.m_led.setLength(m_ledBuffer.getLength());
     this.m_led.setData(m_ledBuffer);
     this.m_led.start();
+  }
+
+  public void setLEDOff() {
+    none();
+    m_led.setData(m_ledBuffer);
+  }
+
+  private void none() {
+    for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+      m_ledBuffer.setRGB(i, 0, 0, 0);
+    }
+    firstBlink = true;
   }
 
   public void setRainbow() {
@@ -31,5 +52,45 @@ public class LedSubsystem extends SubsystemBase {
     m_rainbowFirstPixelHue += 3;
     // Verifica Limites
     m_rainbowFirstPixelHue %= 180;
+  }
+
+  public void setOrange() {
+    orange();
+    m_led.setData(m_ledBuffer);
+  }
+
+  private void orange() {
+    for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+      m_ledBuffer.setRGB(i, 255, 0, 165);
+    }
+  }
+
+  public void setGreen() {
+    green();
+    m_led.setData(m_ledBuffer);
+  }
+
+  private void green() {
+    for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+      m_ledBuffer.setRGB(i, 0, 0, 255);
+    }
+  }
+
+  public void setRed() {
+    red();
+    m_led.setData(m_ledBuffer);
+  }
+
+  public void blinkRed() {
+    red();
+    m_led.setData(m_ledBuffer);
+    none();
+    m_led.setData(m_ledBuffer);
+  }
+
+  private void red() {
+    for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+      m_ledBuffer.setRGB(i, 255, 0, 0);
+    }
   }
 }

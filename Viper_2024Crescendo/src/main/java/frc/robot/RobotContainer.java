@@ -43,10 +43,8 @@ import frc.robot.subsystems.Swerve.SwerveSubsystem;
 public class RobotContainer {
 
   private final SwerveSubsystem swerve;
-
+  public final LedSubsystem led = LedSubsystem.getInstance();
   public final RobotSubsystems robot;
-
-  public final LedSubsystem led = new LedSubsystem();
 
   private final SendableChooser<Command> autoChooser;
 
@@ -77,7 +75,7 @@ public class RobotContainer {
     mControlBoard.setHeadingLeft().onTrue(new InstantCommand(swerve::setAngle90));
     mControlBoard.setHeadingRight().onTrue(new InstantCommand(swerve::setAngleNeg90));
 
-    mControlBoard.getIntake().onTrue(new CollectPosition(robot));
+    mControlBoard.getIntake().onTrue(new CollectPosition(robot, led));
     mControlBoard.getSecured().onTrue(new SecuredPosition(robot));
     mControlBoard.getSecured().onTrue(new SwerveTeleopControl(swerve));
     mControlBoard.getPrepareAmp().onTrue(new ShootAmpPosition(robot));

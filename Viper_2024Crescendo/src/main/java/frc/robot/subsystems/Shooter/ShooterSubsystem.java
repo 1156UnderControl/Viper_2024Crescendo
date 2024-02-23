@@ -15,6 +15,7 @@ import frc.Java_Is_UnderControl.Util.StabilizeChecker;
 import frc.Java_Is_UnderControl.Util.Util;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.LEDs.LedSubsystem;
 import frc.robot.subsystems.Motors.Motor;
 import frc.robot.subsystems.Motors.SparkMAXMotor;
 import frc.robot.subsystems.Motors.VortexMotor;
@@ -30,6 +31,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private boolean manualValues;
 
+  private LedSubsystem led;
   private double setpointVelocityShooter;
 
   private double kDt = 0.02;
@@ -85,6 +87,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   }
 
   private ShooterSubsystem() {
+    led = LedSubsystem.getInstance();
     this.hasNote = false;
     this.configureFlywheelMotor(this.upperFlywheelMotor);
     this.configureFlywheelMotor(this.lowerFlywheelMotor);
@@ -139,6 +142,14 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     this.updateSmartDashboard();
     this.pivotMotor.setPositionReferenceArbFF(profilePosition(goal), getFeedForwardProfiled());
     this.updateLogs();
+    this.runNoteCorrection();
+  }
+
+  private void runNoteCorrection() {
+    if (state != "INTAKING" && state != "PREPARING_SPEAKER_SHOT" && state != "PREPARING_AMP_SHOT"
+        && state != "SHOOTING") {
+      correctNoteCollected();
+    }
   }
 
   private void updateManualValuesFromDashboard() {
@@ -248,28 +259,40 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public void goToSecuredPosition() {
+    correctNoteCollected();
+    this.goal = ShooterConstants.setpoints.ANGLE_SECURED;
+    this.state = "SAFE_POSITION";
+  }
+
+  private void correctNoteCollected() {
     if (this.hasNote) {
       if (noteSensorOut.getBoolean() || noteSensorIn.getBoolean()) {
         this.lowerFlywheelMotor.set(0);
         this.upperFlywheelMotor.set(0);
         this.feederMotor.set(0);
       } else {
+        led.setRed();
         this.lowerFlywheelMotor.set(ShooterConstants.setpoints.VELOCITY_SHOOTER_CORRECT_PASSED_NOTE);
         this.upperFlywheelMotor.set(ShooterConstants.setpoints.VELOCITY_SHOOTER_CORRECT_PASSED_NOTE);
         this.feederMotor.set(ShooterConstants.setpoints.VELOCITY_FEED_CORRECT_PASSED_NOTE);
       }
     } else {
+      led.setRed();
       this.lowerFlywheelMotor.set(0);
       this.upperFlywheelMotor.set(0);
       this.feederMotor.set(0);
     }
-    this.goal = ShooterConstants.setpoints.ANGLE_SECURED;
-    this.state = "SAFE_POSITION";
   }
 
   @Override
   public boolean hasShooted() {
     return !noteSensorOut.getBoolean();
+  }
+
+  @Override
+  public boolean getNoteSensor() {
+    // TODO Auto-generated method stub
+    return noteSensor.getBoolean();
   }
 
   @Override
