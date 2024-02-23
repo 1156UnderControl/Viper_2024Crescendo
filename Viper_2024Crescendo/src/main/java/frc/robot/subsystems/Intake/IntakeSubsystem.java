@@ -130,7 +130,6 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
 
   @Override
   public void expell() {
-    this.goal = 0;
     this.rollerMotor.set(IntakeConstants.setpoints.SPEED_EXPELL);
     this.state = "EXPELL";
   }
