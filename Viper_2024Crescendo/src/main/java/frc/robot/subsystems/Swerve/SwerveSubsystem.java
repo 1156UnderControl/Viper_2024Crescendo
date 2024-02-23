@@ -333,10 +333,12 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     var desiredDeltaPose = new Pose2d(
         speeds.vxMetersPerSecond * dt,
         speeds.vyMetersPerSecond * dt,
-        new Rotation2d(speeds.omegaRadiansPerSecond * dt * 4));
+        new Rotation2d(speeds.omegaRadiansPerSecond * dt * 8));
     var twist = new Pose2d().log(desiredDeltaPose);
 
-    return new ChassisSpeeds((twist.dx / dt), (twist.dy / dt), (speeds.omegaRadiansPerSecond));
+    // return new ChassisSpeeds((twist.dx / dt), (twist.dy / dt),
+    // (speeds.omegaRadiansPerSecond));
+    return speeds;
   }
 
   public ChassisSpeeds getFieldVelocity() {

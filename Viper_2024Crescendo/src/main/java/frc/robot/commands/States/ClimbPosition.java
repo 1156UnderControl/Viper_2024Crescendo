@@ -1,6 +1,5 @@
 package frc.robot.commands.States;
 
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotSubsystems;
 import frc.robot.Joysticks.ControlBoard;
@@ -17,8 +16,6 @@ public class ClimbPosition extends SequentialCommandGroup {
         new GoToClimbIntake(robot),
         new GoToSecuredShooter(robot),
         new ReleaseClimber(robot),
-        Commands.waitUntil(mControlBoard.climb()),
-        new PullClimber(robot),
-        Commands.waitUntil(() -> false));
+        new PullClimber(robot));
   }
 }

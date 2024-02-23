@@ -5,5 +5,9 @@ public interface IClimber {
 
   void climb();
 
+  void stop();
+
+  boolean isNearLimit();
+
   boolean isAtSetpoint();
 }

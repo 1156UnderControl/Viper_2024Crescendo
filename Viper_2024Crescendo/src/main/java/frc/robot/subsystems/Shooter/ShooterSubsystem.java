@@ -281,7 +281,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   @Override
   public void setManualPivotPosition(double goal) {
     if (hasNote && !noteSensor.getBoolean()) {
-      this.feederMotor.set(ShooterConstants.setpoints.VELOCITY_FEED_CORRECT_PASSED_NOTE);
+      this.feederMotor.set(0);
     } else {
       this.feederMotor.set(0);
     }

@@ -36,6 +36,18 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Aim Shoot 3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "3"

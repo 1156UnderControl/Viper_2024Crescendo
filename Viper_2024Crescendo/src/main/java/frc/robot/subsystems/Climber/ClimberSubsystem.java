@@ -53,8 +53,14 @@ public class ClimberSubsystem extends SubsystemBase implements IClimber {
     }
   }
 
+  @Override
   public void stop() {
     climberMotor.set(0);
+  }
+
+  @Override
+  public boolean isNearLimit() {
+    return climberMotor.getPosition() < 5;
   }
 
   @Override

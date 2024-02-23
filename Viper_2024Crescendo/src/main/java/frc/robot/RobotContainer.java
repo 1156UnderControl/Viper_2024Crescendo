@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Joysticks.ControlBoard;
 import frc.robot.commands.Autonomous.AutonomousAim;
+import frc.robot.commands.Autonomous.AutonomousAimSteal;
 import frc.robot.commands.Autonomous.AutonomousAimSubwoofer;
 import frc.robot.commands.Autonomous.AutonomousCollect;
 import frc.robot.commands.Autonomous.AutonomousShoot;
@@ -63,6 +64,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Aim Shoot 2", new AutonomousAim(robot, 1));
     NamedCommands.registerCommand("Aim Shoot 3", new AutonomousAim(robot, 2));
     NamedCommands.registerCommand("Aim Shoot 4", new AutonomousAim(robot, 3));
+    NamedCommands.registerCommand("Aim Shoot Steal", new AutonomousAimSteal(robot));
     autoChooser = AutoBuilder.buildAutoChooser("New Auto");
     SmartDashboard.putData("Aut Chooser", autoChooser);
     configureBindings();
@@ -78,9 +80,9 @@ public class RobotContainer {
     mControlBoard.getIntake().onTrue(new CollectPosition(robot));
     mControlBoard.getSecured().onTrue(new SecuredPosition(robot));
     mControlBoard.getSecured().onTrue(new SwerveTeleopControl(swerve));
-    mControlBoard.getPrepareAmp().and(() -> robot.shooter.hasNote()).onTrue(new ShootAmpPosition(robot));
-    mControlBoard.getPrepareSpeaker().and(() -> robot.shooter.hasNote()).onTrue(new ShootSpeakerPosition(robot));
-    mControlBoard.getPrepareSpeaker().and(() -> robot.shooter.hasNote()).onTrue(new SwerveAlignSpeaker(swerve));
+    mControlBoard.getPrepareAmp().onTrue(new ShootAmpPosition(robot));
+    mControlBoard.getPrepareSpeaker().onTrue(new ShootSpeakerPosition(robot));
+    mControlBoard.getPrepareSpeaker().onTrue(new SwerveAlignSpeaker(swerve));
     mControlBoard.release().onTrue(new ClimbPosition(robot));
   }
 
