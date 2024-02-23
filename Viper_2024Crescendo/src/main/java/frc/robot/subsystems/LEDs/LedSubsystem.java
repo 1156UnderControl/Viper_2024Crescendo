@@ -2,16 +2,14 @@ package frc.robot.subsystems.LEDs;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LedSubsystem extends SubsystemBase {
   private AddressableLED m_led;
   private AddressableLEDBuffer m_ledBuffer;
   private int m_rainbowFirstPixelHue;
-  private Timer timerBlink;
   private boolean firstBlink = true;
-  private static LedSubsystem instance;
+  private static LedSubsystem instance = null;
 
   public static LedSubsystem getInstance() {
     if (instance == null) {
@@ -21,7 +19,6 @@ public class LedSubsystem extends SubsystemBase {
   }
 
   private LedSubsystem() {
-    this.timerBlink.start();
     this.m_led = new AddressableLED(0);
     this.m_ledBuffer = new AddressableLEDBuffer(26);
     this.m_led.setLength(m_ledBuffer.getLength());
