@@ -3,6 +3,8 @@ package frc.robot.subsystems.Shooter;
 public interface IShooter {
   void intake();
 
+  void intakeAuto();
+
   void stopIntaking();
 
   void goToIntakePosition();
@@ -19,11 +21,15 @@ public interface IShooter {
 
   void shoot();
 
+  void cruise();
+
   boolean hasShooted();
 
   boolean isSecureForIntake();
 
-  boolean isAtSetpoint();
+  boolean isPivotAtSetpoint();
+
+  boolean isFlywheelAtSetpoint();
 
   void setManualPivotPosition(double goal);
 }

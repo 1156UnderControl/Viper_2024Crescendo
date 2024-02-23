@@ -3,65 +3,53 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.9359704939096027,
-        "y": 6.991369417831561
+        "x": 1.2745940876497153,
+        "y": 5.535354916863679
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.858573531697704,
-        "y": 7.190453639109847
-      },
-      "isLocked": false,
-      "linkedName": "End Path 1"
-    },
-    {
-      "anchor": {
-        "x": 1.7414651662398888,
-        "y": 5.293298118693241
-      },
-      "prevControl": {
-        "x": 1.3425997703454657,
-        "y": 6.609553925144836
-      },
-      "nextControl": {
-        "x": 1.9756818971555188,
-        "y": 4.520382906671663
+        "x": 2.180621536706695,
+        "y": 5.691466561249813
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.6197779071735017,
-        "y": 4.075371117931965
+        "x": 2.4382599407138885,
+        "y": 6.9679477447399965
       },
       "prevControl": {
-        "x": 1.881995204789267,
-        "y": 5.04737055123183
+        "x": 1.475609000559992,
+        "y": 7.238693321658281
+      },
+      "nextControl": {
+        "x": 3.187753479643905,
+        "y": 6.757152686915928
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.2745940876497153,
+        "y": 5.535354916863679
+      },
+      "prevControl": {
+        "x": 2.4616816138054514,
+        "y": 6.031080821077477
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "End Path 2"
+      "linkedName": "shoot safe subwoofer"
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [
-    {
-      "name": "Shoot",
-      "minWaypointRelativePos": 0.9,
-      "maxWaypointRelativePos": 1.05,
-      "constraints": {
-        "maxVelocity": 0.5,
-        "maxAcceleration": 4.0,
-        "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 720.0
-      }
-    }
-  ],
+  "constraintZones": [],
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.9,
+      "waypointRelativePos": 0,
       "command": {
         "type": "sequential",
         "data": {
@@ -69,13 +57,13 @@
             {
               "type": "named",
               "data": {
-                "name": "Shoot"
+                "name": "Intake"
               }
             },
             {
               "type": "named",
               "data": {
-                "name": "Intake"
+                "name": "Aim Shoot Subwoofer"
               }
             }
           ]
@@ -84,9 +72,9 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 5.0,
-    "maxAcceleration": 4.0,
-    "maxAngularVelocity": 540.0,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 200.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
@@ -95,7 +83,10 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Auto NonStop",
-  "previewStartingState": null,
+  "folder": "Auto 5 notes safe",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
   "useDefaultConstraints": false
 }

@@ -1,0 +1,92 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.2745940876497153,
+        "y": 5.535354916863679
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.5950797094176201,
+        "y": 4.649202108675259
+      },
+      "isLocked": false,
+      "linkedName": "shoot safe subwoofer"
+    },
+    {
+      "anchor": {
+        "x": 2.192332373252477,
+        "y": 3.911419406291023
+      },
+      "prevControl": {
+        "x": 0.9285740163109504,
+        "y": 3.936694573429854
+      },
+      "nextControl": {
+        "x": 2.7778742005415524,
+        "y": 3.899708569745241
+      },
+      "isLocked": false,
+      "linkedName": "end path3 safe"
+    },
+    {
+      "anchor": {
+        "x": 1.2788871226815193,
+        "y": 5.539225686154654
+      },
+      "prevControl": {
+        "x": 2.531946633080141,
+        "y": 4.543804579763226
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.5,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Aim Shoot Subwoofer"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 200.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Auto 5 notes safe",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

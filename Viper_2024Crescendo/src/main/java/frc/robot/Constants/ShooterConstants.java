@@ -24,10 +24,11 @@ public class ShooterConstants {
     public static final double MAX_ACCELERATION = 0.04;
 
     public class PID {
-      public static final double P = 0.00006;
-      public static final double I = 0;
-      public static final double D = 0;
+      public static final double P = 0.00015;
+      public static final double I = 0.000001;
+      public static final double D = 0.005;
       public static final double F = 0.00009;
+      public static final double IZone = 1000;
     }
   }
 
@@ -42,9 +43,11 @@ public class ShooterConstants {
 
     public static final double VELOCITY_SHOOT_SPEAKER = 8000;
     public static final double VELOCITY_SHOOT_AMP = 7500;
+    public static final double VELOCITY_CRUISE_SHOOTER = 6000;
     public static final double VELOCITY_SHOOTER_CORRECT_PASSED_NOTE = -0.1;
-    public static final double VELOCITY_FEED_COLLECT = 0.8;
-    public static final double VELOCITY_FEED_SHOOT = 0.8;
+    public static final double VELOCITY_FEED_COLLECT = 0.7;
+    public static final double VELOCITY_FEED_COLLECT_AUTO = 0.3;
+    public static final double VELOCITY_FEED_SHOOT = 0.9;
     public static final double VELOCITY_FEED_CORRECT_PASSED_NOTE = -0.1;
   }
 }

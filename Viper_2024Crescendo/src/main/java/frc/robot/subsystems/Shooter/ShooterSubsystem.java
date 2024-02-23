@@ -11,6 +11,7 @@ import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.Java_Is_UnderControl.Util.StabilizeChecker;
 import frc.Java_Is_UnderControl.Util.Util;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Limelight;
@@ -30,6 +31,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   private boolean manualValues;
 
   private LedSubsystem led;
+  private double setpointVelocityShooter;
 
   private double kDt = 0.02;
 
@@ -63,11 +65,17 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   private BooleanLogEntry isAtSetpointLog = new BooleanLogEntry(DataLogManager.getLog(),
       "/ShooterSubsystem/IsAtSetpoint");
 
+  private BooleanLogEntry flywheelAtSetpointLog = new BooleanLogEntry(DataLogManager.getLog(),
+      "/ShooterSubsystem/FlywheelAtSetpoint");
+
   private BooleanLogEntry hasNoteLog = new BooleanLogEntry(DataLogManager.getLog(), "/ShooterSubsystem/HasNote");
 
   private String state = "SAFE_POSITION";
 
   private StringLogEntry stateLog = new StringLogEntry(DataLogManager.getLog(), "/ShooterSubsystem/State");
+
+  private StabilizeChecker lowerFlywheelStability = new StabilizeChecker();
+  private StabilizeChecker upperFlywheelStability = new StabilizeChecker();
 
   public static ShooterSubsystem getInstance() {
     if (shooterInstance == null) {
@@ -96,7 +104,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     flywheelMotor.configurePIDF(ShooterConstants.tunning_values_shooter.PID.P,
         ShooterConstants.tunning_values_shooter.PID.I,
         ShooterConstants.tunning_values_shooter.PID.D,
-        ShooterConstants.tunning_values_shooter.PID.F);
+        ShooterConstants.tunning_values_shooter.PID.F,
+        ShooterConstants.tunning_values_shooter.PID.IZone);
   }
 
   private void configureFeederMotor() {
@@ -157,11 +166,11 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     SmartDashboard.putNumber("Output Pivot Shooter", this.pivotMotor.getAppliedOutput());
     SmartDashboard.putNumber("Velocity ShooterUp", this.upperFlywheelMotor.getVelocity());
     SmartDashboard.putNumber("Velocity ShooterDown", this.lowerFlywheelMotor.getVelocity());
-    SmartDashboard.putNumber("Setpoint Shooter", this.pivotCurrentSetpoint.position);
+    SmartDashboard.putNumber("Setpoint Shooter", this.goal);
     SmartDashboard.putNumber("Velocity Feeder", this.feederMotor.getVelocity());
     SmartDashboard.putNumber("Output Shooter Flywheel", this.upperFlywheelMotor.getAppliedOutput());
     SmartDashboard.putBoolean("hasNote", this.hasNote);
-    SmartDashboard.putBoolean("Shooter At Setpoint", this.isAtSetpoint());
+    SmartDashboard.putBoolean("Shooter At Setpoint", this.isPivotAtSetpoint());
   }
 
   @Override
@@ -169,6 +178,13 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     this.goToIntakePosition();
     this.runNoteDetection();
     this.feederMotor.set(this.hasNote ? 0 : ShooterConstants.setpoints.VELOCITY_FEED_COLLECT);
+    this.state = "INTAKING";
+  }
+
+  public void intakeAuto() {
+    this.goToIntakePosition();
+    this.runNoteDetection();
+    this.feederMotor.set(this.hasNote ? 0 : ShooterConstants.setpoints.VELOCITY_FEED_COLLECT_AUTO);
     this.state = "INTAKING";
   }
 
@@ -195,6 +211,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public void prepareAmpShot() {
+    this.feederMotor.set(0);
     setVelocityFlywheel(ShooterConstants.setpoints.VELOCITY_SHOOT_AMP);
     this.goal = ShooterConstants.setpoints.ANGLE_SHOOT_AMP;
     this.state = "PREPARING_AMP_SHOT";
@@ -202,9 +219,14 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public void prepareSpeakerShot() {
+    this.feederMotor.set(0);
     setVelocityFlywheel(verifyManualValue(ShooterConstants.setpoints.VELOCITY_SHOOT_SPEAKER,
         "Setpoint Vel Shooter"));
-    goal = verifyManualValue(calculateGoalSpeaker(), "Setpoint Pos Shoot Pivot");
+    if (Limelight.tvAfterTweak) {
+      goal = verifyManualValue(calculateGoalSpeaker(), "Setpoint Pos Shoot Pivot");
+    } else {
+      goal = 47;
+    }
     this.state = "PREPARING_SPEAKER_SHOT";
   }
 
@@ -213,6 +235,11 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     this.feederMotor.set(ShooterConstants.setpoints.VELOCITY_FEED_SHOOT);
     this.hasNote = false;
     this.state = "SHOOTING";
+  }
+
+  @Override
+  public void cruise() {
+    setVelocityFlywheel(ShooterConstants.setpoints.VELOCITY_CRUISE_SHOOTER);
   }
 
   @Override
@@ -252,20 +279,28 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public boolean isSecureForIntake() {
-    return false;
+    return this.pivotMotor.getPosition() < 40;
   }
 
   @Override
-  public boolean isAtSetpoint() {
+  public boolean isPivotAtSetpoint() {
     double minPosition = this.goal - ShooterConstants.pivotGoalDeadband;
     double maxPosition = this.goal + ShooterConstants.pivotGoalDeadband;
-    return Util.inRange(this.pivotMotor.getPosition(), minPosition, maxPosition);
+    boolean atSP = Util.inRange(this.pivotMotor.getPosition(), minPosition, maxPosition);
+    return atSP;
   }
 
   @Override
   public void setManualPivotPosition(double goal) {
+    if (hasNote && !noteSensor.getBoolean()) {
+      this.feederMotor.set(0);
+    } else {
+      this.feederMotor.set(0);
+    }
     this.goal = goal;
-    this.periodic();
+    setVelocityFlywheel(verifyManualValue(ShooterConstants.setpoints.VELOCITY_SHOOT_SPEAKER,
+        "Setpoint Vel Shooter"));
+    this.state = "PREPARING_SET_PIVOT" + goal;
   }
 
   private double profilePosition(double goal) {
@@ -292,28 +327,46 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   private static void interpolationTree() {
     shooterMap.put(1.29, 51.0);
     shooterMap.put(1.626, 57.0);
-    shooterMap.put(2.02, 62.0);
-    shooterMap.put(2.43, 66.0);
-    shooterMap.put(2.77, 69.0);
-    shooterMap.put(3.16, 71.0);
-    shooterMap.put(3.46, 72.0);
-    shooterMap.put(3.84, 72.0);
-
+    shooterMap.put(1.65, 57.6);
+    shooterMap.put(1.96, 59.5);
+    shooterMap.put(2.2, 61.0);
+    shooterMap.put(2.38, 63.0);
+    shooterMap.put(2.52, 63.5);
+    shooterMap.put(2.75, 63.5);
+    shooterMap.put(2.9, 65.0);
+    shooterMap.put(3.08, 66.5);
+    shooterMap.put(3.32, 68.0);
+    shooterMap.put(3.57, 68.5);
   }
 
   private void setVelocityFlywheel(double velocity) {
     this.lowerFlywheelMotor.setVelocityReference(velocity, 0);
     this.upperFlywheelMotor.setVelocityReference(velocity, 0);
+    this.setpointVelocityShooter = velocity;
+  }
+
+  public boolean isFlywheelAtSetpoint() {
+    return lowerFlywheelStability.isStableInRange(this.lowerFlywheelMotor.getVelocity(),
+        setpointVelocityShooter,
+        50)
+        && upperFlywheelStability.isStableInRange(this.upperFlywheelMotor.getVelocity(),
+            setpointVelocityShooter,
+            50);
   }
 
   private double verifyManualValue(double value, String nameSmartDashboard) {
-    return manualValues ? SmartDashboard.getNumber(nameSmartDashboard, 0) : value;
+    return manualValues ? SmartDashboard.getNumber(nameSmartDashboard, value) : value;
   }
 
   private void updateLogs() {
     this.pivotGoalLog.append(this.goal);
-    this.isAtSetpointLog.append(this.isAtSetpoint());
+    this.isAtSetpointLog.append(this.isPivotAtSetpoint());
+    this.flywheelAtSetpointLog.append(isFlywheelAtSetpoint());
     this.hasNoteLog.append(this.hasNote);
     this.stateLog.append(this.state);
+    this.pivotMotor.updateLogs();
+    this.feederMotor.updateLogs();
+    this.lowerFlywheelMotor.updateLogs();
+    this.upperFlywheelMotor.updateLogs();
   }
 }

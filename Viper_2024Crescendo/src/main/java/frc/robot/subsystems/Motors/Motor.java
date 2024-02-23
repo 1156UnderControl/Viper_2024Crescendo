@@ -53,4 +53,6 @@ public interface Motor {
 
   Object getMotor();
 
+  void updateLogs();
+
 }

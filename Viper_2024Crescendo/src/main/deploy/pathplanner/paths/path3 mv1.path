@@ -1,0 +1,111 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.5436574696259218,
+        "y": 5.527514849608872
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.1266462475863592,
+        "y": 5.785153253616065
+      },
+      "isLocked": false,
+      "linkedName": "end path2 mv1"
+    },
+    {
+      "anchor": {
+        "x": 2.4148382676223252,
+        "y": 6.745441850370149
+      },
+      "prevControl": {
+        "x": 2.4382884737147146,
+        "y": 6.405829559539966
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "end path3 mv3"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.2,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "New Constraints Zone",
+      "minWaypointRelativePos": 0.1,
+      "maxWaypointRelativePos": 0.35,
+      "constraints": {
+        "maxVelocity": 0.5,
+        "maxAcceleration": 5.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0
+      }
+    }
+  ],
+  "eventMarkers": [
+    {
+      "name": "aim",
+      "waypointRelativePos": 0.0,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Aim Shoot 3"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "aim shoot",
+      "waypointRelativePos": 0.2,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Shoot"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 5.0,
+    "maxAngularVelocity": 200.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0.5,
+    "rotation": 27.35,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Auto MAX VERSTAPPEN v1",
+  "previewStartingState": {
+    "rotation": 27.35,
+    "velocity": 0.5
+  },
+  "useDefaultConstraints": true
+}

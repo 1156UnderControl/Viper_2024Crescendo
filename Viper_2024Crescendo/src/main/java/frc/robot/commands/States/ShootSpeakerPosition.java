@@ -7,6 +7,7 @@ import frc.robot.RobotSubsystems;
 import frc.robot.Joysticks.ControlBoard;
 import frc.robot.commands.Intake.GoToShootIntake;
 import frc.robot.commands.Shooter.ShootSpeaker;
+import frc.robot.subsystems.Limelight;
 
 public class ShootSpeakerPosition extends SequentialCommandGroup {
   ControlBoard mControlBoard = ControlBoard.getInstance();
@@ -17,7 +18,9 @@ public class ShootSpeakerPosition extends SequentialCommandGroup {
         new GoToShootIntake(robot),
         new ShootSpeaker(robot),
         Commands.runOnce(() -> robot.shooter.shoot(), robot),
+        new InstantCommand(() -> Limelight.ledOn()),
         Commands.waitSeconds(1),
-        new InstantCommand(() -> RobotSubsystems.shootFinished = true));
+        new InstantCommand(() -> RobotSubsystems.shootFinished = true),
+        new InstantCommand(() -> Limelight.ledOff()));
   }
 }

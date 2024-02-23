@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.907220607593853,
+        "y": 0.772915212021579
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.466787712462726,
+        "y": 1.1945053276697135
+      },
+      "isLocked": false,
+      "linkedName": "end path 1 steal"
+    },
+    {
+      "anchor": {
+        "x": 1.8878506230621577,
+        "y": 4.028527771748839
+      },
+      "prevControl": {
+        "x": 2.8130067101788967,
+        "y": 3.6420701657380485
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "shoot steal"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 200.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -45.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "auto steal 2",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}
