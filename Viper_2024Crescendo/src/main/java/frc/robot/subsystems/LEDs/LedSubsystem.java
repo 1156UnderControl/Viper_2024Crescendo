@@ -2,14 +2,26 @@ package frc.robot.subsystems.LEDs;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LedSubsystem extends SubsystemBase {
   private AddressableLED m_led;
   private AddressableLEDBuffer m_ledBuffer;
   private int m_rainbowFirstPixelHue;
+  private Timer timerBlink;
+  private boolean firstBlink = true;
+  private static LedSubsystem instance;
 
-  public LedSubsystem() {
+  public static LedSubsystem getInstance() {
+    if (instance == null) {
+      instance = new LedSubsystem();
+    }
+    return instance;
+  }
+
+  private LedSubsystem() {
+    this.timerBlink.start();
     this.m_led = new AddressableLED(0);
     this.m_ledBuffer = new AddressableLEDBuffer(26);
     this.m_led.setLength(m_ledBuffer.getLength());
@@ -17,10 +29,16 @@ public class LedSubsystem extends SubsystemBase {
     this.m_led.start();
   }
 
+  public void setLEDOff() {
+    none();
+    m_led.setData(m_ledBuffer);
+  }
+
   private void none() {
     for (var i = 0; i < m_ledBuffer.getLength(); i++) {
       m_ledBuffer.setRGB(i, 0, 0, 0);
     }
+    firstBlink = true;
   }
 
   public void setRainbow() {
@@ -44,28 +62,14 @@ public class LedSubsystem extends SubsystemBase {
     m_led.setData(m_ledBuffer);
   }
 
-  public void blinkOrange() {
-    orange();
-    m_led.setData(m_ledBuffer);
-    none();
-    m_led.setData(m_ledBuffer);
-  }
-
   private void orange() {
     for (var i = 0; i < m_ledBuffer.getLength(); i++) {
-      m_ledBuffer.setRGB(i, 255, 165, 0);
+      m_ledBuffer.setRGB(i, 255, 0, 165);
     }
   }
 
   public void setGreen() {
     green();
-    m_led.setData(m_ledBuffer);
-  }
-
-  public void blinkGreen() {
-    green();
-    m_led.setData(m_ledBuffer);
-    none();
     m_led.setData(m_ledBuffer);
   }
 

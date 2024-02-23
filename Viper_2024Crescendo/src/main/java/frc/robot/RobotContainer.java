@@ -39,7 +39,7 @@ public class RobotContainer {
 
   private final SwerveSubsystem swerve;
   public final RobotSubsystems robot = new RobotSubsystems();
-  public final LedSubsystem led = new LedSubsystem();
+  public final LedSubsystem led = LedSubsystem.getInstance();
 
   private final SendableChooser<Command> autoChooser;
 
@@ -72,12 +72,13 @@ public class RobotContainer {
     mControlBoard.setHeadingRight().onTrue(new InstantCommand(swerve::setAngleNeg90));
     new JoystickButton(driverXbox, 5).onTrue(new InstantCommand(swerve::setAngle45));
 
-    mControlBoard.getIntake().onTrue(new CollectPosition(robot));
+    mControlBoard.getIntake().onTrue(new CollectPosition(robot, led));
     mControlBoard.getSecured().onTrue(new SecuredPosition(robot));
     mControlBoard.getSecured().onTrue(new SwerveTeleopControl(swerve));
     mControlBoard.getPrepareAmp().and(() -> robot.shooter.hasNote()).onTrue(new ShootAmpPosition(robot));
     mControlBoard.getPrepareSpeaker().and(() -> robot.shooter.hasNote()).onTrue(new ShootSpeakerPosition(robot));
     mControlBoard.getPrepareSpeaker().and(() -> robot.shooter.hasNote()).onTrue(new SwerveAlignSpeaker(swerve));
+
   }
 
   public Command getAutonomousCommand() {

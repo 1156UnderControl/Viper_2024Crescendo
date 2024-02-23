@@ -96,7 +96,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    m_robotContainer.led.blinkGreen();
+    m_robotContainer.led.setRainbow();
   }
 
   /**
@@ -105,6 +105,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    m_robotContainer.led.setRainbow();
     m_robotContainer.setHeadingCorrection(false);
     m_robotContainer.setMotorBrake(true);
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();

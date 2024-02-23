@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.Java_Is_UnderControl.Util.Util;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.LEDs.LedSubsystem;
 import frc.robot.subsystems.Motors.Motor;
 import frc.robot.subsystems.Motors.SparkMAXMotor;
 import frc.robot.subsystems.Motors.VortexMotor;
@@ -27,6 +28,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   private boolean hasNote;
 
   private boolean manualValues;
+
+  private LedSubsystem led;
 
   private double kDt = 0.02;
 
@@ -57,7 +60,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private DoubleLogEntry pivotGoalLog = new DoubleLogEntry(DataLogManager.getLog(), "/ShooterSubsystem/PivotGoal");
 
-  private BooleanLogEntry isAtSetpointLog = new BooleanLogEntry(DataLogManager.getLog(), "/ShooterSubsystem/IsAtSetpoint");
+  private BooleanLogEntry isAtSetpointLog = new BooleanLogEntry(DataLogManager.getLog(),
+      "/ShooterSubsystem/IsAtSetpoint");
 
   private BooleanLogEntry hasNoteLog = new BooleanLogEntry(DataLogManager.getLog(), "/ShooterSubsystem/HasNote");
 
@@ -214,15 +218,18 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   public void goToSecuredPosition() {
     if (this.hasNote) {
       if (noteSensor.getBoolean()) {
+        led.setOrange();
         this.lowerFlywheelMotor.set(0);
         this.upperFlywheelMotor.set(0);
         this.feederMotor.set(0);
       } else {
+        led.setRed();
         this.lowerFlywheelMotor.set(ShooterConstants.setpoints.VELOCITY_SHOOTER_CORRECT_PASSED_NOTE);
         this.upperFlywheelMotor.set(ShooterConstants.setpoints.VELOCITY_SHOOTER_CORRECT_PASSED_NOTE);
         this.feederMotor.set(ShooterConstants.setpoints.VELOCITY_FEED_CORRECT_PASSED_NOTE);
       }
     } else {
+      led.setRainbow();
       this.lowerFlywheelMotor.set(0);
       this.upperFlywheelMotor.set(0);
       this.feederMotor.set(0);
@@ -234,6 +241,12 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   @Override
   public boolean hasShooted() {
     return !noteSensor.getBoolean();
+  }
+
+  @Override
+  public boolean getNoteSensor() {
+    // TODO Auto-generated method stub
+    return noteSensor.getBoolean();
   }
 
   @Override
