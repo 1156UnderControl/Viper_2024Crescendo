@@ -7,7 +7,7 @@ import frc.robot.subsystems.Limelight;
 
 public class ShootSpeaker extends Command {
   private RobotSubsystems robot;
-  ControlBoard mControlBoard = ControlBoard.getInstance();
+  ControlBoard controlBoard = ControlBoard.getInstance();
 
   public ShootSpeaker(RobotSubsystems robot) {
     this.robot = robot;
@@ -26,6 +26,6 @@ public class ShootSpeaker extends Command {
 
   @Override
   public boolean isFinished() {
-    return this.robot.isRobotAbleToShoot() && !mControlBoard.getShoot().getAsBoolean();
+    return this.robot.isRobotAbleToShoot() || this.controlBoard.getShoot().getAsBoolean();
   }
 }
