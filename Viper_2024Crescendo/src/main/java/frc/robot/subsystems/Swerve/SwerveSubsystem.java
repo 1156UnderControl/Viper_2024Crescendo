@@ -212,12 +212,14 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     if (isDetectingNote) {
       this.lostNotesFrameCounter = 0;
       this.targetNotePositionX = photonVision.targetPositionX();
-      ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
+      ChassisSpeeds speeds = getTargetSpeedsAngleNotInvert(controller.getYtranslation(), controller.getXtranslation(),
+          0);
       driveOmegaPidRobotOriented(speeds, 0, this.targetNotePositionX, this.pidTrackNote, false);
     } else {
       this.lostNotesFrameCounter++;
       if (this.lostNotesFrameCounter <= this.MAX_LOST_SPEAKER_FRAMES) {
-        ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
+        ChassisSpeeds speeds = getTargetSpeedsAngleNotInvert(controller.getYtranslation(), controller.getXtranslation(),
+            0);
         driveOmegaPidRobotOriented(speeds, 0, this.lastTxMeasurement, this.pidTrackNote, false);
       } else {
         driveAlignAngleButton();
@@ -328,7 +330,8 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   private void driveOmegaPidRobotOriented(ChassisSpeeds speeds, double setpoint, double measurement, PIDController pid,
       boolean invertOmega) {
-    ChassisSpeeds speedsPID = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond,
+    ChassisSpeeds speedsPID;
+    speedsPID = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond,
         invertOmega ? -pid.calculate(measurement, setpoint) : pid.calculate(measurement, setpoint));
     SmartDashboard.putNumber("Omega PID", speedsPID.omegaRadiansPerSecond);
     swerveDrive.drive(speedsPID);
@@ -388,12 +391,20 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     return targetSpeeds;
   }
 
+  private ChassisSpeeds getTargetSpeedsAngleNotInvert(double xInput, double yInput, double angle) {
+    double angleTarget = angle;
+    ChassisSpeeds targetSpeeds;
+    SmartDashboard.putNumber("Angle Target Speeds", angleTarget);
+    double angleRadians = Units.degreesToRadians(angle);
+    targetSpeeds = swerveDrive.swerveController.getTargetSpeeds(xInput, yInput, angleRadians,
+        headingRadians, SwerveConstants.MAX_VEL);
+    return targetSpeeds;
+  }
+
   private ChassisSpeeds getTargetSpeedsAngleJoystick(double xInput, double yInput, double headingX, double headingY) {
     if (DriverStation.getAlliance().get() == Alliance.Red) {
       xInput = -xInput;
       yInput = -yInput;
-      headingX = headingX;
-      headingY = headingY;
     }
     double angleTarget = Math.atan2(headingX, headingY);
     ChassisSpeeds targetSpeeds;
