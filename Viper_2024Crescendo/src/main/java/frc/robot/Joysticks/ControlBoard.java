@@ -112,6 +112,11 @@ public class ControlBoard implements IDriverController, IOperatorController {
   }
 
   @Override
+  public Trigger getDoNotShoot() {
+    return mOperatorController.getDoNotShoot();
+  }
+
+  @Override
   public Trigger falseNegative() {
     return mOperatorController.falseNegative();
   }

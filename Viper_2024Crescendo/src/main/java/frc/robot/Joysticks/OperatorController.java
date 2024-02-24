@@ -57,6 +57,11 @@ public class OperatorController implements IOperatorController {
   }
 
   @Override
+  public Trigger getDoNotShoot() {
+    return controller.b();
+  }
+
+  @Override
   public Trigger falsePositive() {
     return controller.rightStick();
   }

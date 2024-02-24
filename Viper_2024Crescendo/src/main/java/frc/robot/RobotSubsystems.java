@@ -1,10 +1,15 @@
 package frc.robot;
 
+import java.util.ResourceBundle.Control;
+
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
+import frc.Java_Is_UnderControl.Util.StabilizeChecker;
+import frc.robot.Joysticks.ControlBoard;
 import frc.robot.subsystems.Climber.ClimberSubsystem;
 import frc.robot.subsystems.Climber.IClimber;
 import frc.robot.subsystems.Intake.IIntake;
@@ -24,8 +29,12 @@ public class RobotSubsystems extends SubsystemBase {
   private SubsystemBase shooterSubsystem;
   private SubsystemBase climberSubsystem;
 
+  private ControlBoard controlBoard = ControlBoard.getInstance();
+
   public static boolean shootFinished;
   public boolean climbing;
+
+  private StabilizeChecker aprilTagDetectionStabilizeChecker = new StabilizeChecker();
 
   private PowerDistribution powerDistributionHub;
 
@@ -59,6 +68,10 @@ public class RobotSubsystems extends SubsystemBase {
   }
 
   public boolean isRobotAbleToShoot() {
-    return shooter.isPivotAtSetpoint() && shooter.isFlywheelAtSetpoint() && swerve.isSwerveAlignedWithSpeaker();
+    boolean isDetectingAprilTag = this.aprilTagDetectionStabilizeChecker.isStableInCondition(() -> LimelightHelpers.getTV(""));
+    if (this.controlBoard.getDoNotShoot().getAsBoolean()){
+      return false;
+    }
+    return shooter.isPivotAtSetpoint() && shooter.isFlywheelAtSetpoint() && swerve.isSwerveAlignedWithSpeaker() && isDetectingAprilTag;
   }
 }
