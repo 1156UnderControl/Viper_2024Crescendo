@@ -6,7 +6,8 @@ public class ShooterConstants {
   public static final int ID_feeder = 16;
   public static final int ID_pivotShooter = 10;
 
-  public static final int port_IR = 1;
+  public static final int port_IR_OUT = 1;
+  public static final int port_IR_IN = 0;
 
   public static final double pivotGoalDeadband = 5;
 
@@ -38,7 +39,7 @@ public class ShooterConstants {
 
     public static final double ANGLE_SECURED = 0;
     public static final double ANGLE_INTAKE = 41;
-    public static final double ANGLE_SHOOT_AMP = 125;
+    public static final double ANGLE_SHOOT_AMP = 123;
     public static final double ANGLE_SHOOT_SPEAKER = 1;
 
     public static final double VELOCITY_SHOOT_SPEAKER = 8000;

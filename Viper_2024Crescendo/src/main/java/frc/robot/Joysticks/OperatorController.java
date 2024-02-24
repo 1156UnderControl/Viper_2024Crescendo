@@ -55,4 +55,20 @@ public class OperatorController implements IOperatorController {
   public Trigger release() {
     return controller.start();
   }
+
+  @Override
+  public Trigger falsePositive() {
+    return controller.rightStick();
+  }
+
+  @Override
+  public Trigger falseNegative() {
+    return controller.leftStick();
+  }
+
+  @Override
+  public Trigger expell() {
+    return controller.x();
+  }
+
 }

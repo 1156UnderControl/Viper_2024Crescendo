@@ -24,6 +24,7 @@ import frc.robot.commands.Autonomous.AutonomousShoot;
 import frc.robot.commands.Autonomous.AutonomousVisionUpdate;
 import frc.robot.commands.States.ClimbPosition;
 import frc.robot.commands.States.CollectPosition;
+import frc.robot.commands.States.ExpellPosition;
 import frc.robot.commands.States.SecuredPosition;
 import frc.robot.commands.States.ShootAmpPosition;
 import frc.robot.commands.States.ShootSpeakerPosition;
@@ -43,10 +44,8 @@ import frc.robot.subsystems.Swerve.SwerveSubsystem;
 public class RobotContainer {
 
   private final SwerveSubsystem swerve;
-
+  public final LedSubsystem led = LedSubsystem.getInstance();
   public final RobotSubsystems robot;
-
-  public final LedSubsystem led = new LedSubsystem();
 
   private final SendableChooser<Command> autoChooser;
 
@@ -76,13 +75,16 @@ public class RobotContainer {
     mControlBoard.setHeadingBack().onTrue(new InstantCommand(swerve::setAngle180));
     mControlBoard.setHeadingLeft().onTrue(new InstantCommand(swerve::setAngle90));
     mControlBoard.setHeadingRight().onTrue(new InstantCommand(swerve::setAngleNeg90));
-    mControlBoard.getIntake().onTrue(new CollectPosition(robot, swerve));
+    mControlBoard.getIntake().onTrue(new CollectPosition(robot, swerve, led));
     mControlBoard.getSecured().onTrue(new SecuredPosition(robot));
     mControlBoard.getSecured().onTrue(new SwerveTeleopControl(swerve));
     mControlBoard.getPrepareAmp().onTrue(new ShootAmpPosition(robot));
     mControlBoard.getPrepareSpeaker().onTrue(new ShootSpeakerPosition(robot));
     mControlBoard.getPrepareSpeaker().onTrue(new SwerveAlignSpeaker(swerve));
     mControlBoard.release().onTrue(new ClimbPosition(robot));
+    mControlBoard.expell().onTrue(new ExpellPosition(robot));
+    mControlBoard.falseNegative().onTrue(new InstantCommand(() -> robot.shooter.setHasNoteTrue()));
+    mControlBoard.falsePositive().onTrue(new InstantCommand(() -> robot.shooter.setHasNoteFalse()));
   }
 
   public Command getAutonomousCommand() {

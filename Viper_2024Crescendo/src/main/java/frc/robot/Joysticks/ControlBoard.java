@@ -111,4 +111,19 @@ public class ControlBoard implements IDriverController, IOperatorController {
     return mOperatorController.release();
   }
 
+  @Override
+  public Trigger falseNegative() {
+    return mOperatorController.falseNegative();
+  }
+
+  @Override
+  public Trigger falsePositive() {
+    return mOperatorController.falsePositive();
+  }
+
+  @Override
+  public Trigger expell() {
+    return mOperatorController.expell();
+  }
+
 }

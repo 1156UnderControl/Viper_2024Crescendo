@@ -15,6 +15,7 @@ public class CollectToShooter extends Command {
   public void execute() {
     this.robot.shooter.goToIntakePosition();
     this.robot.shooter.intake();
+
   }
 
   @Override
