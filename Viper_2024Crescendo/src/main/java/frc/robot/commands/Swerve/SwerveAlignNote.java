@@ -6,13 +6,11 @@
 package frc.robot.commands.Swerve;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.RobotSubsystems;
 import frc.robot.subsystems.Swerve.ISwerve;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
 public class SwerveAlignNote extends Command {
   private ISwerve swerve;
-  private RobotSubsystems robot;
 
   public SwerveAlignNote(SwerveSubsystem swerve) {
     this.swerve = swerve;
@@ -30,6 +28,6 @@ public class SwerveAlignNote extends Command {
 
   @Override
   public boolean isFinished() {
-    return this.robot.intake.isSecureForShooter();
+    return false;
   }
 }

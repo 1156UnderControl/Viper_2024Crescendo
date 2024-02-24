@@ -2,6 +2,7 @@ package frc.Java_Is_UnderControl.PhotonVision;
 
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.datalog.BooleanLogEntry;
@@ -19,14 +20,16 @@ public class PhotonVision {
   private DoubleLogEntry targetPositionYLogEntry;
 
   public PhotonVision() {
-    this("photonvision");
+    this("Microsoft_LifeCam_HD-3000");
   }
 
   public PhotonVision(String cameraName) {
     this.camera = new PhotonCamera(cameraName);
     this.hasTargetLogEntry = new BooleanLogEntry(DataLogManager.getLog(), "/Cameras/" + cameraName + "/hasTarget");
-    this.targetPositionXLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/Cameras/" + cameraName + "/targetPositionX");
-    this.targetPositionYLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/Cameras/" + cameraName + "/targetPositionY");
+    this.targetPositionXLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
+        "/Cameras/" + cameraName + "/targetPositionX");
+    this.targetPositionYLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
+        "/Cameras/" + cameraName + "/targetPositionY");
   }
 
   private PhotonPipelineResult getResult() {
@@ -34,9 +37,14 @@ public class PhotonVision {
   }
 
   public double targetPositionX() {
-    double targetPositionX = Units.degreesToRadians(this.getResult().getBestTarget().getYaw());
-    this.targetPositionXLogEntry.append(targetPositionX);
-    return targetPositionX;
+    PhotonTrackedTarget bestTarget = this.getResult().getBestTarget();
+    if (bestTarget != null) {
+      double targetPositionX = Units.degreesToRadians(bestTarget.getYaw());
+      this.targetPositionXLogEntry.append(targetPositionX);
+      return targetPositionX;
+    } else {
+      return 0;
+    }
   }
 
   public double targetPositionY() {

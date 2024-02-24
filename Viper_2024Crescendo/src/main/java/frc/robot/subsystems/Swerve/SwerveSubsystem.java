@@ -205,12 +205,12 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
       this.lostNotesFrameCounter = 0;
       this.targetNotePositionX = photonVision.targetPositionX();
       ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
-      driveOmegaPIDfo(speeds, 0, this.targetNotePositionX, this.pidTrackApril, false);
+      driveOmegaPIDfo(speeds, 0, this.targetNotePositionX, this.pidTrackNote, false);
     } else {
       this.lostNotesFrameCounter++;
       if (this.lostNotesFrameCounter <= this.MAX_LOST_SPEAKER_FRAMES) {
         ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
-        driveOmegaPIDfo(speeds, 0, this.lastTxMeasurement, this.pidTrackApril, false);
+        driveOmegaPIDfo(speeds, 0, this.lastTxMeasurement, this.pidTrackNote, false);
       } else {
         driveAlignAngleButton();
       }
