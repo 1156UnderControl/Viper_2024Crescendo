@@ -1,7 +1,10 @@
 package frc.robot.subsystems.LEDs;
 
+import edu.wpi.first.util.datalog.BooleanLogEntry;
+import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -34,6 +37,12 @@ public class LedSubsystem extends SubsystemBase implements ILed {
 
   private Color color;
 
+  private StringLogEntry modeLogEntry = new StringLogEntry(DataLogManager.getLog(), "/LedSubsystem/Mode");
+
+  private StringLogEntry colorLogEntry = new StringLogEntry(DataLogManager.getLog(), "/LedSubsystem/Color");
+
+  private BooleanLogEntry blinkTrackerLogEntry = new BooleanLogEntry(DataLogManager.getLog(), "/LedSubsystem/BlinkTracker");
+
   public static LedSubsystem getInstance() {
     if (instance == null) {
       instance = new LedSubsystem();
@@ -50,13 +59,15 @@ public class LedSubsystem extends SubsystemBase implements ILed {
     this.led.setLength(ledBuffer.getLength());
     this.led.setData(ledBuffer);
     this.led.start();
+    this.blinkTrackerLogEntry.append(false);
+    this.periodic();
   }
 
   @Override
   public void periodic() {
     switch (this.mode) {
       case LedMode.SOLID:
-        this.processSolidColor();
+        this.processSolidColor(this.color);
         break;
       case LedMode.RAINBOW:
         this.processRainbow();
@@ -65,6 +76,8 @@ public class LedSubsystem extends SubsystemBase implements ILed {
         processBlink();
         break;
     }
+    this.modeLogEntry.append(this.mode);
+    this.colorLogEntry.append(this.color.name);
   }
 
   public void setBlinkFrequency(double frequency) {
@@ -80,7 +93,8 @@ public class LedSubsystem extends SubsystemBase implements ILed {
   public void setSolidColor(Color color){
     this.mode = LedMode.SOLID;
     this.color = color;
-    this.processSolidColor();
+    this.blinkTrackerLogEntry.append(false);
+    this.processSolidColor(this.color);
   }
 
   public void setBlink(Color color, int numberOfBlinks, Color colorAfterBlink) {
@@ -104,6 +118,7 @@ public class LedSubsystem extends SubsystemBase implements ILed {
   public void setRainbow() {
     this.mode = LedMode.RAINBOW;
     this.color = LedColor.OFF;
+    this.blinkTrackerLogEntry.append(false);
     this.processRainbow();
   }
 
@@ -119,9 +134,9 @@ public class LedSubsystem extends SubsystemBase implements ILed {
     led.setData(ledBuffer);
   }
 
-  private void processSolidColor(){
+  private void processSolidColor(Color solidColor){
     for (var i = 0; i < ledBuffer.getLength(); i++) {
-      ledBuffer.setRGB(i, this.color.red, this.color.blue, this.color.green);
+      ledBuffer.setRGB(i, solidColor.red, solidColor.blue, solidColor.green);
     }
     led.setData(ledBuffer);
   }
@@ -136,9 +151,11 @@ public class LedSubsystem extends SubsystemBase implements ILed {
       }
     }
     if (elapsedTime % this.blinkPeriod < this.halfBlinkPeriod){
-      this.setSolidColor(this.color);
+      this.processSolidColor(this.color);
+      this.blinkTrackerLogEntry.append(true);
     } else {
-      this.setSolidColor(LedColor.OFF);
+      this.processSolidColor(LedColor.OFF);
+      this.blinkTrackerLogEntry.append(false);
     }
   }
 }

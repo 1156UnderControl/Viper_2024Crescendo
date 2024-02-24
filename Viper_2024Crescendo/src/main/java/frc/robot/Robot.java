@@ -118,6 +118,7 @@ public class Robot extends TimedRobot {
     this.robotContainer.setHeadingCorrection(true);
     this.robotContainer.setMotorBrake(true);
     this.autonomousCommand = robotContainer.getAutonomousCommand();
+    this.robotContainer.robot.led.turnOff();
 
     // schedule the autonomous command (example)
     if (this.autonomousCommand != null) {
@@ -144,6 +145,7 @@ public class Robot extends TimedRobot {
     }
     ;
     this.robotContainer.setMotorBrake(true);
+    this.robotContainer.robot.led.turnOff();
   }
 
   /**
