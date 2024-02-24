@@ -111,4 +111,9 @@ public class ControlBoard implements IDriverController, IOperatorController {
     return mOperatorController.release();
   }
 
+  @Override
+  public Trigger getDoNotShoot() {
+    return mOperatorController.getDoNotShoot();
+  }
+
 }

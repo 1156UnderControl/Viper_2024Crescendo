@@ -16,4 +16,6 @@ public interface IOperatorController {
   Trigger climb();
 
   Trigger release();
+
+  Trigger getDoNotShoot();
 }

@@ -55,4 +55,9 @@ public class OperatorController implements IOperatorController {
   public Trigger release() {
     return controller.start();
   }
+
+  @Override
+  public Trigger getDoNotShoot() {
+    return controller.b();
+  }
 }
