@@ -15,7 +15,6 @@ import frc.Java_Is_UnderControl.Util.StabilizeChecker;
 import frc.Java_Is_UnderControl.Util.Util;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Limelight;
-import frc.robot.subsystems.LEDs.LedColor;
 import frc.robot.subsystems.LEDs.LedSubsystem;
 import frc.robot.subsystems.Motors.Motor;
 import frc.robot.subsystems.Motors.SparkMAXMotor;
@@ -148,7 +147,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private void runNoteCorrection() {
     if (state != "INTAKING" && state != "PREPARING_SPEAKER_SHOT" && state != "PREPARING_AMP_SHOT"
-        && state != "SHOOTING") {
+        && state != "SHOOTING" && state != "PREPARING_SET_PIVOT") {
       correctNoteCollected();
     }
   }
@@ -325,15 +324,14 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public void setManualPivotPosition(double goal) {
+    setVelocityFlywheel(ShooterConstants.setpoints.VELOCITY_SHOOT_SPEAKER);
     if (hasNote && !noteSensorOut.getBoolean() && !noteSensorIn.getBoolean()) {
       this.feederMotor.set(ShooterConstants.setpoints.VELOCITY_FEED_CORRECT_PASSED_NOTE);
     } else {
       this.feederMotor.set(0);
     }
     this.goal = goal;
-    setVelocityFlywheel(verifyManualValue(ShooterConstants.setpoints.VELOCITY_SHOOT_SPEAKER,
-        "Setpoint Vel Shooter"));
-    this.state = "PREPARING_SET_PIVOT" + goal;
+    this.state = "PREPARING_SET_PIVOT";
   }
 
   private double profilePosition(double goal) {
