@@ -50,11 +50,6 @@ public class DriverController implements IDriverController {
   }
 
   @Override
-  public double getThrottle() {
-    return Math.pow(driverController.getRightTriggerAxis(), 3);
-  }
-
-  @Override
   public boolean turboActivate() {
     return 0.2 < driverController.getRightTriggerAxis();
   }
@@ -86,6 +81,11 @@ public class DriverController implements IDriverController {
   @Override
   public Trigger setHeadingRight() {
     return driverController.b();
+  }
+
+  @Override
+  public boolean isForcingDriverControl(){
+    return 0.2 < driverController.getLeftTriggerAxis();
   }
 
 }

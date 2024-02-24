@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
 import frc.Java_Is_UnderControl.Logging.Pose2dLogEntry;
+import frc.Java_Is_UnderControl.PhotonVision.PhotonVision;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CommandsConstants;
 import frc.robot.Constants.SwerveConstants;
@@ -50,9 +51,13 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   public boolean notUsingLLforOdometry = false;
 
-  private int lostFramesCounter = 0;
-
   private final int MAX_LOST_SPEAKER_FRAMES = 2;
+
+  private final int MAX_LOST_NOTE_FRAMES = 2;
+
+  private int lostSpeakerFramesCounter = this.MAX_LOST_SPEAKER_FRAMES;
+
+  private int lostNotesFrameCounter = this.MAX_LOST_NOTE_FRAMES;
 
   private double lastTxMeasurement;
 
@@ -66,6 +71,9 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   PIDController pidTrackApril = new PIDController(CommandsConstants.P_TrackSpeaker, CommandsConstants.I_TrackSpeaker,
       CommandsConstants.D_TrackSpeaker);
+
+  PIDController pidTrackNote = new PIDController(CommandsConstants.P_TrackNote, CommandsConstants.I_TrackNote,
+      CommandsConstants.D_TrackNote);
 
   Pose2d poseVision;
 
@@ -98,6 +106,10 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   private StringLogEntry stateLogEntry = new StringLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/State");
 
+  private PhotonVision photonVision;
+
+  private double targetNotePositionX;
+
   public static SwerveSubsystem getInstance(File directory) {
     if (swerveInstance == null) {
       swerveInstance = new SwerveSubsystem(directory);
@@ -113,6 +125,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   }
 
   private SwerveSubsystem(File directory) {
+    this.photonVision = new PhotonVision();
     SmartDashboard.putData("POSE APRIL", aprField2d);
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     setupPIDs();
@@ -146,7 +159,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
       ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(),
           angleAlign.getDegrees());
       SmartDashboard.putString("Chassis Speed", speeds.toString());
-      driveFO(speeds);
+      driveFieldOriented(speeds);
       this.state = "DRIVE_ALIGN_ANGLE_BUTTON";
     } else {
       driveAlignAngleJoy();
@@ -158,25 +171,29 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     ChassisSpeeds speeds = getTargetSpeedsAngleJoystick(controller.getYtranslation(), controller.getXtranslation(),
         controller.getCOS_Joystick(), controller.getSIN_Joystick());
     SmartDashboard.putString("Chassis Speed", speeds.toString());
-    driveFO(speeds);
+    driveFieldOriented(speeds);
     this.state = "DRIVE_ALIGN_ANGLE_JOY";
   }
 
   @Override
   public void driveAlignSpeaker() {
+    if(this.controller.isForcingDriverControl()){
+      driveAlignAngleButton();
+      return;
+    }
     boolean isDetectingAprilTag = LimelightHelpers.getTV("");
     if (isDetectingAprilTag) {
-      this.lostFramesCounter = 0;
+      this.lostSpeakerFramesCounter = 0;
       this.lastTxMeasurement = LimelightHelpers.getTX("");
       ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
       Limelight.tvAfterTweak = true;
-      driveOmegaPIDfo(speeds, 0, this.lastTxMeasurement, this.pidTrackApril, false);
+      driveOmegaPidFieldOriented(speeds, 0, this.lastTxMeasurement, this.pidTrackApril, false);
     } else {
-      this.lostFramesCounter++;
-      if (this.lostFramesCounter <= this.MAX_LOST_SPEAKER_FRAMES) {
+      this.lostSpeakerFramesCounter++;
+      if (this.lostSpeakerFramesCounter <= this.MAX_LOST_SPEAKER_FRAMES) {
         Limelight.tvAfterTweak = true;
         ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
-        driveOmegaPIDfo(speeds, 0, this.lastTxMeasurement, this.pidTrackApril, false);
+        driveOmegaPidFieldOriented(speeds, 0, this.lastTxMeasurement, this.pidTrackApril, false);
       } else {
         Limelight.tvAfterTweak = false;
         driveAlignAngleButton();
@@ -186,6 +203,58 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   }
 
   @Override
+  public void driveAlignNote() {
+    if(this.controller.isForcingDriverControl()){
+      driveAlignAngleButton();
+      return;
+    }
+    boolean isDetectingNote = photonVision.hasTarget();
+    if (isDetectingNote) {
+      this.lostNotesFrameCounter = 0;
+      this.targetNotePositionX = photonVision.targetPositionX();
+      ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
+      driveOmegaPidRobotOriented(speeds, 0, this.targetNotePositionX, this.pidTrackNote, false);
+    } else {
+      this.lostNotesFrameCounter++;
+      if (this.lostNotesFrameCounter <= this.MAX_LOST_SPEAKER_FRAMES) {
+        ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
+        driveOmegaPidRobotOriented(speeds, 0, this.lastTxMeasurement, this.pidTrackNote, false);
+      } else {
+        driveAlignAngleButton();
+      }
+    }
+    this.state = "DRIVE_ALIGN_NOTE";
+  }
+
+  private void driveTowardsNote() {
+    if(this.controller.isForcingDriverControl()){
+      driveAlignAngleButton();
+      return;
+    }
+    boolean isDetectingNote = photonVision.hasTarget();
+    if (isDetectingNote) {
+      this.lostNotesFrameCounter = 0;
+      this.targetNotePositionX = photonVision.targetPositionX();
+      Translation2d speeds = new Translation2d(1, 0);
+      driveToNoteCommand(speeds, this.pidTrackNote.calculate(this.targetNotePositionX, 0));
+    } else {
+      this.lostNotesFrameCounter++;
+      if (this.lostNotesFrameCounter <= this.MAX_LOST_SPEAKER_FRAMES) {
+        Translation2d speeds = new Translation2d(1, 0);
+        driveToNoteCommand(speeds, this.pidTrackNote.calculate(this.targetNotePositionX, 0));
+      } else {
+        driveAlignAngleButton();
+      }
+    }
+    this.state = "DRIVE_ALIGN_NOTE"; // Add to the log entry
+  }
+
+  private void driveToNoteCommand(Translation2d translation, double rotation) {
+    Translation2d centerOfRotation = new Translation2d(0, 0);
+    swerveDrive.drive(translation, rotation, false, false, centerOfRotation);
+
+  }
+
   public boolean isSwerveAlignedWithSpeaker() {
     return this.pidTrackApril.atSetpoint();
   }
@@ -243,17 +312,26 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     );
   }
 
-  private void driveFO(ChassisSpeeds speeds) {
+  private void driveFieldOriented(ChassisSpeeds speeds) {
     swerveDrive.driveFieldOriented(speeds);
     this.targetSpeeds = speeds;
   }
 
-  private void driveOmegaPIDfo(ChassisSpeeds speeds, double setpoint, double measurement, PIDController pid,
+  private void driveOmegaPidFieldOriented(ChassisSpeeds speeds, double setpoint, double measurement, PIDController pid,
       boolean invertOmega) {
     ChassisSpeeds speedsPID = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond,
         invertOmega ? -pid.calculate(measurement, setpoint) : pid.calculate(measurement, setpoint));
     SmartDashboard.putNumber("Omega PID", speedsPID.omegaRadiansPerSecond);
     swerveDrive.driveFieldOriented(speedsPID);
+    this.targetSpeeds = speedsPID;
+  }
+
+  private void driveOmegaPidRobotOriented(ChassisSpeeds speeds, double setpoint, double measurement, PIDController pid,
+      boolean invertOmega) {
+    ChassisSpeeds speedsPID = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond,
+        invertOmega ? -pid.calculate(measurement, setpoint) : pid.calculate(measurement, setpoint));
+    SmartDashboard.putNumber("Omega PID", speedsPID.omegaRadiansPerSecond);
+    swerveDrive.drive(speedsPID);
     this.targetSpeeds = speedsPID;
   }
 
@@ -374,6 +452,12 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
       swerveDrive.addVisionMeasurement(poseVision, Timer.getFPGATimestamp());
     }
   }
+
+  /*
+   * public double trackNote() {
+   * return pidTrackNotes.calculate();
+   * }
+   */
 
   /*
    * ANGLE CONTROL

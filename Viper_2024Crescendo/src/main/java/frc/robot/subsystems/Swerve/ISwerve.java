@@ -7,6 +7,8 @@ public interface ISwerve {
 
   void driveAlignSpeaker();
 
+  void driveAlignNote();
+
   void intakeNote();
 
   boolean isSwerveAlignedWithSpeaker();

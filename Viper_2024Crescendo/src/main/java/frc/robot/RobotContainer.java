@@ -74,8 +74,7 @@ public class RobotContainer {
     mControlBoard.setHeadingBack().onTrue(new InstantCommand(swerve::setAngle180));
     mControlBoard.setHeadingLeft().onTrue(new InstantCommand(swerve::setAngle90));
     mControlBoard.setHeadingRight().onTrue(new InstantCommand(swerve::setAngleNeg90));
-
-    mControlBoard.getIntake().onTrue(new CollectPosition(robot));
+    mControlBoard.getIntake().onTrue(new CollectPosition(robot, swerve));
     mControlBoard.getSecured().onTrue(new SecuredPosition(robot));
     mControlBoard.getSecured().onTrue(new SwerveTeleopControl(swerve));
     mControlBoard.getPrepareAmp().onTrue(new ShootAmpPosition(robot));
