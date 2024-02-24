@@ -18,4 +18,10 @@ public interface IOperatorController {
   Trigger release();
 
   Trigger getDoNotShoot();
+  
+  Trigger falsePositive();
+
+  Trigger falseNegative();
+
+  Trigger expell();
 }

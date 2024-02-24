@@ -15,6 +15,7 @@ import frc.Java_Is_UnderControl.Util.StabilizeChecker;
 import frc.Java_Is_UnderControl.Util.Util;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.LEDs.LedSubsystem;
 import frc.robot.subsystems.Motors.Motor;
 import frc.robot.subsystems.Motors.SparkMAXMotor;
 import frc.robot.subsystems.Motors.VortexMotor;
@@ -26,9 +27,11 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   private static ShooterSubsystem shooterInstance = null;
 
   private boolean hasNote;
+  private boolean wasNoteIn;
 
   private boolean manualValues;
 
+  private LedSubsystem led;
   private double setpointVelocityShooter;
 
   private double kDt = 0.02;
@@ -43,7 +46,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private Motor pivotMotor = new SparkMAXMotor(ShooterConstants.ID_pivotShooter, true);
 
-  private DigitalInput noteSensor = new InfraRed(ShooterConstants.port_IR, false);
+  private DigitalInput noteSensorOut = new InfraRed(ShooterConstants.port_IR_OUT, false);
+  private DigitalInput noteSensorIn = new InfraRed(ShooterConstants.port_IR_IN, false);
 
   SimpleMotorFeedforward pivotFeedforward = new SimpleMotorFeedforward(ShooterConstants.tunning_values_pivot.KS,
       ShooterConstants.tunning_values_pivot.KV);
@@ -83,6 +87,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   }
 
   private ShooterSubsystem() {
+    led = LedSubsystem.getInstance();
     this.hasNote = false;
     this.configureFlywheelMotor(this.upperFlywheelMotor);
     this.configureFlywheelMotor(this.lowerFlywheelMotor);
@@ -137,6 +142,14 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     this.updateSmartDashboard();
     this.pivotMotor.setPositionReferenceArbFF(profilePosition(goal), getFeedForwardProfiled());
     this.updateLogs();
+    this.runNoteCorrection();
+  }
+
+  private void runNoteCorrection() {
+    if (state != "INTAKING" && state != "PREPARING_SPEAKER_SHOT" && state != "PREPARING_AMP_SHOT"
+        && state != "SHOOTING") {
+      correctNoteCollected();
+    }
   }
 
   private void updateManualValuesFromDashboard() {
@@ -157,7 +170,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   }
 
   private void updateSmartDashboard() {
-    SmartDashboard.putBoolean("IR", this.noteSensor.getBoolean());
+    SmartDashboard.putBoolean("IR Out", this.noteSensorOut.getBoolean());
+    SmartDashboard.putBoolean("IR In", this.noteSensorIn.getBoolean());
     SmartDashboard.putNumber("Position Pivot", this.pivotMotor.getPosition());
     SmartDashboard.putNumber("Velocity Pivot", this.pivotMotor.getVelocity());
     SmartDashboard.putNumber("Output Pivot Shooter", this.pivotMotor.getAppliedOutput());
@@ -186,7 +200,10 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   }
 
   private void runNoteDetection() {
-    if (noteSensor.getBoolean()) {
+    if (noteSensorIn.getBoolean()) {
+      wasNoteIn = true;
+    }
+    if (wasNoteIn && noteSensorOut.getBoolean()) {
       hasNote = true;
     }
   }
@@ -204,6 +221,16 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   @Override
   public boolean hasNote() {
     return this.hasNote;
+  }
+
+  @Override
+  public void setHasNoteFalse() {
+    hasNote = false;
+  }
+
+  @Override
+  public void setHasNoteTrue() {
+    hasNote = true;
   }
 
   @Override
@@ -231,6 +258,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   public void shoot() {
     this.feederMotor.set(ShooterConstants.setpoints.VELOCITY_FEED_SHOOT);
     this.hasNote = false;
+    this.wasNoteIn = false;
     this.state = "SHOOTING";
   }
 
@@ -240,29 +268,48 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   }
 
   @Override
+  public void expell() {
+    setVelocityFlywheel(ShooterConstants.setpoints.VELOCITY_CRUISE_SHOOTER);
+    feederMotor.set(1);
+  }
+
+  @Override
   public void goToSecuredPosition() {
+    correctNoteCollected();
+    this.goal = ShooterConstants.setpoints.ANGLE_SECURED;
+    this.state = "SAFE_POSITION";
+  }
+
+  private void correctNoteCollected() {
     if (this.hasNote) {
-      if (noteSensor.getBoolean()) {
+      if (noteSensorOut.getBoolean() || noteSensorIn.getBoolean()) {
         this.lowerFlywheelMotor.set(0);
         this.upperFlywheelMotor.set(0);
         this.feederMotor.set(0);
+        led.setGreen();
       } else {
+        led.setRed();
         this.lowerFlywheelMotor.set(ShooterConstants.setpoints.VELOCITY_SHOOTER_CORRECT_PASSED_NOTE);
         this.upperFlywheelMotor.set(ShooterConstants.setpoints.VELOCITY_SHOOTER_CORRECT_PASSED_NOTE);
         this.feederMotor.set(ShooterConstants.setpoints.VELOCITY_FEED_CORRECT_PASSED_NOTE);
       }
     } else {
+      led.setRed();
       this.lowerFlywheelMotor.set(0);
       this.upperFlywheelMotor.set(0);
       this.feederMotor.set(0);
     }
-    this.goal = ShooterConstants.setpoints.ANGLE_SECURED;
-    this.state = "SAFE_POSITION";
   }
 
   @Override
   public boolean hasShooted() {
-    return !noteSensor.getBoolean();
+    return !noteSensorOut.getBoolean();
+  }
+
+  @Override
+  public boolean getNoteSensor() {
+    // TODO Auto-generated method stub
+    return false;
   }
 
   @Override
@@ -280,8 +327,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public void setManualPivotPosition(double goal) {
-    if (hasNote && !noteSensor.getBoolean()) {
-      this.feederMotor.set(0);
+    if (hasNote && !noteSensorOut.getBoolean() && !noteSensorIn.getBoolean()) {
+      this.feederMotor.set(ShooterConstants.setpoints.VELOCITY_FEED_CORRECT_PASSED_NOTE);
     } else {
       this.feederMotor.set(0);
     }
