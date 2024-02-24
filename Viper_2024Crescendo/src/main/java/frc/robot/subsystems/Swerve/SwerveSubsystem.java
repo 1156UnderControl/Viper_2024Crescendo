@@ -144,9 +144,9 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     SmartDashboard.putNumber("Heading Odometry", swerveDrive.getOdometryHeading().getDegrees());
     SmartDashboard.putNumber("Distance LL", Limelight.getDistance());
     if (!Limelight.notUsingLLforOdometry) {
-      Limelight.setPipelineToOdometry();
-      poseVision = Limelight.poseLL;
-      aprField2d.setRobotPose(poseVision);
+      Limelight.setPipelineToTrackSpeaker();
+      // poseVision = Limelight.poseLL;
+      // aprField2d.setRobotPose(poseVision);
     } else {
       Limelight.setPipelineToTrackSpeaker();
     }
@@ -177,7 +177,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   @Override
   public void driveAlignSpeaker() {
-    if(this.controller.isForcingDriverControl()){
+    if (this.controller.isForcingDriverControl()) {
       driveAlignAngleButton();
       return;
     }
@@ -204,7 +204,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   @Override
   public void driveAlignNote() {
-    if(this.controller.isForcingDriverControl()){
+    if (this.controller.isForcingDriverControl()) {
       driveAlignAngleButton();
       return;
     }
@@ -227,7 +227,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   }
 
   private void driveTowardsNote() {
-    if(this.controller.isForcingDriverControl()){
+    if (this.controller.isForcingDriverControl()) {
       driveAlignAngleButton();
       return;
     }
