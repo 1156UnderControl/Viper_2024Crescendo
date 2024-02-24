@@ -287,15 +287,12 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
         this.lowerFlywheelMotor.set(0);
         this.upperFlywheelMotor.set(0);
         this.feederMotor.set(0);
-        led.setSolidColor(LedColor.GREEN);
       } else {
-        led.setSolidColor(LedColor.RED);
         this.lowerFlywheelMotor.set(ShooterConstants.setpoints.VELOCITY_SHOOTER_CORRECT_PASSED_NOTE);
         this.upperFlywheelMotor.set(ShooterConstants.setpoints.VELOCITY_SHOOTER_CORRECT_PASSED_NOTE);
         this.feederMotor.set(ShooterConstants.setpoints.VELOCITY_FEED_CORRECT_PASSED_NOTE);
       }
     } else {
-      led.setSolidColor(LedColor.RED);
       this.lowerFlywheelMotor.set(0);
       this.upperFlywheelMotor.set(0);
       this.feederMotor.set(0);

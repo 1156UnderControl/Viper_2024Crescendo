@@ -97,13 +97,14 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     this.robotContainer.setMotorBrake(false);
+    this.robotContainer.robot.led.setRainbow();
     this.disabledTimer.reset();
     this.disabledTimer.start();
   }
 
   @Override
   public void disabledPeriodic() {
-    this.robotContainer.led.setRainbow();
+    
   }
 
   /**

@@ -7,15 +7,14 @@ import frc.robot.RobotSubsystems;
 import frc.robot.commands.Intake.GoToIntakeIntake;
 import frc.robot.commands.Shooter.CollectToShooter;
 import frc.robot.subsystems.LEDs.LedColor;
-import frc.robot.subsystems.LEDs.LedSubsystem;
 
 public class CollectPosition extends SequentialCommandGroup {
 
-  public CollectPosition(RobotSubsystems robot, LedSubsystem led) {
+  public CollectPosition(RobotSubsystems robot) {
     addCommands(
-        new GoToIntakeIntake(robot, led),
+        new GoToIntakeIntake(robot),
         new CollectToShooter(robot),
-        new InstantCommand(() -> led.setSolidColor(LedColor.GREEN), led),
+        new InstantCommand(() -> robot.led.setBlink(LedColor.GREEN, 3, LedColor.WHITE)),
         Commands.runOnce(() -> robot.intake.stopIntaking()));
   }
 }

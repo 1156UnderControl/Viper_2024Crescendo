@@ -8,6 +8,7 @@ import frc.robot.Joysticks.ControlBoard;
 import frc.robot.commands.Intake.GoToShootIntake;
 import frc.robot.commands.Shooter.ShootSpeaker;
 import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.LEDs.LedColor;
 
 public class ShootSpeakerPosition extends SequentialCommandGroup {
   ControlBoard mControlBoard = ControlBoard.getInstance();
@@ -15,9 +16,11 @@ public class ShootSpeakerPosition extends SequentialCommandGroup {
   public ShootSpeakerPosition(RobotSubsystems robot) {
     addCommands(
         new InstantCommand(() -> RobotSubsystems.shootFinished = false),
+        new InstantCommand(() -> robot.led.setSolidColor(LedColor.YELLOW)),
         new GoToShootIntake(robot),
         new ShootSpeaker(robot),
         Commands.runOnce(() -> robot.shooter.shoot(), robot),
+        new InstantCommand(() -> robot.led.setBlink(LedColor.GREEN, 3)),
         new InstantCommand(() -> Limelight.ledOn()),
         Commands.waitSeconds(1),
         new InstantCommand(() -> RobotSubsystems.shootFinished = true),
