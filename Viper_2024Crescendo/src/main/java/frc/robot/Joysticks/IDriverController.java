@@ -11,8 +11,6 @@ public interface IDriverController {
 
   double getSIN_Joystick();
 
-  double getThrottle();
-
   boolean turboActivate();
 
   boolean notUsingJoystick();
@@ -25,4 +23,5 @@ public interface IDriverController {
 
   Trigger setHeadingLeft();
 
+  boolean isForcingDriverControl();
 }

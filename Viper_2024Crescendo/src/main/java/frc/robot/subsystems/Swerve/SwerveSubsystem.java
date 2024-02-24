@@ -159,7 +159,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
       ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(),
           angleAlign.getDegrees());
       SmartDashboard.putString("Chassis Speed", speeds.toString());
-      driveFO(speeds);
+      driveFieldOriented(speeds);
       this.state = "DRIVE_ALIGN_ANGLE_BUTTON";
     } else {
       driveAlignAngleJoy();
@@ -171,25 +171,29 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     ChassisSpeeds speeds = getTargetSpeedsAngleJoystick(controller.getYtranslation(), controller.getXtranslation(),
         controller.getCOS_Joystick(), controller.getSIN_Joystick());
     SmartDashboard.putString("Chassis Speed", speeds.toString());
-    driveFO(speeds);
+    driveFieldOriented(speeds);
     this.state = "DRIVE_ALIGN_ANGLE_JOY";
   }
 
   @Override
   public void driveAlignSpeaker() {
+    if(this.controller.isForcingDriverControl()){
+      driveAlignAngleButton();
+      return;
+    }
     boolean isDetectingAprilTag = LimelightHelpers.getTV("");
     if (isDetectingAprilTag) {
       this.lostSpeakerFramesCounter = 0;
       this.lastTxMeasurement = LimelightHelpers.getTX("");
       ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
       Limelight.tvAfterTweak = true;
-      driveOmegaPIDfo(speeds, 0, this.lastTxMeasurement, this.pidTrackApril, false);
+      driveOmegaPidFieldOriented(speeds, 0, this.lastTxMeasurement, this.pidTrackApril, false);
     } else {
       this.lostSpeakerFramesCounter++;
       if (this.lostSpeakerFramesCounter <= this.MAX_LOST_SPEAKER_FRAMES) {
         Limelight.tvAfterTweak = true;
         ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
-        driveOmegaPIDfo(speeds, 0, this.lastTxMeasurement, this.pidTrackApril, false);
+        driveOmegaPidFieldOriented(speeds, 0, this.lastTxMeasurement, this.pidTrackApril, false);
       } else {
         Limelight.tvAfterTweak = false;
         driveAlignAngleButton();
@@ -200,25 +204,33 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   @Override
   public void driveAlignNote() {
+    if(this.controller.isForcingDriverControl()){
+      driveAlignAngleButton();
+      return;
+    }
     boolean isDetectingNote = photonVision.hasTarget();
     if (isDetectingNote) {
       this.lostNotesFrameCounter = 0;
       this.targetNotePositionX = photonVision.targetPositionX();
       ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
-      driveOmegaPIDfo(speeds, 0, this.targetNotePositionX, this.pidTrackNote, false);
+      driveOmegaPidFieldOriented(speeds, 0, this.targetNotePositionX, this.pidTrackNote, false);
     } else {
       this.lostNotesFrameCounter++;
       if (this.lostNotesFrameCounter <= this.MAX_LOST_SPEAKER_FRAMES) {
         ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
-        driveOmegaPIDfo(speeds, 0, this.lastTxMeasurement, this.pidTrackNote, false);
+        driveOmegaPidFieldOriented(speeds, 0, this.lastTxMeasurement, this.pidTrackNote, false);
       } else {
         driveAlignAngleButton();
       }
     }
-    this.state = "DRIVE_ALIGN_NOTE"; // Add to the log entry
+    this.state = "DRIVE_ALIGN_NOTE";
   }
 
   private void driveTowardsNote() {
+    if(this.controller.isForcingDriverControl()){
+      driveAlignAngleButton();
+      return;
+    }
     boolean isDetectingNote = photonVision.hasTarget();
     if (isDetectingNote) {
       this.lostNotesFrameCounter = 0;
@@ -300,12 +312,12 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     );
   }
 
-  private void driveFO(ChassisSpeeds speeds) {
+  private void driveFieldOriented(ChassisSpeeds speeds) {
     swerveDrive.driveFieldOriented(speeds);
     this.targetSpeeds = speeds;
   }
 
-  private void driveOmegaPIDfo(ChassisSpeeds speeds, double setpoint, double measurement, PIDController pid,
+  private void driveOmegaPidFieldOriented(ChassisSpeeds speeds, double setpoint, double measurement, PIDController pid,
       boolean invertOmega) {
     ChassisSpeeds speedsPID = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond,
         invertOmega ? -pid.calculate(measurement, setpoint) : pid.calculate(measurement, setpoint));

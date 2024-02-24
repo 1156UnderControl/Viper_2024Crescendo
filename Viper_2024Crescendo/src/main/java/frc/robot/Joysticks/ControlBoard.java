@@ -42,11 +42,6 @@ public class ControlBoard implements IDriverController, IOperatorController {
   }
 
   @Override
-  public double getThrottle() {
-    return mDriverController.getThrottle();
-  }
-
-  @Override
   public boolean turboActivate() {
     return mDriverController.turboActivate();
   }
@@ -124,6 +119,11 @@ public class ControlBoard implements IDriverController, IOperatorController {
   @Override
   public Trigger expell() {
     return mOperatorController.expell();
+  }
+
+  @Override
+  public boolean isForcingDriverControl() {
+    return mDriverController.isForcingDriverControl();
   }
 
 }
