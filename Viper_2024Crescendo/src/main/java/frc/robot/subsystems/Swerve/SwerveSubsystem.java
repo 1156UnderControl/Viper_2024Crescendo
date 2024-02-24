@@ -213,12 +213,12 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
       this.lostNotesFrameCounter = 0;
       this.targetNotePositionX = photonVision.targetPositionX();
       ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
-      driveOmegaPidFieldOriented(speeds, 0, this.targetNotePositionX, this.pidTrackNote, false);
+      driveOmegaPidRobotOriented(speeds, 0, this.targetNotePositionX, this.pidTrackNote, false);
     } else {
       this.lostNotesFrameCounter++;
       if (this.lostNotesFrameCounter <= this.MAX_LOST_SPEAKER_FRAMES) {
         ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
-        driveOmegaPidFieldOriented(speeds, 0, this.lastTxMeasurement, this.pidTrackNote, false);
+        driveOmegaPidRobotOriented(speeds, 0, this.lastTxMeasurement, this.pidTrackNote, false);
       } else {
         driveAlignAngleButton();
       }
@@ -323,6 +323,15 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
         invertOmega ? -pid.calculate(measurement, setpoint) : pid.calculate(measurement, setpoint));
     SmartDashboard.putNumber("Omega PID", speedsPID.omegaRadiansPerSecond);
     swerveDrive.driveFieldOriented(speedsPID);
+    this.targetSpeeds = speedsPID;
+  }
+
+  private void driveOmegaPidRobotOriented(ChassisSpeeds speeds, double setpoint, double measurement, PIDController pid,
+      boolean invertOmega) {
+    ChassisSpeeds speedsPID = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond,
+        invertOmega ? -pid.calculate(measurement, setpoint) : pid.calculate(measurement, setpoint));
+    SmartDashboard.putNumber("Omega PID", speedsPID.omegaRadiansPerSecond);
+    swerveDrive.drive(speedsPID);
     this.targetSpeeds = speedsPID;
   }
 
