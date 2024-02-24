@@ -9,6 +9,8 @@ import frc.robot.subsystems.Climber.ClimberSubsystem;
 import frc.robot.subsystems.Climber.IClimber;
 import frc.robot.subsystems.Intake.IIntake;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
+import frc.robot.subsystems.LEDs.ILed;
+import frc.robot.subsystems.LEDs.LedSubsystem;
 import frc.robot.subsystems.Shooter.IShooter;
 import frc.robot.subsystems.Shooter.ShooterSubsystem;
 import frc.robot.subsystems.Swerve.ISwerve;
@@ -19,10 +21,12 @@ public class RobotSubsystems extends SubsystemBase {
   public IShooter shooter;
   public ISwerve swerve;
   public IClimber climber;
+  public ILed led;
 
   private SubsystemBase intakeSubsystem;
   private SubsystemBase shooterSubsystem;
   private SubsystemBase climberSubsystem;
+  private SubsystemBase ledSubsystem;
 
   public static boolean shootFinished;
   public boolean climbing;
@@ -39,9 +43,11 @@ public class RobotSubsystems extends SubsystemBase {
     this.shooter = ShooterSubsystem.getInstance();
     this.swerve = SwerveSubsystem.getInstance();
     this.climber = ClimberSubsystem.getInstance();
+    this.led = LedSubsystem.getInstance();
     this.intakeSubsystem = IntakeSubsystem.getInstance();
     this.shooterSubsystem = ShooterSubsystem.getInstance();
     this.climberSubsystem = ClimberSubsystem.getInstance();
+    this.ledSubsystem = LedSubsystem.getInstance();
     this.powerDistributionHub = new PowerDistribution();
     this.batteryVoltageLogEntry.append(this.powerDistributionHub.getVoltage());
     this.totalCurrentDrawLogEntry.append(this.powerDistributionHub.getTotalCurrent());
@@ -54,6 +60,7 @@ public class RobotSubsystems extends SubsystemBase {
     this.intakeSubsystem.periodic();
     this.shooterSubsystem.periodic();
     this.climberSubsystem.periodic();
+    this.ledSubsystem.periodic();
     this.batteryVoltageLogEntry.append(this.powerDistributionHub.getVoltage());
     this.totalCurrentDrawLogEntry.append(this.powerDistributionHub.getTotalCurrent());
   }

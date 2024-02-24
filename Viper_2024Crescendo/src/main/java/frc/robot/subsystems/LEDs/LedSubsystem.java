@@ -2,14 +2,37 @@ package frc.robot.subsystems.LEDs;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class LedSubsystem extends SubsystemBase {
-  private AddressableLED m_led;
-  private AddressableLEDBuffer m_ledBuffer;
-  private int m_rainbowFirstPixelHue;
-  private boolean firstBlink = true;
+class LedMode {
+  public static final String SOLID = "SOLID";
+  public static final String RAINBOW = "RAINBOW";
+  public static final String BLINK = "BLINK";  
+}
+
+public class LedSubsystem extends SubsystemBase implements ILed {
   private static LedSubsystem instance = null;
+
+  private AddressableLED led;
+  private AddressableLEDBuffer ledBuffer;
+  private int rainbowFirstPixelHue;
+
+  private Timer blinkTimer = new Timer();
+
+  private double blinkFrequency;
+
+  private double blinkPeriod;
+
+  private double halfBlinkPeriod;
+
+  private int numberOfBlinks;
+
+  private Color colorAfterBlink;
+
+  private String mode;
+
+  private Color color;
 
   public static LedSubsystem getInstance() {
     if (instance == null) {
@@ -19,78 +42,103 @@ public class LedSubsystem extends SubsystemBase {
   }
 
   private LedSubsystem() {
-    this.m_led = new AddressableLED(0);
-    this.m_ledBuffer = new AddressableLEDBuffer(26);
-    this.m_led.setLength(m_ledBuffer.getLength());
-    this.m_led.setData(m_ledBuffer);
-    this.m_led.start();
+    this.setBlinkFrequency(3);
+    this.mode = LedMode.SOLID;
+    this.color = LedColor.OFF;
+    this.led = new AddressableLED(0);
+    this.ledBuffer = new AddressableLEDBuffer(26);
+    this.led.setLength(ledBuffer.getLength());
+    this.led.setData(ledBuffer);
+    this.led.start();
   }
 
-  public void setLEDOff() {
-    none();
-    m_led.setData(m_ledBuffer);
-  }
-
-  private void none() {
-    for (var i = 0; i < m_ledBuffer.getLength(); i++) {
-      m_ledBuffer.setRGB(i, 0, 0, 0);
+  @Override
+  public void periodic() {
+    switch (this.mode) {
+      case LedMode.SOLID:
+        this.processSolidColor();
+        break;
+      case LedMode.RAINBOW:
+        this.processRainbow();
+        break;
+      case LedMode.BLINK:
+        processBlink();
+        break;
     }
-    firstBlink = true;
+  }
+
+  public void setBlinkFrequency(double frequency) {
+    this.blinkFrequency = frequency;
+    this.blinkPeriod = 1 / this.blinkFrequency;
+    this.halfBlinkPeriod = this.blinkPeriod / 2;
+  }
+
+  public void turnOff() {
+    this.setSolidColor(LedColor.OFF);
+  }
+
+  public void setSolidColor(Color color){
+    this.mode = LedMode.SOLID;
+    this.color = color;
+    this.processSolidColor();
+  }
+
+  public void setBlink(Color color, int numberOfBlinks, Color colorAfterBlink) {
+    this.mode = LedMode.BLINK;
+    this.color = color;
+    this.numberOfBlinks = numberOfBlinks;
+    this.colorAfterBlink = colorAfterBlink;
+    this.blinkTimer.reset();
+    this.blinkTimer.start();
+    this.processBlink();
+  }
+
+  public void setBlink(Color color, int numberOfBlinks) {
+    this.setBlink(color, numberOfBlinks, LedColor.OFF);
+  }
+
+  public void setBlink(Color color) {
+    this.setBlink(color, 0, LedColor.OFF);
   }
 
   public void setRainbow() {
-    rainbow();
-    m_led.setData(m_ledBuffer);
+    this.mode = LedMode.RAINBOW;
+    this.color = LedColor.OFF;
+    this.processRainbow();
   }
 
-  public void rainbow() {
-    for (var i = 0; i < m_ledBuffer.getLength(); i++) {
-      final var hue = (m_rainbowFirstPixelHue + (i * 180 / m_ledBuffer.getLength())) % 180;
+  private void processRainbow() {
+    for (var i = 0; i < ledBuffer.getLength(); i++) {
+      final var hue = (this.rainbowFirstPixelHue + (i * 180 / ledBuffer.getLength())) % 180;
       // Define o valor do pixel
-      m_ledBuffer.setHSV(i, hue, 255, 128);
+      ledBuffer.setHSV(i, hue, 255, 128);
     }
-    m_rainbowFirstPixelHue += 3;
+    this.rainbowFirstPixelHue += 3;
     // Verifica Limites
-    m_rainbowFirstPixelHue %= 180;
+    this.rainbowFirstPixelHue %= 180;
+    led.setData(ledBuffer);
   }
 
-  public void setOrange() {
-    orange();
-    m_led.setData(m_ledBuffer);
-  }
-
-  private void orange() {
-    for (var i = 0; i < m_ledBuffer.getLength(); i++) {
-      m_ledBuffer.setRGB(i, 255, 0, 165);
+  private void processSolidColor(){
+    for (var i = 0; i < ledBuffer.getLength(); i++) {
+      ledBuffer.setRGB(i, this.color.red, this.color.blue, this.color.green);
     }
+    led.setData(ledBuffer);
   }
 
-  public void setGreen() {
-    green();
-    m_led.setData(m_ledBuffer);
-  }
-
-  private void green() {
-    for (var i = 0; i < m_ledBuffer.getLength(); i++) {
-      m_ledBuffer.setRGB(i, 0, 0, 255);
+  private void processBlink(){
+    double elapsedTime = this.blinkTimer.get();
+    if (this.numberOfBlinks > 0){
+      double elapsedBlinkPeriods = elapsedTime / this.blinkPeriod;
+      if (elapsedBlinkPeriods > this.numberOfBlinks){
+        this.setSolidColor(this.colorAfterBlink);
+        return;
+      }
     }
-  }
-
-  public void setRed() {
-    red();
-    m_led.setData(m_ledBuffer);
-  }
-
-  public void blinkRed() {
-    red();
-    m_led.setData(m_ledBuffer);
-    none();
-    m_led.setData(m_ledBuffer);
-  }
-
-  private void red() {
-    for (var i = 0; i < m_ledBuffer.getLength(); i++) {
-      m_ledBuffer.setRGB(i, 255, 0, 0);
+    if (elapsedTime % this.blinkPeriod < this.halfBlinkPeriod){
+      this.setSolidColor(this.color);
+    } else {
+      this.setSolidColor(LedColor.OFF);
     }
   }
 }

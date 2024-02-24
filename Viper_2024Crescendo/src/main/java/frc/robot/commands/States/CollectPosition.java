@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotSubsystems;
 import frc.robot.commands.Intake.GoToIntakeIntake;
 import frc.robot.commands.Shooter.CollectToShooter;
+import frc.robot.subsystems.LEDs.LedColor;
 import frc.robot.subsystems.LEDs.LedSubsystem;
 
 public class CollectPosition extends SequentialCommandGroup {
@@ -14,7 +15,7 @@ public class CollectPosition extends SequentialCommandGroup {
     addCommands(
         new GoToIntakeIntake(robot, led),
         new CollectToShooter(robot),
-        new InstantCommand(() -> led.setGreen(), led),
+        new InstantCommand(() -> led.setSolidColor(LedColor.GREEN), led),
         Commands.runOnce(() -> robot.intake.stopIntaking()));
   }
 }

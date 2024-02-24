@@ -15,6 +15,7 @@ import frc.Java_Is_UnderControl.Util.StabilizeChecker;
 import frc.Java_Is_UnderControl.Util.Util;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.LEDs.LedColor;
 import frc.robot.subsystems.LEDs.LedSubsystem;
 import frc.robot.subsystems.Motors.Motor;
 import frc.robot.subsystems.Motors.SparkMAXMotor;
@@ -286,15 +287,15 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
         this.lowerFlywheelMotor.set(0);
         this.upperFlywheelMotor.set(0);
         this.feederMotor.set(0);
-        led.setGreen();
+        led.setSolidColor(LedColor.GREEN);
       } else {
-        led.setRed();
+        led.setSolidColor(LedColor.RED);
         this.lowerFlywheelMotor.set(ShooterConstants.setpoints.VELOCITY_SHOOTER_CORRECT_PASSED_NOTE);
         this.upperFlywheelMotor.set(ShooterConstants.setpoints.VELOCITY_SHOOTER_CORRECT_PASSED_NOTE);
         this.feederMotor.set(ShooterConstants.setpoints.VELOCITY_FEED_CORRECT_PASSED_NOTE);
       }
     } else {
-      led.setRed();
+      led.setSolidColor(LedColor.RED);
       this.lowerFlywheelMotor.set(0);
       this.upperFlywheelMotor.set(0);
       this.feederMotor.set(0);
