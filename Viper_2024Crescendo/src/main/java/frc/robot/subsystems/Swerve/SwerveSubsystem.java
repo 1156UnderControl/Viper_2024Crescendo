@@ -233,6 +233,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
       driveAlignAngleButton();
       return;
     }
+
     boolean isDetectingNote = photonVision.hasTarget();
     if (isDetectingNote) {
       this.lostNotesFrameCounter = 0;

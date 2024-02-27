@@ -1,7 +1,5 @@
 package frc.robot;
 
-import java.util.ResourceBundle.Control;
-
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -75,10 +73,12 @@ public class RobotSubsystems extends SubsystemBase {
   }
 
   public boolean isRobotAbleToShoot() {
-    boolean isDetectingAprilTag = this.aprilTagDetectionStabilizeChecker.isStableInCondition(() -> LimelightHelpers.getTV(""));
-    if (this.controlBoard.getDoNotShoot().getAsBoolean()){
+    boolean isDetectingAprilTag = this.aprilTagDetectionStabilizeChecker
+        .isStableInCondition(() -> LimelightHelpers.getTV(""));
+    if (this.controlBoard.getDoNotShoot().getAsBoolean()) {
       return false;
     }
-    return shooter.isPivotAtSetpoint() && shooter.isFlywheelAtSetpoint() && swerve.isSwerveAlignedWithSpeaker() && isDetectingAprilTag;
+    return shooter.isPivotAtSetpoint() && shooter.isFlywheelAtSetpoint() && swerve.isSwerveAlignedWithSpeaker()
+        && isDetectingAprilTag;
   }
 }

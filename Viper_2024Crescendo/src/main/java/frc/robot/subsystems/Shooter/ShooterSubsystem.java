@@ -15,7 +15,6 @@ import frc.Java_Is_UnderControl.Util.StabilizeChecker;
 import frc.Java_Is_UnderControl.Util.Util;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Limelight;
-import frc.robot.subsystems.LEDs.LedSubsystem;
 import frc.robot.subsystems.Motors.Motor;
 import frc.robot.subsystems.Motors.SparkMAXMotor;
 import frc.robot.subsystems.Motors.VortexMotor;
@@ -31,7 +30,6 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private boolean manualValues;
 
-  private LedSubsystem led;
   private double setpointVelocityShooter;
 
   private double kDt = 0.02;
@@ -87,7 +85,6 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   }
 
   private ShooterSubsystem() {
-    led = LedSubsystem.getInstance();
     this.hasNote = false;
     this.configureFlywheelMotor(this.upperFlywheelMotor);
     this.configureFlywheelMotor(this.lowerFlywheelMotor);
