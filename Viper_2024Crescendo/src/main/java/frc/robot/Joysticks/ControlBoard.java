@@ -72,6 +72,16 @@ public class ControlBoard implements IDriverController, IOperatorController {
   }
 
   @Override
+  public Trigger setHeading45Left() {
+    return mDriverController.setHeading45Left();
+  }
+
+  @Override
+  public Trigger setHeading45Right() {
+    return mDriverController.setHeading45Right();
+  }
+
+  @Override
   public Trigger getIntake() {
     return mOperatorController.getIntake();
   }

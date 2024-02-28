@@ -84,7 +84,17 @@ public class DriverController implements IDriverController {
   }
 
   @Override
-  public boolean isForcingDriverControl(){
+  public Trigger setHeading45Left() {
+    return driverController.leftBumper();
+  }
+
+  @Override
+  public Trigger setHeading45Right() {
+    return driverController.rightBumper();
+  }
+
+  @Override
+  public boolean isForcingDriverControl() {
     return 0.2 < driverController.getLeftTriggerAxis();
   }
 

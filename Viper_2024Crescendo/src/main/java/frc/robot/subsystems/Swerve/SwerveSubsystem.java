@@ -495,6 +495,10 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     angleAlign = new Rotation2d(Units.degreesToRadians(45));
   }
 
+  public void setAngleNeg45() {
+    angleAlign = new Rotation2d(Units.degreesToRadians(-45));
+  }
+
   private void updateLogs() {
     this.poseLogEntry.appendRadians(this.swerveDrive.getPose());
     this.targetXSpeedLogEntry.append(this.targetSpeeds.vxMetersPerSecond);
