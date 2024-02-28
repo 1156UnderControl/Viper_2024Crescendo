@@ -6,7 +6,7 @@ public class CommandsConstants {
   public static final double D_TrackSpeaker = 0.002;
 
   public static final double P_TrackNote = 5;
-  public static final double I_TrackNote = 0;
+  public static final double I_TrackNote = 0.05;
   public static final double D_TrackNote = 0;
 
 }

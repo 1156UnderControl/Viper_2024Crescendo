@@ -270,6 +270,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   private void setupPIDs() {
     this.pidTrackApril.setIZone(5);
     this.pidTrackApril.setTolerance(3);
+    this.pidTrackNote.setIZone(10);
   }
 
   private void setupYAGSL_JSON(File directory) {
