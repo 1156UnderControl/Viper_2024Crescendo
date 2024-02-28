@@ -72,6 +72,10 @@ public class RobotSubsystems extends SubsystemBase {
     this.totalCurrentDrawLogEntry.append(this.powerDistributionHub.getTotalCurrent());
   }
 
+  public boolean robotHasNote() {
+    return this.shooter.hasNote();
+  }
+
   public boolean isRobotAbleToShoot() {
     boolean isDetectingAprilTag = this.aprilTagDetectionStabilizeChecker
         .isStableInCondition(() -> LimelightHelpers.getTV(""));
