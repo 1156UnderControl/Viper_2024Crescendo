@@ -212,15 +212,15 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     if (isDetectingNote) {
       this.lostNotesFrameCounter = 0;
       this.targetNotePositionX = photonVision.targetPositionX();
-      ChassisSpeeds speeds = getTargetSpeedsAngleNotInvert(controller.getYtranslation(), controller.getXtranslation(),
+      ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(),
           0);
-      driveOmegaPidRobotOriented(speeds, 0, this.targetNotePositionX, this.pidTrackNote, false);
+      driveOmegaPidFieldOriented(speeds, 0, this.targetNotePositionX, this.pidTrackNote, false);
     } else {
       this.lostNotesFrameCounter++;
       if (this.lostNotesFrameCounter <= this.MAX_LOST_SPEAKER_FRAMES) {
-        ChassisSpeeds speeds = getTargetSpeedsAngleNotInvert(controller.getYtranslation(), controller.getXtranslation(),
+        ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(),
             0);
-        driveOmegaPidRobotOriented(speeds, 0, this.lastTxMeasurement, this.pidTrackNote, false);
+        driveOmegaPidFieldOriented(speeds, 0, this.lastTxMeasurement, this.pidTrackNote, false);
       } else {
         driveAlignAngleButton();
       }
@@ -268,9 +268,9 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   }
 
   private void setupPIDs() {
-    this.pidTrackApril.setIZone(5);
+    this.pidTrackApril.setIZone(15);
     this.pidTrackApril.setTolerance(3);
-    this.pidTrackNote.setIZone(10);
+    this.pidTrackNote.setIZone(7);
   }
 
   private void setupYAGSL_JSON(File directory) {

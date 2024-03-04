@@ -86,6 +86,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private ShooterSubsystem() {
     this.hasNote = false;
+    this.wasNoteIn = false;
     this.configureFlywheelMotor(this.upperFlywheelMotor);
     this.configureFlywheelMotor(this.lowerFlywheelMotor);
     this.configureFeederMotor();
@@ -144,7 +145,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private void runNoteCorrection() {
     if (state != "INTAKING" && state != "PREPARING_SPEAKER_SHOT" && state != "PREPARING_AMP_SHOT"
-        && state != "SHOOTING" && state != "PREPARING_SET_PIVOT") {
+        && state != "SHOOTING" && state != "PREPARING_SET_PIVOT" && state != "INTAKING_HP") {
       correctNoteCollected();
     }
   }
@@ -189,6 +190,14 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     this.state = "INTAKING";
   }
 
+  @Override
+  public void intakeFromHP() {
+    this.goToIntakePositionHP();
+    this.runNoteDetection();
+    this.setVelocityFlywheel(this.hasNote ? 0 : ShooterConstants.setpoints.VELOCITY_SHOOTER_COLLECT_HP);
+    this.state = "INTAKING_HP";
+  }
+
   public void intakeAuto() {
     this.goToIntakePosition();
     this.runNoteDetection();
@@ -198,10 +207,10 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private void runNoteDetection() {
     if (noteSensorIn.getBoolean()) {
-      wasNoteIn = true;
+      this.wasNoteIn = true;
     }
-    if (wasNoteIn && noteSensorOut.getBoolean()) {
-      hasNote = true;
+    if (this.wasNoteIn && noteSensorOut.getBoolean()) {
+      this.hasNote = true;
     }
   }
 
@@ -213,6 +222,10 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   @Override
   public void goToIntakePosition() {
     this.goal = ShooterConstants.setpoints.ANGLE_INTAKE;
+  }
+
+  public void goToIntakePositionHP() {
+    this.goal = 105;
   }
 
   @Override
@@ -296,6 +309,11 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   }
 
   @Override
+  public void stopFeeder() {
+    this.feederMotor.set(0);
+  }
+
+  @Override
   public boolean hasShooted() {
     return !noteSensorOut.getBoolean();
   }
@@ -303,7 +321,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   @Override
   public boolean getNoteSensor() {
     // TODO Auto-generated method stub
-    return false;
+    return noteSensorOut.getBoolean();
   }
 
   @Override

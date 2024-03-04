@@ -27,6 +27,11 @@ public class OperatorController implements IOperatorController {
   }
 
   @Override
+  public Trigger getIntakeFromHP() {
+    return controller.rightTrigger(0.2);
+  }
+
+  @Override
   public Trigger getSecured() {
     return controller.y();
   }

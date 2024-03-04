@@ -28,10 +28,11 @@ public class AutonomousAimSubwoofer extends Command {
 
   @Override
   public void end(boolean interrupted) {
+    this.robot.shooter.stopFeeder();
   }
 
   @Override
   public boolean isFinished() {
-    return robot.shooter.isPivotAtSetpoint();
+    return robot.shooter.isPivotAtSetpoint() && robot.shooter.getNoteSensor();
   }
 }

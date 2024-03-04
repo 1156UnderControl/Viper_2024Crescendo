@@ -1,8 +1,8 @@
 package frc.robot.Constants;
 
 public class CommandsConstants {
-  public static final double P_TrackSpeaker = 0.120;
-  public static final double I_TrackSpeaker = 0.0001;
+  public static final double P_TrackSpeaker = 0.09;
+  public static final double I_TrackSpeaker = 0.1;
   public static final double D_TrackSpeaker = 0.002;
 
   public static final double P_TrackNote = 5;

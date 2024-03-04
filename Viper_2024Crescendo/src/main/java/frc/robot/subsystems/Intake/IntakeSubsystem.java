@@ -69,7 +69,7 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
     this.pivotMotor.setVelocityFactor(6);
     this.pivotMotor.configurePIDF(IntakeConstants.tunning_values.PID.P, IntakeConstants.tunning_values.PID.I,
         IntakeConstants.tunning_values.PID.D, IntakeConstants.tunning_values.PID.F);
-    this.pivotMotor.setPosition(0);
+    this.pivotMotor.setPosition(IntakeConstants.setpoints.ANGLE_SECURED);
   }
 
   private void configureRollerMotor() {
@@ -97,6 +97,12 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
   public void intake() {
     this.goToIntakePosition();
     this.rollerMotor.set(IntakeConstants.setpoints.SPEED_INTAKE);
+  }
+
+  @Override
+  public void intakeFromHPposition() {
+    this.goToIntakePosition();
+    this.rollerMotor.set(0);
   }
 
   @Override

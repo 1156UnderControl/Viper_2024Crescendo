@@ -6,7 +6,7 @@ import frc.robot.RobotSubsystems;
 
 public class AutonomousAimSteal extends Command {
   private RobotSubsystems robot;
-  private double shotPosition = 50;
+  private double shotPosition = 66;
 
   public AutonomousAimSteal(RobotSubsystems robot) {
     this.robot = robot;
@@ -32,6 +32,6 @@ public class AutonomousAimSteal extends Command {
 
   @Override
   public boolean isFinished() {
-    return robot.shooter.isPivotAtSetpoint();
+    return robot.shooter.isPivotAtSetpoint() && robot.shooter.getNoteSensor();
   }
 }

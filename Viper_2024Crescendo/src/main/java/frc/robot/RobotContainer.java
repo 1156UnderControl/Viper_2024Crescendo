@@ -23,6 +23,7 @@ import frc.robot.commands.Autonomous.AutonomousCollect;
 import frc.robot.commands.Autonomous.AutonomousShoot;
 import frc.robot.commands.Autonomous.AutonomousVisionUpdate;
 import frc.robot.commands.States.ClimbPosition;
+import frc.robot.commands.States.CollectHPposition;
 import frc.robot.commands.States.CollectPosition;
 import frc.robot.commands.States.ExpellPosition;
 import frc.robot.commands.States.SecuredPosition;
@@ -76,6 +77,7 @@ public class RobotContainer {
     mControlBoard.setHeading45Left().onTrue(new InstantCommand(swerve::setAngle45));
     mControlBoard.setHeading45Right().onTrue(new InstantCommand(swerve::setAngleNeg45));
     mControlBoard.getIntake().onTrue(new CollectPosition(robot, swerve));
+    mControlBoard.getIntakeFromHP().onTrue(new CollectHPposition(robot));
     mControlBoard.getSecured().onTrue(new SecuredPosition(robot));
     mControlBoard.getSecured().onTrue(new SwerveTeleopControl(swerve));
     mControlBoard.getPrepareAmp().onTrue(new ShootAmpPosition(robot));

@@ -34,6 +34,6 @@ public class AutonomousAim extends Command {
 
   @Override
   public boolean isFinished() {
-    return robot.shooter.isPivotAtSetpoint();
+    return robot.shooter.isPivotAtSetpoint() && robot.shooter.getNoteSensor();
   }
 }

@@ -3,6 +3,8 @@ package frc.robot.subsystems.Intake;
 public interface IIntake {
   void intake();
 
+  void intakeFromHPposition();
+
   void stopIntaking();
 
   void goToIntakePosition();
