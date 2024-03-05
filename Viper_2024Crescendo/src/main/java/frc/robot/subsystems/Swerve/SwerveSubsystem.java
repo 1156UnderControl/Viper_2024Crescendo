@@ -24,6 +24,7 @@ import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.Java_Is_UnderControl.Limelight.Limelight;
@@ -76,6 +77,8 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
       CommandsConstants.D_TrackNote);
 
   LimelightHelpers.PoseEstimate limelightMeasurement;
+
+  Field2d poseVision = new Field2d();
 
   private Pose2dLogEntry poseLogEntry = new Pose2dLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/Pose");
 
@@ -138,17 +141,13 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   @Override
   public void periodic() {
-    this.limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+    this.limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("");
     swerveDrive.updateOdometry();
-    headingDegrees = getHeading().getDegrees();
-    headingRadians = getHeading().getRadians();
-    SmartDashboard.putNumber("Heading Degrees", headingDegrees);
-    SmartDashboard.putNumber("Heading Radians", headingRadians);
-    SmartDashboard.putNumber("Heading Odometry", swerveDrive.getOdometryHeading().getDegrees());
     SmartDashboard.putNumber("Distance LL", limelight.getDistance());
     if (!Limelight.notUsingLLforOdometry) {
       Limelight.setPipeline(1);
       if (this.limelightMeasurement.tagCount >= 2) {
+        this.poseVision.setRobotPose(this.limelightMeasurement.pose);
         swerveDrive.addVisionMeasurement(this.limelightMeasurement.pose, this.limelightMeasurement.timestampSeconds,
             VecBuilder.fill(.7, .7, 9999999));
       }
