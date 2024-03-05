@@ -84,12 +84,12 @@ public class DriverController implements IDriverController {
   }
 
   @Override
-  public Trigger setHeading45Left() {
+  public Trigger rotateLeft() {
     return driverController.leftBumper();
   }
 
   @Override
-  public Trigger setHeading45Right() {
+  public Trigger rotateRight() {
     return driverController.rightBumper();
   }
 

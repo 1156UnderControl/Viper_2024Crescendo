@@ -317,7 +317,15 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   }
 
   private void driveFieldOriented(ChassisSpeeds speeds) {
-    swerveDrive.driveFieldOriented(speeds);
+    ChassisSpeeds speedsRotate;
+    if (this.controller.rotateLeft().getAsBoolean()) {
+      speedsRotate = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, 8);
+    } else if (this.controller.rotateRight().getAsBoolean()) {
+      speedsRotate = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, -8);
+    } else {
+      speedsRotate = speeds;
+    }
+    swerveDrive.driveFieldOriented(speedsRotate);
     this.targetSpeeds = speeds;
   }
 
