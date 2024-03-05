@@ -26,6 +26,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   private static ShooterSubsystem shooterInstance = null;
 
   private boolean hasNote;
+
   private boolean wasNoteIn;
 
   private boolean manualValues;
@@ -45,7 +46,12 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   private Motor pivotMotor = new SparkMAXMotor(ShooterConstants.ID_pivotShooter, true);
 
   private DigitalInput noteSensorOut = new InfraRed(ShooterConstants.port_IR_OUT, false);
+
   private DigitalInput noteSensorIn = new InfraRed(ShooterConstants.port_IR_IN, false);
+
+  private boolean tvAfterTweak = true;
+
+  private Limelight limelight;
 
   SimpleMotorFeedforward pivotFeedforward = new SimpleMotorFeedforward(ShooterConstants.tunning_values_pivot.KS,
       ShooterConstants.tunning_values_pivot.KV);
@@ -85,6 +91,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   }
 
   private ShooterSubsystem() {
+    this.limelight = new Limelight();
     this.hasNote = false;
     this.wasNoteIn = false;
     this.configureFlywheelMotor(this.upperFlywheelMotor);
@@ -144,8 +151,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   }
 
   private void runNoteCorrection() {
-    if (state != "INTAKING" && state != "PREPARING_SPEAKER_SHOT" && state != "PREPARING_AMP_SHOT"
-        && state != "SHOOTING" && state != "PREPARING_SET_PIVOT" && state != "INTAKING_HP") {
+    if (state == "SAFE_POSITION") {
       correctNoteCollected();
     }
   }
@@ -256,7 +262,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     this.feederMotor.set(0);
     setVelocityFlywheel(verifyManualValue(ShooterConstants.setpoints.VELOCITY_SHOOT_SPEAKER,
         "Setpoint Vel Shooter"));
-    if (Limelight.tvAfterTweak) {
+    if (this.tvAfterTweak) {
       goal = verifyManualValue(calculateGoalSpeaker(), "Setpoint Pos Shoot Pivot");
     } else {
       goal = 47;
@@ -365,9 +371,9 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     return pivotFeedforward.calculate(pivotCurrentSetpoint.velocity / 12);
   }
 
-  private static double calculateGoalSpeaker() {
+  private double calculateGoalSpeaker() {
     interpolationTree();
-    return shooterMap.get(Limelight.getDistance());
+    return shooterMap.get(limelight.getDistance());
   }
 
   private static void interpolationTree() {
