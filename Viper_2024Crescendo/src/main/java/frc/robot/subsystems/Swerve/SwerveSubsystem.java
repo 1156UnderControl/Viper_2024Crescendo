@@ -10,8 +10,8 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -24,8 +24,6 @@ import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.Java_Is_UnderControl.Limelight.Limelight;
@@ -77,12 +75,12 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   PIDController pidTrackNote = new PIDController(CommandsConstants.P_TrackNote, CommandsConstants.I_TrackNote,
       CommandsConstants.D_TrackNote);
 
-  Pose2d poseVision;
-
-  Field2d aprField2d = new Field2d();
-  MedianFilter filter = new MedianFilter(3);
+  LimelightHelpers.PoseEstimate limelightMeasurement;
 
   private Pose2dLogEntry poseLogEntry = new Pose2dLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/Pose");
+
+  private Pose2dLogEntry poseVisionLogEntry = new Pose2dLogEntry(DataLogManager.getLog(),
+      "/SwerveSubsystem/PoseVision");
 
   private ChassisSpeeds targetSpeeds = new ChassisSpeeds();
 
@@ -131,7 +129,6 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   private SwerveSubsystem(File directory) {
     this.limelight = new Limelight();
     this.photonVision = new PhotonVision();
-    SmartDashboard.putData("POSE APRIL", aprField2d);
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     setupPIDs();
     setupYAGSL_JSON(directory);
@@ -141,6 +138,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   @Override
   public void periodic() {
+    this.limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
     swerveDrive.updateOdometry();
     headingDegrees = getHeading().getDegrees();
     headingRadians = getHeading().getRadians();
@@ -150,9 +148,10 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     SmartDashboard.putNumber("Distance LL", limelight.getDistance());
     if (!Limelight.notUsingLLforOdometry) {
       Limelight.setPipeline(1);
-      // poseVision = Limelight.poseLL;
-      // aprField2d.setRobotPose(poseVision);
-      swerveDrive.addVisionMeasurement(poseVision, Timer.getFPGATimestamp(), null);
+      if (this.limelightMeasurement.tagCount >= 2) {
+        swerveDrive.addVisionMeasurement(this.limelightMeasurement.pose, this.limelightMeasurement.timestampSeconds,
+            VecBuilder.fill(.7, .7, 9999999));
+      }
     } else {
       Limelight.setPipeline(0);
     }
@@ -427,20 +426,6 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     swerveDrive.lockPose();
   }
 
-  public void addVisionReading() {
-    Limelight.notUsingLLforOdometry = false;
-    this.poseVision = new Pose2d(
-        new Translation2d(
-            poseVision.getX(),
-            poseVision.getY()),
-        new Rotation2d(
-            poseVision.getRotation().getDegrees()));
-
-    if (LimelightHelpers.getTV("")) {
-      swerveDrive.addVisionMeasurement(poseVision, Timer.getFPGATimestamp());
-    }
-  }
-
   /*
    * public double trackNote() {
    * return pidTrackNotes.calculate();
@@ -484,5 +469,6 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     this.txMeasurementLlLogEntry.append(this.lastTxMeasurement);
     this.tvMeasurementLlLogEntry.append(LimelightHelpers.getTV(""));
     this.stateLogEntry.append(this.state);
+    this.poseVisionLogEntry.appendRadians(this.limelightMeasurement.pose);
   }
 }
