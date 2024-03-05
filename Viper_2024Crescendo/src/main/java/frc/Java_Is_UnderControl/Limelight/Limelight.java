@@ -2,29 +2,26 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.Java_Is_UnderControl.Limelight;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
-import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
 
 public final class Limelight {
-  private Limelight() {
+  public Limelight() {
   }
 
   public static boolean notUsingLLforOdometry = false;
 
-  public static double tx = LimelightHelpers.getTX("");
-  public static boolean tv = LimelightHelpers.getTV("");
-  public static boolean tvAfterTweak = false;
-  public static Pose2d poseLL = LimelightHelpers.getBotPose2d_wpiBlue("");
-
-  public static void setPipelineToOdometry() {
-    LimelightHelpers.setPipelineIndex("", 0);
+  public double getTX() {
+    return LimelightHelpers.getTX("");
   }
 
-  public static void setPipelineToTrackSpeaker() {
-    LimelightHelpers.setPipelineIndex("", 1);
+  public boolean getTV() {
+    return LimelightHelpers.getTV("");
+  }
+
+  public static void setPipeline(int index) {
+    LimelightHelpers.setPipelineIndex("", index);
   }
 
   public static void ledBlink() {
@@ -48,7 +45,7 @@ public final class Limelight {
 
   private static final double goalHeightInches = 53.88;
 
-  public static double getDistance() {
+  public double getDistance() {
     double angleToGoalDegrees = limelightMountAngleDegrees + LimelightHelpers.getTY("");
     double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
     double distanceFromLimelightToGoalInches = (goalHeightInches - limelightLensHeightInches)
