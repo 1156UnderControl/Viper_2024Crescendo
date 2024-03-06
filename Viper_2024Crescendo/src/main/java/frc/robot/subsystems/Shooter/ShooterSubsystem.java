@@ -259,9 +259,17 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     if (Limelight.tvAfterTweak) {
       goal = verifyManualValue(calculateGoalSpeaker(), "Setpoint Pos Shoot Pivot");
     } else {
-      goal = 47;
+      goal = ShooterConstants.setpoints.ANGLE_SHOOT_SUBWOOFER;
     }
     this.state = "PREPARING_SPEAKER_SHOT";
+  }
+
+  @Override
+  public void prepareShootOverStage() {
+    this.feederMotor.set(0);
+    setVelocityFlywheel(ShooterConstants.setpoints.VELOCITY_SHOOT_OVER_STAGE);
+    this.goal = ShooterConstants.setpoints.ANGLE_SHOOT_OVER_STAGE;
+    this.state = "PREPARING_SHOT_OVER_STAGE";
   }
 
   @Override

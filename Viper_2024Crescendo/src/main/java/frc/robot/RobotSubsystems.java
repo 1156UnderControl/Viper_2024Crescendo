@@ -34,6 +34,7 @@ public class RobotSubsystems extends SubsystemBase {
   private ControlBoard controlBoard = ControlBoard.getInstance();
 
   public static boolean shootFinished;
+  public boolean preparingShoot = false;
   public boolean climbing;
 
   private StabilizeChecker aprilTagDetectionStabilizeChecker = new StabilizeChecker();

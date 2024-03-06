@@ -15,11 +15,13 @@ public class ShootAmpPosition extends SequentialCommandGroup {
   public ShootAmpPosition(RobotSubsystems robot) {
     addCommands(
         new InstantCommand(() -> RobotSubsystems.shootFinished = false),
+        new InstantCommand(() -> robot.preparingShoot = true),
         new InstantCommand(() -> robot.led.setSolidColor(LedColor.YELLOW)),
         new GoToShootIntake(robot),
         new ShootAmp(robot),
         new InstantCommand(() -> robot.led.setSolidColor(LedColor.GREEN)),
         Commands.waitUntil(mControlBoard.getShoot()),
+        new InstantCommand(() -> robot.preparingShoot = false),
         Commands.runOnce(() -> robot.shooter.shoot(), robot),
         new InstantCommand(() -> robot.led.setBlink(LedColor.GREEN, 3)),
         Commands.waitSeconds(1),

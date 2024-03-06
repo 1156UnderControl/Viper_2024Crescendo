@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import static edu.wpi.first.wpilibj2.command.Commands.parallel;
+
 import java.io.File;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -28,6 +30,7 @@ import frc.robot.commands.States.CollectPosition;
 import frc.robot.commands.States.ExpellPosition;
 import frc.robot.commands.States.SecuredPosition;
 import frc.robot.commands.States.ShootAmpPosition;
+import frc.robot.commands.States.ShootOverStagePosition;
 import frc.robot.commands.States.ShootSpeakerPosition;
 import frc.robot.commands.Swerve.SwerveAlignSpeaker;
 import frc.robot.commands.Swerve.SwerveTeleopControl;
@@ -83,6 +86,8 @@ public class RobotContainer {
     mControlBoard.getPrepareAmp().onTrue(new ShootAmpPosition(robot));
     mControlBoard.getPrepareSpeaker().onTrue(new ShootSpeakerPosition(robot));
     mControlBoard.getPrepareSpeaker().onTrue(new SwerveAlignSpeaker(swerve));
+    mControlBoard.getDoNotShoot().and(() -> !robot.preparingShoot).onTrue(parallel(
+        new ShootOverStagePosition(robot), new InstantCommand(swerve::setAngle45)));
     mControlBoard.release().onTrue(new ClimbPosition(robot));
     mControlBoard.expell().onTrue(new ExpellPosition(robot));
     mControlBoard.falseNegative().onTrue(new InstantCommand(() -> robot.shooter.setHasNoteTrue()));

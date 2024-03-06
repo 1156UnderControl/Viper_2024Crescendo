@@ -21,6 +21,8 @@ public interface IShooter {
 
   void prepareAmpShot();
 
+  void prepareShootOverStage();
+
   void goToSecuredPosition();
 
   void shoot();
