@@ -8,6 +8,7 @@ import frc.robot.Joysticks.ControlBoard;
 public class ShootSpeaker extends Command {
   private RobotSubsystems robot;
   ControlBoard controlBoard = ControlBoard.getInstance();
+  private Limelight limelight = Limelight.getInstance();
 
   public ShootSpeaker(RobotSubsystems robot) {
     this.robot = robot;
@@ -18,9 +19,9 @@ public class ShootSpeaker extends Command {
   public void execute() {
     this.robot.shooter.prepareSpeakerShot();
     if (this.robot.isRobotAbleToShoot()) {
-      Limelight.ledOn();
+      limelight.ledOn();
     } else {
-      Limelight.ledBlink();
+      limelight.ledBlink();
     }
   }
 

@@ -12,6 +12,7 @@ import frc.robot.subsystems.LEDs.LedColor;
 
 public class ShootSpeakerPosition extends SequentialCommandGroup {
   ControlBoard mControlBoard = ControlBoard.getInstance();
+  private Limelight limelight = Limelight.getInstance();
 
   public ShootSpeakerPosition(RobotSubsystems robot) {
     addCommands(
@@ -21,9 +22,9 @@ public class ShootSpeakerPosition extends SequentialCommandGroup {
         new ShootSpeaker(robot),
         Commands.runOnce(() -> robot.shooter.shoot(), robot),
         new InstantCommand(() -> robot.led.setBlink(LedColor.GREEN, 3)),
-        new InstantCommand(() -> Limelight.ledOn()),
+        new InstantCommand(() -> limelight.ledOn()),
         Commands.waitSeconds(1),
         new InstantCommand(() -> RobotSubsystems.shootFinished = true),
-        new InstantCommand(() -> Limelight.ledOff()));
+        new InstantCommand(() -> limelight.ledOff()));
   }
 }

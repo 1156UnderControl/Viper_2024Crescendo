@@ -32,8 +32,8 @@ public final class Limelight {
 
   public EstimatedRobotPose estimatedRobotPose;
 
-  private Transform3d robotToCam = new Transform3d(new Translation3d(-0.23, 0.0, 0.26),
-      new Rotation3d(0, Units.degreesToRadians(20), Math.PI)); // Cam mounted facing forward, half a meter forward of
+  private Transform3d robotToCam = new Transform3d(new Translation3d(-0.6, 0.0, 0.26),
+      new Rotation3d(0, Units.degreesToRadians(24), Math.PI)); // Cam mounted facing forward, half a meter forward of
                                                                // center, half a meter up from center.
 
   PhotonPoseEstimator photonPoseEstimator;
@@ -69,7 +69,7 @@ public final class Limelight {
   public double getTX() {
     var result = camera.getLatestResult();
     if (result.hasTargets()) {
-      return result.getBestTarget().getYaw();
+
     }
     return 0;
   }
@@ -80,7 +80,7 @@ public final class Limelight {
   }
 
   public void setPipeline(int index) {
-    this.camera.setPipelineIndex(index);
+    this.camera.setPipelineIndex(0);
   }
 
   public void ledBlink() {
@@ -95,20 +95,20 @@ public final class Limelight {
     camera.setLED(VisionLEDMode.kOff);
   }
 
-  private static final double limelightMountAngleDegreesRAD = 0.349066;
+  private static final double limelightMountAngleDegreesDEG = 24;
 
-  private static final double limelightLensHeightInches = 0.2599;
+  private static final double limelightLensHeightMeters = 0.2599;
 
-  private static final double goalHeightInches = 1.368552;
+  private static final double goalHeightMeters = 1.368552;
 
   public double getDistance() {
     var result = camera.getLatestResult();
     double distance = 0;
     if (result.hasTargets()) {
       distance = PhotonUtils.calculateDistanceToTargetMeters(
-          limelightLensHeightInches,
-          goalHeightInches,
-          limelightMountAngleDegreesRAD,
+          limelightLensHeightMeters,
+          goalHeightMeters,
+          Units.degreesToRadians(limelightMountAngleDegreesDEG),
           Units.degreesToRadians(result.getBestTarget().getPitch()));
     }
     return distance;
