@@ -5,12 +5,14 @@
 package frc.robot.subsystems.Swerve;
 
 import java.io.File;
+import java.util.Optional;
+
+import org.photonvision.EstimatedRobotPose;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
 
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -60,8 +62,6 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   private double lastTxMeasurement;
 
-  private boolean tvAfterTweak = true;
-
   private static SwerveSubsystem swerveInstance = null;
 
   private double headingDegrees;
@@ -76,9 +76,10 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   PIDController pidTrackNote = new PIDController(CommandsConstants.P_TrackNote, CommandsConstants.I_TrackNote,
       CommandsConstants.D_TrackNote);
 
+  Pose2d poseVision = new Pose2d();
   LimelightHelpers.PoseEstimate limelightMeasurement;
 
-  Field2d poseVision = new Field2d();
+  Field2d aprField2d = new Field2d();
 
   private Pose2dLogEntry poseLogEntry = new Pose2dLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/Pose");
 
@@ -111,9 +112,9 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   private PhotonVision photonVision;
 
-  private double targetNotePositionX;
-
   private Limelight limelight;
+
+  private double targetNotePositionX;
 
   public static SwerveSubsystem getInstance(File directory) {
     if (swerveInstance == null) {
@@ -130,8 +131,9 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   }
 
   private SwerveSubsystem(File directory) {
-    this.limelight = new Limelight();
+    this.limelight = Limelight.getInstance();
     this.photonVision = new PhotonVision();
+    SmartDashboard.putData("POSE APRIL", aprField2d);
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     setupPIDs();
     setupYAGSL_JSON(directory);
@@ -143,16 +145,22 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   public void periodic() {
     this.limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("");
     swerveDrive.updateOdometry();
+    Optional<EstimatedRobotPose> estimation = limelight
+        .getEstimatedGlobalPose(swerveDrive.swerveDrivePoseEstimator.getEstimatedPosition());
+    headingDegrees = getHeading().getDegrees();
+    headingRadians = getHeading().getRadians();
+    SmartDashboard.putNumber("Heading Odometry", swerveDrive.getOdometryHeading().getDegrees());
     SmartDashboard.putNumber("Distance LL", limelight.getDistance());
-    if (!Limelight.notUsingLLforOdometry) {
-      Limelight.setPipeline(1);
-      if (this.limelightMeasurement.tagCount >= 2) {
-        this.poseVision.setRobotPose(this.limelightMeasurement.pose);
-        swerveDrive.addVisionMeasurement(this.limelightMeasurement.pose, this.limelightMeasurement.timestampSeconds,
-            VecBuilder.fill(.7, .7, 9999999));
+    if (!Limelight.notUsingLLforOdometry && estimation.isPresent()) {
+      limelight.setPipeline(0);
+      SmartDashboard.putNumber("tags", estimation.get().targetsUsed.size());
+      poseVision = estimation.get().estimatedPose.toPose2d();
+      if (estimation.get().targetsUsed.size() >= 2) {
+        aprField2d.setRobotPose(poseVision);
+        swerveDrive.addVisionMeasurement(poseVision, estimation.get().timestampSeconds);
       }
     } else {
-      Limelight.setPipeline(0);
+      limelight.setPipeline(1);
     }
     this.updateLogs();
   }
@@ -190,16 +198,16 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
       this.lostSpeakerFramesCounter = 0;
       this.lastTxMeasurement = LimelightHelpers.getTX("");
       ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
-      tvAfterTweak = true;
+      Limelight.tvAfterTweak = true;
       driveOmegaPidFieldOriented(speeds, 0, this.lastTxMeasurement, this.pidTrackApril, false);
     } else {
       this.lostSpeakerFramesCounter++;
       if (this.lostSpeakerFramesCounter <= this.MAX_LOST_SPEAKER_FRAMES) {
-        tvAfterTweak = true;
+        Limelight.tvAfterTweak = true;
         ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
         driveOmegaPidFieldOriented(speeds, 0, this.lastTxMeasurement, this.pidTrackApril, false);
       } else {
-        tvAfterTweak = false;
+        Limelight.tvAfterTweak = false;
         driveAlignAngleButton();
       }
     }
@@ -461,6 +469,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   private void updateLogs() {
     this.poseLogEntry.appendRadians(this.swerveDrive.getPose());
+    this.poseVisionLogEntry.appendRadians(this.poseVision);
     this.targetXSpeedLogEntry.append(this.targetSpeeds.vxMetersPerSecond);
     this.targetYSpeedLogEntry.append(this.targetSpeeds.vyMetersPerSecond);
     this.targetOmegaSpeedLogEntry.append(this.targetSpeeds.omegaRadiansPerSecond);
@@ -468,6 +477,5 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     this.txMeasurementLlLogEntry.append(this.lastTxMeasurement);
     this.tvMeasurementLlLogEntry.append(LimelightHelpers.getTV(""));
     this.stateLogEntry.append(this.state);
-    this.poseVisionLogEntry.appendRadians(this.limelightMeasurement.pose);
   }
 }

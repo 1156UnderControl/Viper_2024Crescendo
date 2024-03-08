@@ -91,7 +91,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   }
 
   private ShooterSubsystem() {
-    this.limelight = new Limelight();
+    this.limelight = Limelight.getInstance();
     this.hasNote = false;
     this.wasNoteIn = false;
     this.configureFlywheelMotor(this.upperFlywheelMotor);
@@ -262,7 +262,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     this.feederMotor.set(0);
     setVelocityFlywheel(verifyManualValue(ShooterConstants.setpoints.VELOCITY_SHOOT_SPEAKER,
         "Setpoint Vel Shooter"));
-    if (this.tvAfterTweak) {
+    if (Limelight.tvAfterTweak) {
       goal = verifyManualValue(calculateGoalSpeaker(), "Setpoint Pos Shoot Pivot");
     } else {
       goal = 47;

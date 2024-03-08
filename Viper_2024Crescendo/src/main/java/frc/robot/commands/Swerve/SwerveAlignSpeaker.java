@@ -13,6 +13,7 @@ import frc.robot.subsystems.Swerve.ISwerve;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
 public class SwerveAlignSpeaker extends Command {
+  private Limelight limelight = Limelight.getInstance();
   private ISwerve swerve;
 
   public SwerveAlignSpeaker(SwerveSubsystem swerve) {
@@ -23,7 +24,7 @@ public class SwerveAlignSpeaker extends Command {
   @Override
   public void initialize() {
     Limelight.notUsingLLforOdometry = true;
-    Limelight.setPipeline(1);
+    limelight.setPipeline(1);
   }
 
   @Override

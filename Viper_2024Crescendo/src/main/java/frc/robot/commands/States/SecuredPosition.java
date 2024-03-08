@@ -10,10 +10,11 @@ import frc.robot.commands.Shooter.GoToSecuredShooter;
 import frc.robot.subsystems.LEDs.LedColor;
 
 public class SecuredPosition extends SequentialCommandGroup {
+  private Limelight limelight = Limelight.getInstance();
 
   public SecuredPosition(RobotSubsystems robot) {
     addCommands(
-        new InstantCommand(() -> Limelight.ledOff()),
+        new InstantCommand(() -> limelight.ledOff()),
         new InstantCommand(() -> RobotSubsystems.shootFinished = false),
         new GoToSecuredShooter(robot),
         new GoToSecuredIntake(robot),
