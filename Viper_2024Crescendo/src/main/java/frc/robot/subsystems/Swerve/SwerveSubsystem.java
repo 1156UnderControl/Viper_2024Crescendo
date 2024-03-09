@@ -266,36 +266,6 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     this.state = "DRIVE_ALIGN_NOTE";
   }
 
-  private void driveTowardsNote() {
-    if (this.controller.isForcingDriverControl()) {
-      driveAlignAngleButton();
-      return;
-    }
-
-    boolean isDetectingNote = photonVision.hasTarget();
-    if (isDetectingNote) {
-      this.lostNotesFrameCounter = 0;
-      this.targetNotePositionX = photonVision.targetPositionX();
-      Translation2d speeds = new Translation2d(1, 0);
-      driveToNoteCommand(speeds, this.pidTrackNote.calculate(this.targetNotePositionX, 0));
-    } else {
-      this.lostNotesFrameCounter++;
-      if (this.lostNotesFrameCounter <= this.MAX_LOST_SPEAKER_FRAMES) {
-        Translation2d speeds = new Translation2d(1, 0);
-        driveToNoteCommand(speeds, this.pidTrackNote.calculate(this.targetNotePositionX, 0));
-      } else {
-        driveAlignAngleButton();
-      }
-    }
-    this.state = "DRIVE_ALIGN_NOTE"; // Add to the log entry
-  }
-
-  private void driveToNoteCommand(Translation2d translation, double rotation) {
-    Translation2d centerOfRotation = new Translation2d(0, 0);
-    swerveDrive.drive(translation, rotation, false, false, centerOfRotation);
-
-  }
-
   public boolean isSwerveAlignedWithSpeaker() {
     return this.pidTrackApril.atSetpoint();
   }
