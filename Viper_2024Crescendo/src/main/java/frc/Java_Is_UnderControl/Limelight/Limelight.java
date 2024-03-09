@@ -12,6 +12,7 @@ import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.PhotonUtils;
 import org.photonvision.common.hardware.VisionLEDMode;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
@@ -32,6 +33,11 @@ public final class Limelight {
 
   public EstimatedRobotPose estimatedRobotPose;
 
+  public static Transform3d camToRobotRot = new Transform3d(new Translation3d(),
+      new Rotation3d(0, Units.degreesToRadians(24), Math.PI));
+
+  public static Transform3d camToRobotTrans = new Transform3d(new Translation3d(-0.23, 0, 0), new Rotation3d());
+
   private Transform3d robotToCam = new Transform3d(new Translation3d(-0.6, 0.0, 0.26),
       new Rotation3d(0, Units.degreesToRadians(24), Math.PI)); // Cam mounted facing forward, half a meter forward of
                                                                // center, half a meter up from center.
@@ -51,7 +57,7 @@ public final class Limelight {
     this("limelight");
     fieldAprils.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
     photonPoseEstimator = new PhotonPoseEstimator(fieldAprils,
-        PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, robotToCam);
+        PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, new Transform3d());
   }
 
   public Limelight(String cameraName) {
@@ -66,10 +72,14 @@ public final class Limelight {
   public static boolean notUsingLLforOdometry = false;
   public static boolean tvAfterTweak = false;
 
-  public double getTX() {
+  public double getYawTagSpeaker() {
     var result = camera.getLatestResult();
     if (result.hasTargets()) {
-
+      for (PhotonTrackedTarget target : result.getTargets()) {
+        if (target.getFiducialId() == 4 || target.getFiducialId() == 7) {
+          return target.getYaw();
+        }
+      }
     }
     return 0;
   }
@@ -105,11 +115,13 @@ public final class Limelight {
     var result = camera.getLatestResult();
     double distance = 0;
     if (result.hasTargets()) {
-      distance = PhotonUtils.calculateDistanceToTargetMeters(
-          limelightLensHeightMeters,
-          goalHeightMeters,
-          Units.degreesToRadians(limelightMountAngleDegreesDEG),
-          Units.degreesToRadians(result.getBestTarget().getPitch()));
+      for (PhotonTrackedTarget target : result.getTargets()) {
+        if (target.getFiducialId() == 4 || target.getFiducialId() == 7) {
+          distance = PhotonUtils.calculateDistanceToTargetMeters(limelightLensHeightMeters, goalHeightMeters,
+              Units.degreesToRadians(limelightMountAngleDegreesDEG), 0);
+          return distance;
+        }
+      }
     }
     return distance;
   }

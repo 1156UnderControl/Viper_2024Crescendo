@@ -15,6 +15,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -35,6 +36,7 @@ import frc.Java_Is_UnderControl.Logging.Pose2dLogEntry;
 import frc.Java_Is_UnderControl.PhotonVision.PhotonVision;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CommandsConstants;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Joysticks.ControlBoard;
 import swervelib.SwerveController;
@@ -76,7 +78,10 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   PIDController pidTrackNote = new PIDController(CommandsConstants.P_TrackNote, CommandsConstants.I_TrackNote,
       CommandsConstants.D_TrackNote);
 
-  Pose2d poseVision = new Pose2d();
+  Pose2d poseVision2D = new Pose2d();
+
+  Pose3d poseVision3D = new Pose3d();
+
   LimelightHelpers.PoseEstimate limelightMeasurement;
 
   Field2d aprField2d = new Field2d();
@@ -154,10 +159,14 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     if (!Limelight.notUsingLLforOdometry && estimation.isPresent()) {
       limelight.setPipeline(0);
       SmartDashboard.putNumber("tags", estimation.get().targetsUsed.size());
-      poseVision = estimation.get().estimatedPose.toPose2d();
+      poseVision2D = estimation.get().estimatedPose.toPose2d();
+      poseVision3D = estimation.get().estimatedPose;
       if (estimation.get().targetsUsed.size() >= 2) {
-        aprField2d.setRobotPose(poseVision);
-        swerveDrive.addVisionMeasurement(poseVision, estimation.get().timestampSeconds);
+        Pose3d fieldToCamera = poseVision3D;
+        Pose3d fieldToRobotRot = fieldToCamera.transformBy(Limelight.camToRobotRot);
+        Pose3d fieldToRobot = fieldToRobotRot.transformBy(Limelight.camToRobotTrans);
+        aprField2d.setRobotPose(fieldToRobot.toPose2d());
+        swerveDrive.addVisionMeasurement(fieldToRobot.toPose2d(), estimation.get().timestampSeconds);
       }
     } else {
       limelight.setPipeline(1);
@@ -193,10 +202,11 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
       driveAlignAngleButton();
       return;
     }
-    boolean isDetectingAprilTag = LimelightHelpers.getTV("");
+    boolean isDetectingAprilTag = limelight.getTV();
     if (isDetectingAprilTag) {
       this.lostSpeakerFramesCounter = 0;
-      this.lastTxMeasurement = LimelightHelpers.getTX("");
+      SmartDashboard.putNumber("yaw tag", limelight.getYawTagSpeaker());
+      this.lastTxMeasurement = limelight.getYawTagSpeaker();
       ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
       Limelight.tvAfterTweak = true;
       driveOmegaPidFieldOriented(speeds, 0, this.lastTxMeasurement, this.pidTrackApril, false);
@@ -211,6 +221,22 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
         driveAlignAngleButton();
       }
     }
+    this.state = "DRIVE_ALIGN_SPEAKER";
+  }
+
+  public void driveAlignSpeakerTestOdom() {
+    if (this.controller.isForcingDriverControl()) {
+      driveAlignAngleButton();
+      return;
+    }
+    Translation2d angleSpeaker;
+    if (DriverStation.getAlliance().get() == Alliance.Red) {
+      angleSpeaker = getPose().getTranslation().minus(FieldConstants.redGoalPos);
+    } else {
+      angleSpeaker = getPose().getTranslation().minus(FieldConstants.blueGoalPos);
+    }
+    getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(),
+        angleSpeaker.getAngle().getDegrees());
     this.state = "DRIVE_ALIGN_SPEAKER";
   }
 
@@ -429,6 +455,14 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     return swerveDrive.swerveDriveConfiguration;
   }
 
+  public double distanceFromSpeaker() {
+    if (DriverStation.getAlliance().get() == Alliance.Red) {
+      return getPose().getTranslation().getDistance(FieldConstants.redGoalPos);
+    } else {
+      return getPose().getTranslation().getDistance(FieldConstants.blueGoalPos);
+    }
+  }
+
   public void lock() {
     swerveDrive.lockPose();
   }
@@ -469,7 +503,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   private void updateLogs() {
     this.poseLogEntry.appendRadians(this.swerveDrive.getPose());
-    this.poseVisionLogEntry.appendRadians(this.poseVision);
+    this.poseVisionLogEntry.appendRadians(this.poseVision2D);
     this.targetXSpeedLogEntry.append(this.targetSpeeds.vxMetersPerSecond);
     this.targetYSpeedLogEntry.append(this.targetSpeeds.vyMetersPerSecond);
     this.targetOmegaSpeedLogEntry.append(this.targetSpeeds.omegaRadiansPerSecond);
