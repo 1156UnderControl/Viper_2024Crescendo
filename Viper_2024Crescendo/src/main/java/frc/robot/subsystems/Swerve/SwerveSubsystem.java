@@ -148,7 +148,6 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   @Override
   public void periodic() {
-    this.limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("");
     swerveDrive.updateOdometry();
     Optional<EstimatedRobotPose> estimation = limelight
         .getEstimatedGlobalPose(swerveDrive.swerveDrivePoseEstimator.getEstimatedPosition());
@@ -156,6 +155,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     headingRadians = getHeading().getRadians();
     SmartDashboard.putNumber("Heading Odometry", swerveDrive.getOdometryHeading().getDegrees());
     SmartDashboard.putNumber("Distance LL", limelight.getDistance());
+    SmartDashboard.putNumber("Distance Odom", distanceFromSpeaker());
     if (!Limelight.notUsingLLforOdometry && estimation.isPresent()) {
       limelight.setPipeline(0);
       SmartDashboard.putNumber("tags", estimation.get().targetsUsed.size());
