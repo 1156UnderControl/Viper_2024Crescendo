@@ -46,9 +46,9 @@ public class RobotSubsystems extends SubsystemBase {
       "/Robot/TotalCurrentDraw");
 
   public RobotSubsystems() {
+    this.swerve = SwerveSubsystem.getInstance();
     this.intake = IntakeSubsystem.getInstance();
     this.shooter = ShooterSubsystem.getInstance();
-    this.swerve = SwerveSubsystem.getInstance();
     this.climber = ClimberSubsystem.getInstance();
     this.led = LedSubsystem.getInstance();
     this.intakeSubsystem = IntakeSubsystem.getInstance();
