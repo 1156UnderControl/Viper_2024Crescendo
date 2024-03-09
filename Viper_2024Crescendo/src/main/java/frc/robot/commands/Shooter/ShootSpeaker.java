@@ -18,11 +18,6 @@ public class ShootSpeaker extends Command {
   @Override
   public void execute() {
     this.robot.shooter.prepareSpeakerShot();
-    if (this.robot.isRobotAbleToShoot()) {
-      limelight.ledOn();
-    } else {
-      limelight.ledBlink();
-    }
   }
 
   @Override
