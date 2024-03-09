@@ -139,7 +139,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     this.limelight = Limelight.getInstance();
     this.photonVision = new PhotonVision();
     SmartDashboard.putData("POSE APRIL", aprField2d);
-    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
+    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.LOW;
     setupPIDs();
     setupYAGSL_JSON(directory);
     setupPathPlanner();
@@ -148,6 +148,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   @Override
   public void periodic() {
+    SmartDashboard.putNumber("yaw tag", limelight.getYawTagSpeaker());
     swerveDrive.updateOdometry();
     Optional<EstimatedRobotPose> estimation = limelight
         .getEstimatedGlobalPose(swerveDrive.swerveDrivePoseEstimator.getEstimatedPosition());
@@ -156,21 +157,17 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     SmartDashboard.putNumber("Heading Odometry", swerveDrive.getOdometryHeading().getDegrees());
     SmartDashboard.putNumber("Distance LL", limelight.getDistance());
     SmartDashboard.putNumber("Distance Odom", distanceFromSpeaker());
-    if (!Limelight.notUsingLLforOdometry && estimation.isPresent()) {
+    if (estimation.isPresent()) {
       limelight.setPipeline(0);
       SmartDashboard.putNumber("tags", estimation.get().targetsUsed.size());
       poseVision2D = estimation.get().estimatedPose.toPose2d();
       poseVision3D = estimation.get().estimatedPose;
       if (estimation.get().targetsUsed.size() >= 2) {
-        // Pose3d fieldToCamera = poseVision3D;
-        // Pose3d fieldToRobotRot = fieldToCamera.transformBy(Limelight.camToRobotRot);
-        // Pose3d fieldToRobot = fieldToRobotRot.transformBy(Limelight.camToRobotTrans);
         aprField2d.setRobotPose(poseVision2D);
         swerveDrive.addVisionMeasurement(poseVision2D, estimation.get().timestampSeconds);
       }
-    } else {
-      limelight.setPipeline(1);
     }
+
     this.updateLogs();
   }
 
@@ -224,7 +221,8 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     this.state = "DRIVE_ALIGN_SPEAKER";
   }
 
-  public void driveAlignSpeakerTestOdom() {
+  @Override
+  public void driveAlignSpeakerOdom() {
     if (this.controller.isForcingDriverControl()) {
       driveAlignAngleButton();
       return;
@@ -235,8 +233,10 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     } else {
       angleSpeaker = getPose().getTranslation().minus(FieldConstants.blueGoalPos);
     }
-    getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(),
-        angleSpeaker.getAngle().getDegrees());
+    ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(),
+        angleSpeaker.rotateBy(new Rotation2d(Math.PI)).getAngle().getDegrees());
+
+    driveFieldOriented(speeds);
     this.state = "DRIVE_ALIGN_SPEAKER";
   }
 

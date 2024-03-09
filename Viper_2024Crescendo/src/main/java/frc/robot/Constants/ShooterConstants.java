@@ -36,8 +36,10 @@ public class ShooterConstants {
   public class setpoints {
     public static final double LIMIT_MAX = 230;
     public static final double LIMIT_MIN = 0;
+    public static final double LIMIT_MAX_INTERPOLATION = 130;
+    public static final double LIMIT_MIN_INTERPOLATION = 47;
 
-    public static final double ANGLE_SECURED = 0;
+    public static final double ANGLE_SECURED = 0.5;
     public static final double ANGLE_INTAKE = 41;
     public static final double ANGLE_SHOOT_AMP = 125;
     public static final double ANGLE_SHOOT_SPEAKER = 1;
