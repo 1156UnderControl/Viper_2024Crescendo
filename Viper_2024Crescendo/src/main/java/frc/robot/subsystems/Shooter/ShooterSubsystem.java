@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.Java_Is_UnderControl.Limelight.Limelight;
 import frc.Java_Is_UnderControl.Util.StabilizeChecker;
-import frc.Java_Is_UnderControl.Util.Util;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Motors.Motor;
 import frc.robot.subsystems.Motors.SparkMAXMotor;
@@ -85,6 +84,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private StabilizeChecker lowerFlywheelStability = new StabilizeChecker();
   private StabilizeChecker upperFlywheelStability = new StabilizeChecker();
+  private StabilizeChecker pivotStabilizeChecker = new StabilizeChecker();
 
   public static ShooterSubsystem getInstance() {
     if (shooterInstance == null) {
@@ -335,10 +335,11 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public boolean isPivotAtSetpoint() {
-    double minPosition = this.goal - ShooterConstants.pivotGoalDeadband;
-    double maxPosition = this.goal + ShooterConstants.pivotGoalDeadband;
-    boolean atSP = Util.inRange(this.pivotMotor.getPosition(), minPosition, maxPosition);
-    return atSP;
+    boolean atSetpoint = this.pivotStabilizeChecker.isStableInRange(
+        this.pivotMotor.getPosition(),
+        this.goal,
+        ShooterConstants.pivotGoalDeadband);
+    return atSetpoint;
   }
 
   @Override

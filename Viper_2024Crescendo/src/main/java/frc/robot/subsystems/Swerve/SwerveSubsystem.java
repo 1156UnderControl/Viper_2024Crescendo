@@ -34,6 +34,7 @@ import frc.Java_Is_UnderControl.Limelight.Limelight;
 import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
 import frc.Java_Is_UnderControl.Logging.Pose2dLogEntry;
 import frc.Java_Is_UnderControl.PhotonVision.PhotonVision;
+import frc.Java_Is_UnderControl.Util.StabilizeChecker;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CommandsConstants;
 import frc.robot.Constants.FieldConstants;
@@ -66,14 +67,15 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   private static SwerveSubsystem swerveInstance = null;
 
+  private double angleToAimAtSpeaker = 0;
+
   private double headingDegrees;
 
   private double headingRadians;
 
-  private Rotation2d angleAlign = new Rotation2d(Units.degreesToRadians(0));
+  private StabilizeChecker alignedToSpeakerStabilizeChecker = new StabilizeChecker();
 
-  PIDController pidTrackApril = new PIDController(CommandsConstants.P_TrackSpeaker, CommandsConstants.I_TrackSpeaker,
-      CommandsConstants.D_TrackSpeaker);
+  private Rotation2d angleAlign = new Rotation2d(Units.degreesToRadians(0));
 
   PIDController pidTrackNote = new PIDController(CommandsConstants.P_TrackNote, CommandsConstants.I_TrackNote,
       CommandsConstants.D_TrackNote);
@@ -140,7 +142,6 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     this.photonVision = new PhotonVision();
     SmartDashboard.putData("POSE APRIL", aprField2d);
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.LOW;
-    setupPIDs();
     setupYAGSL_JSON(directory);
     setupPathPlanner();
     this.updateLogs();
@@ -199,42 +200,17 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
       driveAlignAngleButton();
       return;
     }
-    boolean isDetectingAprilTag = limelight.getTV();
-    if (isDetectingAprilTag) {
-      this.lostSpeakerFramesCounter = 0;
-      SmartDashboard.putNumber("yaw tag", limelight.getYawTagSpeaker());
-      this.lastTxMeasurement = limelight.getYawTagSpeaker();
-      ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
-      Limelight.tvAfterTweak = true;
-      driveOmegaPidFieldOriented(speeds, 0, this.lastTxMeasurement, this.pidTrackApril, false);
-    } else {
-      this.lostSpeakerFramesCounter++;
-      if (this.lostSpeakerFramesCounter <= this.MAX_LOST_SPEAKER_FRAMES) {
-        Limelight.tvAfterTweak = true;
-        ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
-        driveOmegaPidFieldOriented(speeds, 0, this.lastTxMeasurement, this.pidTrackApril, false);
-      } else {
-        Limelight.tvAfterTweak = false;
-        driveAlignAngleButton();
-      }
-    }
-    this.state = "DRIVE_ALIGN_SPEAKER";
-  }
-
-  @Override
-  public void driveAlignSpeakerOdom() {
-    if (this.controller.isForcingDriverControl()) {
-      driveAlignAngleButton();
-      return;
-    }
     Translation2d angleSpeaker;
     if (DriverStation.getAlliance().get() == Alliance.Red) {
       angleSpeaker = getPose().getTranslation().minus(FieldConstants.redGoalPos);
     } else {
       angleSpeaker = getPose().getTranslation().minus(FieldConstants.blueGoalPos);
     }
+
+    this.angleToAimAtSpeaker = angleSpeaker.rotateBy(new Rotation2d(Math.PI)).getAngle().getDegrees();
+
     ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(),
-        angleSpeaker.rotateBy(new Rotation2d(Math.PI)).getAngle().getDegrees());
+        this.angleToAimAtSpeaker);
 
     driveFieldOriented(speeds);
     this.state = "DRIVE_ALIGN_SPEAKER";
@@ -267,13 +243,11 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   }
 
   public boolean isSwerveAlignedWithSpeaker() {
-    return this.pidTrackApril.atSetpoint();
-  }
-
-  private void setupPIDs() {
-    this.pidTrackApril.setIZone(15);
-    this.pidTrackApril.setTolerance(3);
-    this.pidTrackNote.setIZone(7);
+    boolean aligned = this.alignedToSpeakerStabilizeChecker.isStableInRange(
+        swerveDrive.getOdometryHeading().getDegrees(),
+        angleToAimAtSpeaker,
+        SwerveConstants.DEADBAND_ALIGNED_WITH_SPEAKER);
+    return aligned;
   }
 
   private void setupYAGSL_JSON(File directory) {
