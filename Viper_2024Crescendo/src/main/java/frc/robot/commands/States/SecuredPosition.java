@@ -14,10 +14,10 @@ public class SecuredPosition extends SequentialCommandGroup {
 
   public SecuredPosition(RobotSubsystems robot) {
     addCommands(
-        new InstantCommand(() -> limelight.ledOff()),
         new InstantCommand(() -> RobotSubsystems.shootFinished = false),
         new GoToSecuredShooter(robot),
         new GoToSecuredIntake(robot),
+        new InstantCommand(() -> limelight.ledOff()),
         Commands.either(new InstantCommand(() -> robot.led.setSolidColor(LedColor.WHITE)),
             new InstantCommand(() -> robot.led.setSolidColor(LedColor.OFF)),
             () -> robot.robotHasNote()));

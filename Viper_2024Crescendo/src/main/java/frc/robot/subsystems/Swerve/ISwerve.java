@@ -10,4 +10,10 @@ public interface ISwerve {
   void driveAlignNote();
 
   boolean isSwerveAlignedWithSpeaker();
+
+  boolean isSwerveInAutoShootZone();
+
+  boolean isSwerveInVelocityToAutoShoot();
+
+  boolean isSwerveInVelocityToShoot();
 }

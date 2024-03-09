@@ -76,6 +76,11 @@ public class RobotSubsystems extends SubsystemBase {
     if (this.controlBoard.getDoNotShoot().getAsBoolean()) {
       return false;
     }
-    return shooter.isPivotAtSetpoint() && shooter.isFlywheelAtSetpoint() && swerve.isSwerveAlignedWithSpeaker();
+    return shooter.isPivotAtSetpoint()
+        && shooter.isFlywheelAtSetpoint()
+        && swerve.isSwerveAlignedWithSpeaker()
+        && swerve.isSwerveInAutoShootZone()
+        && swerve.isSwerveInVelocityToAutoShoot();
+
   }
 }

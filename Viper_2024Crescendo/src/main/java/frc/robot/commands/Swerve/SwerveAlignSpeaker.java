@@ -28,7 +28,7 @@ public class SwerveAlignSpeaker extends Command {
 
   @Override
   public void execute() {
-    swerve.driveAlignSpeakerOdom();
+    swerve.driveAlignSpeaker();
   }
 
   @Override

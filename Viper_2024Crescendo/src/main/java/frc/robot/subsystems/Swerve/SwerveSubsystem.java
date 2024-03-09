@@ -113,6 +113,9 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   private DoubleLogEntry txMeasurementLlLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
       "/SwerveSubsystem/SpeakerAlign/txLL");
 
+  private DoubleLogEntry fieldVelocityCalculatedLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
+      "/SwerveSubsystem/Velocity/FieldVelocityCalculated");
+
   private String state = "DRIVE_ALIGN_ANGLE_BUTTON";
 
   private StringLogEntry stateLogEntry = new StringLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/State");
@@ -248,6 +251,32 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
         angleToAimAtSpeaker,
         SwerveConstants.DEADBAND_ALIGNED_WITH_SPEAKER);
     return aligned;
+  }
+
+  @Override
+  public boolean isSwerveInAutoShootZone() {
+    boolean isInFrontOfSpeaker = getPose().getY() > 2.9;
+    boolean isNearSpeaker = distanceFromSpeaker() < 3.5;
+    return isNearSpeaker && isInFrontOfSpeaker;
+  }
+
+  @Override
+  public boolean isSwerveInVelocityToAutoShoot() {
+    double velocity = calculateVelocity();
+    return velocity < 1;
+  }
+
+  @Override
+  public boolean isSwerveInVelocityToShoot() {
+    double velocity = calculateVelocity();
+    return velocity < 2.5;
+  }
+
+  private double calculateVelocity() {
+    double velocity = Math.sqrt(Math.pow(swerveDrive.getFieldVelocity().vxMetersPerSecond, 2)
+        + Math.pow(swerveDrive.getFieldVelocity().vyMetersPerSecond, 2));
+
+    return velocity;
   }
 
   private void setupYAGSL_JSON(File directory) {
@@ -450,6 +479,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     this.poseVisionLogEntry.appendRadians(this.poseVision2D);
     this.targetXSpeedLogEntry.append(this.targetSpeeds.vxMetersPerSecond);
     this.targetYSpeedLogEntry.append(this.targetSpeeds.vyMetersPerSecond);
+    this.fieldVelocityCalculatedLogEntry.append(calculateVelocity());
     this.targetOmegaSpeedLogEntry.append(this.targetSpeeds.omegaRadiansPerSecond);
     this.isAlignedWithSpeakerLogEntry.append(isSwerveAlignedWithSpeaker());
     this.txMeasurementLlLogEntry.append(this.lastTxMeasurement);
