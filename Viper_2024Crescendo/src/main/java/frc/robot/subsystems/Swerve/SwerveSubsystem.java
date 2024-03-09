@@ -162,11 +162,11 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
       poseVision2D = estimation.get().estimatedPose.toPose2d();
       poseVision3D = estimation.get().estimatedPose;
       if (estimation.get().targetsUsed.size() >= 2) {
-        Pose3d fieldToCamera = poseVision3D;
-        Pose3d fieldToRobotRot = fieldToCamera.transformBy(Limelight.camToRobotRot);
-        Pose3d fieldToRobot = fieldToRobotRot.transformBy(Limelight.camToRobotTrans);
-        aprField2d.setRobotPose(fieldToRobot.toPose2d());
-        swerveDrive.addVisionMeasurement(fieldToRobot.toPose2d(), estimation.get().timestampSeconds);
+        // Pose3d fieldToCamera = poseVision3D;
+        // Pose3d fieldToRobotRot = fieldToCamera.transformBy(Limelight.camToRobotRot);
+        // Pose3d fieldToRobot = fieldToRobotRot.transformBy(Limelight.camToRobotTrans);
+        aprField2d.setRobotPose(poseVision2D);
+        swerveDrive.addVisionMeasurement(poseVision2D, estimation.get().timestampSeconds);
       }
     } else {
       limelight.setPipeline(1);

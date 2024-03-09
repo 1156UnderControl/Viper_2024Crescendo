@@ -57,7 +57,7 @@ public final class Limelight {
     this("limelight");
     fieldAprils.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
     photonPoseEstimator = new PhotonPoseEstimator(fieldAprils,
-        PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, new Transform3d());
+        PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, robotToCam);
   }
 
   public Limelight(String cameraName) {
