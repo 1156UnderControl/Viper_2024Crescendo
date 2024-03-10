@@ -9,5 +9,7 @@ public interface ISwerve {
 
   void driveAlignNote();
 
+  void driveToAmp();
+
   boolean isSwerveAlignedWithSpeaker();
 }

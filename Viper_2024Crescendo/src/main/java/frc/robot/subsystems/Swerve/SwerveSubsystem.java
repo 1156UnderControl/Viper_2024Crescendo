@@ -20,6 +20,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.datalog.BooleanLogEntry;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
@@ -37,6 +40,7 @@ import frc.Java_Is_UnderControl.PhotonVision.PhotonVision;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CommandsConstants;
 import frc.robot.Constants.FieldConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Joysticks.ControlBoard;
 import swervelib.SwerveController;
@@ -65,8 +69,6 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   private double lastTxMeasurement;
 
   private static SwerveSubsystem swerveInstance = null;
-
-  private double headingDegrees;
 
   private double headingRadians;
 
@@ -120,6 +122,14 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   private Limelight limelight;
 
   private double targetNotePositionX;
+
+  private TrapezoidProfile autoPositionMotionProfileX = new TrapezoidProfile(
+      new Constraints(SwerveConstants.MOTION_PROFILE_MAX_VEL, SwerveConstants.MOTION_PROFILE_MAX_ACCEL));
+
+  private TrapezoidProfile autoPositionMotionProfileY = new TrapezoidProfile(
+    new Constraints(SwerveConstants.MOTION_PROFILE_MAX_VEL, SwerveConstants.MOTION_PROFILE_MAX_ACCEL));
+
+  private double kDt = 0.02;
 
   public static SwerveSubsystem getInstance(File directory) {
     if (swerveInstance == null) {
@@ -264,6 +274,31 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
       }
     }
     this.state = "DRIVE_ALIGN_NOTE";
+  }
+
+  @Override
+  public void driveToAmp() {
+    Pose2d targetPose;
+    if (this.getPose().getX() > FieldConstants.midFieldLine) {
+      targetPose = FieldConstants.redAmp;
+    } else {
+      targetPose = FieldConstants.blueAmp;
+    }
+    driveToPose(new Pose2d(targetPose.getX(), targetPose.getY(), new Rotation2d(90)));
+    this.state = "DRIVE_TO_AMP";
+  }
+
+  private void driveToPose(Pose2d targetPose) {
+    if (this.controller.isForcingDriverControl()) {
+      driveAlignAngleButton();
+      return;
+    }
+    Pose2d currentPose = this.getPose();
+    ChassisSpeeds currentSpeeds = this.getFieldVelocity();
+    double targetSpeedX = this.profileVelocity(targetPose.getX(), autoPositionMotionProfileX, currentPose.getX(), currentSpeeds.vxMetersPerSecond);
+    double targetSpeedY = this.profileVelocity(targetPose.getY(), autoPositionMotionProfileY, currentPose.getY(), currentSpeeds.vyMetersPerSecond);
+    ChassisSpeeds targetSpeeds = new ChassisSpeeds(targetSpeedX, targetSpeedY, targetPose.getRotation().getDegrees());
+    this.driveFieldOriented(targetSpeeds);
   }
 
   public boolean isSwerveAlignedWithSpeaker() {
@@ -465,5 +500,12 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     this.txMeasurementLlLogEntry.append(this.lastTxMeasurement);
     this.tvMeasurementLlLogEntry.append(LimelightHelpers.getTV(""));
     this.stateLogEntry.append(this.state);
+  }
+
+  private double profileVelocity(double goalPosition, TrapezoidProfile motionProfile, double currentPosition, double currentVelocity) {
+    State motionProfileGoal = new State(goalPosition, 0);
+    State motionProfileCurrent = new State(currentPosition, currentVelocity);
+    State motionProfileCurrentTargetState = motionProfile.calculate(kDt, motionProfileCurrent, motionProfileGoal);
+    return motionProfileCurrentTargetState.velocity;
   }
 }
