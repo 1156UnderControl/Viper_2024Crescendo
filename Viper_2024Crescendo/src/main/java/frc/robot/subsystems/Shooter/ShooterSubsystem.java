@@ -13,17 +13,19 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.Java_Is_UnderControl.Limelight.Limelight;
 import frc.Java_Is_UnderControl.Util.StabilizeChecker;
-import frc.Java_Is_UnderControl.Util.Util;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Motors.Motor;
 import frc.robot.subsystems.Motors.SparkMAXMotor;
 import frc.robot.subsystems.Motors.VortexMotor;
 import frc.robot.subsystems.Sensors.DigitalInput;
 import frc.robot.subsystems.Sensors.InfraRed;
+import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
 public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private static ShooterSubsystem shooterInstance = null;
+
+  private SwerveSubsystem swerve = SwerveSubsystem.getInstance();
 
   private boolean hasNote;
 
@@ -82,6 +84,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private StabilizeChecker lowerFlywheelStability = new StabilizeChecker();
   private StabilizeChecker upperFlywheelStability = new StabilizeChecker();
+  private StabilizeChecker pivotStabilizeChecker = new StabilizeChecker();
 
   public static ShooterSubsystem getInstance() {
     if (shooterInstance == null) {
@@ -126,16 +129,16 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     this.pivotMotor.setVelocityFactor(1 / 0.52);
     this.pivotMotor.setPositionFactor(264 / 2.32);
     this.pivotMotor.setInvertedEncoder(true);
-    this.pivotMotor.configurePIDF(0.05, 0.000011, 0, 0, 45);
+    this.pivotMotor.configurePIDF(0.055, 0.00008, 0, 0, 10);
     this.pivotMotor.setPosition(0);
   }
 
   private void initializeSmartDashboardVariables() {
-    SmartDashboard.putNumber("P Shooter", 0);
-    SmartDashboard.putNumber("I Shooter", 0);
-    SmartDashboard.putNumber("D Shooter", 0);
-    SmartDashboard.putNumber("F Shooter", 0);
-    SmartDashboard.putNumber("I zone Shooter", 0);
+    SmartDashboard.putNumber("P Shooter", ShooterConstants.tunning_values_shooter.PID.P);
+    SmartDashboard.putNumber("I Shooter", ShooterConstants.tunning_values_shooter.PID.I);
+    SmartDashboard.putNumber("D Shooter", ShooterConstants.tunning_values_shooter.PID.D);
+    SmartDashboard.putNumber("F Shooter", ShooterConstants.tunning_values_shooter.PID.F);
+    SmartDashboard.putNumber("I zone Shooter", ShooterConstants.tunning_values_shooter.PID.IZone);
     SmartDashboard.putNumber("Setpoint Vel Shooter", 0);
     SmartDashboard.putNumber("Setpoint Pos Shoot Pivot", 0);
     SmartDashboard.putBoolean("Manual Values Shooter", false);
@@ -166,11 +169,11 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private void configureFlywheelMotorPIDsmartdashboard(Motor flywheelMotor) {
     flywheelMotor.configurePIDF(
-        SmartDashboard.getNumber("P Shooter", 0),
-        SmartDashboard.getNumber("I Shooter", 0),
-        SmartDashboard.getNumber("D Shooter", 0),
-        SmartDashboard.getNumber("F Shooter", 0),
-        SmartDashboard.getNumber("I zone Shooter", 0));
+        SmartDashboard.getNumber("P Shooter", ShooterConstants.tunning_values_shooter.PID.P),
+        SmartDashboard.getNumber("I Shooter", ShooterConstants.tunning_values_shooter.PID.I),
+        SmartDashboard.getNumber("D Shooter", ShooterConstants.tunning_values_shooter.PID.D),
+        SmartDashboard.getNumber("F Shooter", ShooterConstants.tunning_values_shooter.PID.F),
+        SmartDashboard.getNumber("I zone Shooter", ShooterConstants.tunning_values_shooter.PID.IZone));
   }
 
   private void updateSmartDashboard() {
@@ -262,11 +265,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     this.feederMotor.set(0);
     setVelocityFlywheel(verifyManualValue(ShooterConstants.setpoints.VELOCITY_SHOOT_SPEAKER,
         "Setpoint Vel Shooter"));
-    if (Limelight.tvAfterTweak) {
-      goal = verifyManualValue(calculateGoalSpeaker(), "Setpoint Pos Shoot Pivot");
-    } else {
-      goal = 47;
-    }
+    goal = verifyManualValue(calculateGoalSpeaker(), "Setpoint Pos Shoot Pivot");
     this.state = "PREPARING_SPEAKER_SHOT";
   }
 
@@ -326,7 +325,6 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public boolean getNoteSensor() {
-    // TODO Auto-generated method stub
     return noteSensorOut.getBoolean();
   }
 
@@ -337,10 +335,11 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public boolean isPivotAtSetpoint() {
-    double minPosition = this.goal - ShooterConstants.pivotGoalDeadband;
-    double maxPosition = this.goal + ShooterConstants.pivotGoalDeadband;
-    boolean atSP = Util.inRange(this.pivotMotor.getPosition(), minPosition, maxPosition);
-    return atSP;
+    boolean atSetpoint = this.pivotStabilizeChecker.isStableInRange(
+        this.pivotMotor.getPosition(),
+        this.goal,
+        ShooterConstants.pivotGoalDeadband);
+    return atSetpoint;
   }
 
   @Override
@@ -373,22 +372,29 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private double calculateGoalSpeaker() {
     interpolationTree();
-    return shooterMap.get(limelight.getDistance());
+    double setpointInterpolation = shooterMap.get(swerve.distanceFromSpeaker());
+    if (setpointInterpolation > ShooterConstants.setpoints.LIMIT_MAX_INTERPOLATION) {
+      return ShooterConstants.setpoints.LIMIT_MAX_INTERPOLATION;
+    }
+
+    if (setpointInterpolation < ShooterConstants.setpoints.LIMIT_MIN_INTERPOLATION) {
+      return ShooterConstants.setpoints.LIMIT_MIN_INTERPOLATION;
+    }
+
+    return setpointInterpolation;
   }
 
   private static void interpolationTree() {
-    shooterMap.put(1.29, 51.0);
-    shooterMap.put(1.626, 57.0);
-    shooterMap.put(1.65, 57.6);
-    shooterMap.put(1.96, 59.5);
-    shooterMap.put(2.2, 61.0);
-    shooterMap.put(2.38, 63.0);
-    shooterMap.put(2.52, 63.5);
-    shooterMap.put(2.75, 63.5);
-    shooterMap.put(2.9, 65.0);
-    shooterMap.put(3.08, 66.5);
-    shooterMap.put(3.32, 68.0);
-    shooterMap.put(3.57, 68.5);
+    shooterMap.put(1.1, 47.0);
+    shooterMap.put(1.47, 54.0);
+    shooterMap.put(1.72, 58.0);
+    shooterMap.put(2.12, 62.5);
+    shooterMap.put(2.48, 65.0);
+    shooterMap.put(2.48, 65.0);
+    shooterMap.put(2.84, 67.5);
+    shooterMap.put(3.19, 71.5);
+    shooterMap.put(3.57, 72.75);
+
   }
 
   private void setVelocityFlywheel(double velocity) {

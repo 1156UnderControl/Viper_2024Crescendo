@@ -12,4 +12,10 @@ public interface ISwerve {
   void driveToAmp();
 
   boolean isSwerveAlignedWithSpeaker();
+
+  boolean isSwerveInAutoShootZone();
+
+  boolean isSwerveInVelocityToAutoShoot();
+
+  boolean isSwerveInVelocityToShoot();
 }

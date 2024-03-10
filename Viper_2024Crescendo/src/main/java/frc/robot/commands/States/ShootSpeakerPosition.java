@@ -3,7 +3,6 @@ package frc.robot.commands.States;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.Java_Is_UnderControl.Limelight.Limelight;
 import frc.robot.RobotSubsystems;
 import frc.robot.Joysticks.ControlBoard;
 import frc.robot.commands.Intake.GoToShootIntake;
@@ -12,7 +11,6 @@ import frc.robot.subsystems.LEDs.LedColor;
 
 public class ShootSpeakerPosition extends SequentialCommandGroup {
   ControlBoard mControlBoard = ControlBoard.getInstance();
-  private Limelight limelight = Limelight.getInstance();
 
   public ShootSpeakerPosition(RobotSubsystems robot) {
     addCommands(
@@ -22,9 +20,7 @@ public class ShootSpeakerPosition extends SequentialCommandGroup {
         new ShootSpeaker(robot),
         Commands.runOnce(() -> robot.shooter.shoot(), robot),
         new InstantCommand(() -> robot.led.setBlink(LedColor.GREEN, 3)),
-        new InstantCommand(() -> limelight.ledOn()),
         Commands.waitSeconds(1),
-        new InstantCommand(() -> RobotSubsystems.shootFinished = true),
-        new InstantCommand(() -> limelight.ledOff()));
+        new InstantCommand(() -> RobotSubsystems.shootFinished = true));
   }
 }

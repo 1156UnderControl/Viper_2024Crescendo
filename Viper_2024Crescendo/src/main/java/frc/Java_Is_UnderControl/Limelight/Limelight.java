@@ -118,7 +118,7 @@ public final class Limelight {
       for (PhotonTrackedTarget target : result.getTargets()) {
         if (target.getFiducialId() == 4 || target.getFiducialId() == 7) {
           distance = PhotonUtils.calculateDistanceToTargetMeters(limelightLensHeightMeters, goalHeightMeters,
-              Units.degreesToRadians(limelightMountAngleDegreesDEG), 0);
+              Units.degreesToRadians(limelightMountAngleDegreesDEG), Units.degreesToRadians(target.getPitch()));
           return distance;
         }
       }

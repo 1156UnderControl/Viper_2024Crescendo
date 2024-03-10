@@ -6,6 +6,8 @@ import swervelib.math.Matter;
 import swervelib.math.SwerveMath;
 
 public class SwerveConstants {
+  public static final double DEADBAND_ALIGNED_WITH_SPEAKER = 5;
+
   public static final double MAX_VEL = Units.feetToMeters(14.5);
 
   public static final double MOTION_PROFILE_MAX_VEL = 4;

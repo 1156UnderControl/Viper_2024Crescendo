@@ -37,6 +37,7 @@ import frc.Java_Is_UnderControl.Limelight.Limelight;
 import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
 import frc.Java_Is_UnderControl.Logging.Pose2dLogEntry;
 import frc.Java_Is_UnderControl.PhotonVision.PhotonVision;
+import frc.Java_Is_UnderControl.Util.StabilizeChecker;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CommandsConstants;
 import frc.robot.Constants.FieldConstants;
@@ -70,12 +71,15 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   private static SwerveSubsystem swerveInstance = null;
 
+  private double angleToAimAtSpeaker = 0;
+
+  private double headingDegrees;
+
   private double headingRadians;
 
-  private Rotation2d angleAlign = new Rotation2d(Units.degreesToRadians(0));
+  private StabilizeChecker alignedToSpeakerStabilizeChecker = new StabilizeChecker();
 
-  PIDController pidTrackApril = new PIDController(CommandsConstants.P_TrackSpeaker, CommandsConstants.I_TrackSpeaker,
-      CommandsConstants.D_TrackSpeaker);
+  private Rotation2d angleAlign = new Rotation2d(Units.degreesToRadians(0));
 
   PIDController pidTrackNote = new PIDController(CommandsConstants.P_TrackNote, CommandsConstants.I_TrackNote,
       CommandsConstants.D_TrackNote);
@@ -113,6 +117,9 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   private DoubleLogEntry txMeasurementLlLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
       "/SwerveSubsystem/SpeakerAlign/txLL");
 
+  private DoubleLogEntry fieldVelocityCalculatedLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
+      "/SwerveSubsystem/Velocity/FieldVelocityCalculated");
+
   private String state = "DRIVE_ALIGN_ANGLE_BUTTON";
 
   private StringLogEntry stateLogEntry = new StringLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/State");
@@ -149,8 +156,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     this.limelight = Limelight.getInstance();
     this.photonVision = new PhotonVision();
     SmartDashboard.putData("POSE APRIL", aprField2d);
-    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
-    setupPIDs();
+    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.LOW;
     setupYAGSL_JSON(directory);
     setupPathPlanner();
     this.updateLogs();
@@ -158,6 +164,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   @Override
   public void periodic() {
+    SmartDashboard.putNumber("yaw tag", limelight.getYawTagSpeaker());
     swerveDrive.updateOdometry();
     Optional<EstimatedRobotPose> estimation = limelight
         .getEstimatedGlobalPose(swerveDrive.swerveDrivePoseEstimator.getEstimatedPosition());
@@ -166,21 +173,17 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     SmartDashboard.putNumber("Heading Odometry", swerveDrive.getOdometryHeading().getDegrees());
     SmartDashboard.putNumber("Distance LL", limelight.getDistance());
     SmartDashboard.putNumber("Distance Odom", distanceFromSpeaker());
-    if (!Limelight.notUsingLLforOdometry && estimation.isPresent()) {
+    if (estimation.isPresent()) {
       limelight.setPipeline(0);
       SmartDashboard.putNumber("tags", estimation.get().targetsUsed.size());
       poseVision2D = estimation.get().estimatedPose.toPose2d();
       poseVision3D = estimation.get().estimatedPose;
       if (estimation.get().targetsUsed.size() >= 2) {
-        // Pose3d fieldToCamera = poseVision3D;
-        // Pose3d fieldToRobotRot = fieldToCamera.transformBy(Limelight.camToRobotRot);
-        // Pose3d fieldToRobot = fieldToRobotRot.transformBy(Limelight.camToRobotTrans);
         aprField2d.setRobotPose(poseVision2D);
         swerveDrive.addVisionMeasurement(poseVision2D, estimation.get().timestampSeconds);
       }
-    } else {
-      limelight.setPipeline(1);
     }
+
     this.updateLogs();
   }
 
@@ -212,41 +215,19 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
       driveAlignAngleButton();
       return;
     }
-    boolean isDetectingAprilTag = limelight.getTV();
-    if (isDetectingAprilTag) {
-      this.lostSpeakerFramesCounter = 0;
-      SmartDashboard.putNumber("yaw tag", limelight.getYawTagSpeaker());
-      this.lastTxMeasurement = limelight.getYawTagSpeaker();
-      ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
-      Limelight.tvAfterTweak = true;
-      driveOmegaPidFieldOriented(speeds, 0, this.lastTxMeasurement, this.pidTrackApril, false);
-    } else {
-      this.lostSpeakerFramesCounter++;
-      if (this.lostSpeakerFramesCounter <= this.MAX_LOST_SPEAKER_FRAMES) {
-        Limelight.tvAfterTweak = true;
-        ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(), 0);
-        driveOmegaPidFieldOriented(speeds, 0, this.lastTxMeasurement, this.pidTrackApril, false);
-      } else {
-        Limelight.tvAfterTweak = false;
-        driveAlignAngleButton();
-      }
-    }
-    this.state = "DRIVE_ALIGN_SPEAKER";
-  }
-
-  public void driveAlignSpeakerTestOdom() {
-    if (this.controller.isForcingDriverControl()) {
-      driveAlignAngleButton();
-      return;
-    }
     Translation2d angleSpeaker;
     if (DriverStation.getAlliance().get() == Alliance.Red) {
       angleSpeaker = getPose().getTranslation().minus(FieldConstants.redGoalPos);
     } else {
       angleSpeaker = getPose().getTranslation().minus(FieldConstants.blueGoalPos);
     }
-    getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(),
-        angleSpeaker.getAngle().getDegrees());
+
+    this.angleToAimAtSpeaker = angleSpeaker.rotateBy(new Rotation2d(Math.PI)).getAngle().getDegrees();
+
+    ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(),
+        this.angleToAimAtSpeaker);
+
+    driveFieldOriented(speeds);
     this.state = "DRIVE_ALIGN_SPEAKER";
   }
 
@@ -302,13 +283,37 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   }
 
   public boolean isSwerveAlignedWithSpeaker() {
-    return this.pidTrackApril.atSetpoint();
+    boolean aligned = this.alignedToSpeakerStabilizeChecker.isStableInRange(
+        swerveDrive.getOdometryHeading().getDegrees(),
+        angleToAimAtSpeaker,
+        SwerveConstants.DEADBAND_ALIGNED_WITH_SPEAKER);
+    return aligned;
   }
 
-  private void setupPIDs() {
-    this.pidTrackApril.setIZone(15);
-    this.pidTrackApril.setTolerance(3);
-    this.pidTrackNote.setIZone(7);
+  @Override
+  public boolean isSwerveInAutoShootZone() {
+    boolean isInFrontOfSpeaker = getPose().getY() > 2.9;
+    boolean isNearSpeaker = distanceFromSpeaker() < 3.5;
+    return isNearSpeaker && isInFrontOfSpeaker;
+  }
+
+  @Override
+  public boolean isSwerveInVelocityToAutoShoot() {
+    double velocity = calculateVelocity();
+    return velocity < 1;
+  }
+
+  @Override
+  public boolean isSwerveInVelocityToShoot() {
+    double velocity = calculateVelocity();
+    return velocity < 2.5;
+  }
+
+  private double calculateVelocity() {
+    double velocity = Math.sqrt(Math.pow(swerveDrive.getFieldVelocity().vxMetersPerSecond, 2)
+        + Math.pow(swerveDrive.getFieldVelocity().vyMetersPerSecond, 2));
+
+    return velocity;
   }
 
   private void setupYAGSL_JSON(File directory) {
@@ -495,6 +500,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     this.poseVisionLogEntry.appendRadians(this.poseVision2D);
     this.targetXSpeedLogEntry.append(this.targetSpeeds.vxMetersPerSecond);
     this.targetYSpeedLogEntry.append(this.targetSpeeds.vyMetersPerSecond);
+    this.fieldVelocityCalculatedLogEntry.append(calculateVelocity());
     this.targetOmegaSpeedLogEntry.append(this.targetSpeeds.omegaRadiansPerSecond);
     this.isAlignedWithSpeakerLogEntry.append(isSwerveAlignedWithSpeaker());
     this.txMeasurementLlLogEntry.append(this.lastTxMeasurement);
