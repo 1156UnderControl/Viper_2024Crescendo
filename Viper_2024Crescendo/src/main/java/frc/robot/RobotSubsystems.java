@@ -5,8 +5,6 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
-import frc.Java_Is_UnderControl.Util.StabilizeChecker;
 import frc.robot.Joysticks.ControlBoard;
 import frc.robot.subsystems.Climber.ClimberSubsystem;
 import frc.robot.subsystems.Climber.IClimber;
@@ -36,8 +34,6 @@ public class RobotSubsystems extends SubsystemBase {
   public static boolean shootFinished;
   public boolean climbing;
 
-  private StabilizeChecker aprilTagDetectionStabilizeChecker = new StabilizeChecker();
-
   private PowerDistribution powerDistributionHub;
 
   private DoubleLogEntry batteryVoltageLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/Robot/BatteryVoltage");
@@ -46,9 +42,9 @@ public class RobotSubsystems extends SubsystemBase {
       "/Robot/TotalCurrentDraw");
 
   public RobotSubsystems() {
+    this.swerve = SwerveSubsystem.getInstance();
     this.intake = IntakeSubsystem.getInstance();
     this.shooter = ShooterSubsystem.getInstance();
-    this.swerve = SwerveSubsystem.getInstance();
     this.climber = ClimberSubsystem.getInstance();
     this.led = LedSubsystem.getInstance();
     this.intakeSubsystem = IntakeSubsystem.getInstance();
@@ -77,12 +73,14 @@ public class RobotSubsystems extends SubsystemBase {
   }
 
   public boolean isRobotAbleToShoot() {
-    boolean isDetectingAprilTag = this.aprilTagDetectionStabilizeChecker
-        .isStableInCondition(() -> LimelightHelpers.getTV(""));
     if (this.controlBoard.getDoNotShoot().getAsBoolean()) {
       return false;
     }
-    return shooter.isPivotAtSetpoint() && shooter.isFlywheelAtSetpoint() && swerve.isSwerveAlignedWithSpeaker()
-        && isDetectingAprilTag;
+    return shooter.isPivotAtSetpoint()
+        && shooter.isFlywheelAtSetpoint()
+        && swerve.isSwerveAlignedWithSpeaker()
+        && swerve.isSwerveInAutoShootZone()
+        && swerve.isSwerveInVelocityToAutoShoot();
+
   }
 }
