@@ -7,7 +7,6 @@ import frc.robot.RobotSubsystems;
 import frc.robot.Joysticks.ControlBoard;
 import frc.robot.commands.Intake.GoToShootIntake;
 import frc.robot.commands.Shooter.ShootSpeaker;
-import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.LEDs.LedColor;
 
 public class ShootSpeakerPosition extends SequentialCommandGroup {
@@ -21,9 +20,7 @@ public class ShootSpeakerPosition extends SequentialCommandGroup {
         new ShootSpeaker(robot),
         Commands.runOnce(() -> robot.shooter.shoot(), robot),
         new InstantCommand(() -> robot.led.setBlink(LedColor.GREEN, 3)),
-        new InstantCommand(() -> Limelight.ledOn()),
         Commands.waitSeconds(1),
-        new InstantCommand(() -> RobotSubsystems.shootFinished = true),
-        new InstantCommand(() -> Limelight.ledOff()));
+        new InstantCommand(() -> RobotSubsystems.shootFinished = true));
   }
 }
