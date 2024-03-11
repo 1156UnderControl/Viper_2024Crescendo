@@ -111,6 +111,21 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   private BooleanLogEntry isAlignedWithSpeakerLogEntry = new BooleanLogEntry(DataLogManager.getLog(),
       "/SwerveSubsystem/SpeakerAlign/isAligned");
 
+  private BooleanLogEntry isSwerveInAutoShootZoneLogEntry = new BooleanLogEntry(DataLogManager.getLog(),
+      "/SwerveSubsystem/SpeakerAlign/isInAutoShootZone");
+
+  private BooleanLogEntry isSwerveInAutoShootVelocityLogEntry = new BooleanLogEntry(DataLogManager.getLog(),
+      "/SwerveSubsystem/SpeakerAlign/isInAutoShootVelocity");
+
+  private BooleanLogEntry isSwerveInShootVelocityLogEntry = new BooleanLogEntry(DataLogManager.getLog(),
+      "/SwerveSubsystem/SpeakerAlign/isInShootVelocity");
+
+  private DoubleLogEntry velocityCalculatedLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
+      "/SwerveSubsystem/TargetSpeeds/Omega");
+
+  private DoubleLogEntry angleToAimSpeakerLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
+      "/SwerveSubsystem/TargetSpeeds/Omega");
+
   private BooleanLogEntry tvMeasurementLlLogEntry = new BooleanLogEntry(DataLogManager.getLog(),
       "/SwerveSubsystem/SpeakerAlign/tvLL");
 
@@ -164,15 +179,17 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("yaw tag", limelight.getYawTagSpeaker());
+    updateHeadingVariables();
+    updateSmartDashboardValues();
+    updateOdometryWithVision();
+
+    this.updateLogs();
+  }
+
+  private void updateOdometryWithVision() {
     swerveDrive.updateOdometry();
     Optional<EstimatedRobotPose> estimation = limelight
         .getEstimatedGlobalPose(swerveDrive.swerveDrivePoseEstimator.getEstimatedPosition());
-    headingDegrees = getHeading().getDegrees();
-    headingRadians = getHeading().getRadians();
-    SmartDashboard.putNumber("Heading Odometry", swerveDrive.getOdometryHeading().getDegrees());
-    SmartDashboard.putNumber("Distance LL", limelight.getDistance());
-    SmartDashboard.putNumber("Distance Odom", distanceFromSpeaker());
     if (estimation.isPresent()) {
       limelight.setPipeline(0);
       SmartDashboard.putNumber("tags", estimation.get().targetsUsed.size());
@@ -183,8 +200,20 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
         swerveDrive.addVisionMeasurement(poseVision2D, estimation.get().timestampSeconds);
       }
     }
+  }
 
-    this.updateLogs();
+  private void updateHeadingVariables() {
+    headingDegrees = getHeading().getDegrees();
+    headingRadians = getHeading().getRadians();
+  }
+
+  private void updateSmartDashboardValues() {
+    SmartDashboard.putNumber("Heading Odometry", swerveDrive.getOdometryHeading().getDegrees());
+    SmartDashboard.putNumber("Distance LL", limelight.getDistance());
+    SmartDashboard.putNumber("Distance Odom", distanceFromSpeaker());
+    SmartDashboard.putBoolean("Aligned With Speaker", isSwerveAlignedWithSpeaker());
+    SmartDashboard.putBoolean("Swerve at Velocity to auto shoot", isSwerveInVelocityToAutoShoot());
+    SmartDashboard.putBoolean("Swerve in zone to auto shoot", isSwerveInAutoShootZone());
   }
 
   @Override
@@ -284,7 +313,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   public boolean isSwerveAlignedWithSpeaker() {
     boolean aligned = this.alignedToSpeakerStabilizeChecker.isStableInRange(
-        swerveDrive.getOdometryHeading().getDegrees(),
+        headingDegrees,
         angleToAimAtSpeaker,
         SwerveConstants.DEADBAND_ALIGNED_WITH_SPEAKER);
     return aligned;
@@ -312,7 +341,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   private double calculateVelocity() {
     double velocity = Math.sqrt(Math.pow(swerveDrive.getFieldVelocity().vxMetersPerSecond, 2)
         + Math.pow(swerveDrive.getFieldVelocity().vyMetersPerSecond, 2));
-
+    SmartDashboard.putNumber("Field Velocity Calculated", velocity);
     return velocity;
   }
 
@@ -503,8 +532,13 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     this.fieldVelocityCalculatedLogEntry.append(calculateVelocity());
     this.targetOmegaSpeedLogEntry.append(this.targetSpeeds.omegaRadiansPerSecond);
     this.isAlignedWithSpeakerLogEntry.append(isSwerveAlignedWithSpeaker());
+    this.isSwerveInAutoShootZoneLogEntry.append(isSwerveInAutoShootZone());
+    this.isSwerveInShootVelocityLogEntry.append(isSwerveInVelocityToShoot());
+    this.isSwerveInAutoShootVelocityLogEntry.append(isSwerveInVelocityToAutoShoot());
+    this.velocityCalculatedLogEntry.append(calculateVelocity());
+    this.angleToAimSpeakerLogEntry.append(this.angleToAimAtSpeaker);
     this.txMeasurementLlLogEntry.append(this.lastTxMeasurement);
-    this.tvMeasurementLlLogEntry.append(LimelightHelpers.getTV(""));
+    this.tvMeasurementLlLogEntry.append(limelight.getTV());
     this.stateLogEntry.append(this.state);
   }
 
