@@ -14,8 +14,8 @@ public class IntakeConstants {
   public static final double ANGLE_PASSED_FOR_SHOOTER_MOVE = 110;
 
   public class tunning_values {
-    public static final double KS = 0.28;
-    public static final double KV = 0.03;
+    public static final double KS = 0.36;
+    public static final double KV = 0.02;
     public static final double MAX_VELOCITY = 400;
     public static final double MAX_ACCELERATION = 2500;
 
