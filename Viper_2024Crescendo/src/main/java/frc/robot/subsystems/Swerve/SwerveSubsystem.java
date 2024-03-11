@@ -311,12 +311,36 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     this.driveFieldOriented(targetSpeeds);
   }
 
+  @Override
+  public double getDistanceToNearestAmp() {
+    if (this.getPose().getX() > FieldConstants.midFieldLine) {
+      return this.getPose().getTranslation().getDistance(FieldConstants.redAmp.getTranslation());
+    } else {
+      return this.getPose().getTranslation().getDistance(FieldConstants.blueAmp.getTranslation());
+    }
+  }
+
+  @Override
   public boolean isSwerveAlignedWithSpeaker() {
     boolean aligned = this.alignedToSpeakerStabilizeChecker.isStableInRange(
         headingDegrees,
         angleToAimAtSpeaker,
         SwerveConstants.DEADBAND_ALIGNED_WITH_SPEAKER);
     return aligned;
+  }
+
+  @Override
+  public boolean isAlignedWithAmp() {
+    Translation2d targetAmpPosition;
+    if (this.getPose().getX() > FieldConstants.midFieldLine) {
+      targetAmpPosition = FieldConstants.redAmp.getTranslation();
+    } else {
+      targetAmpPosition = FieldConstants.blueAmp.getTranslation();
+    }
+    Translation2d currentPosition = this.getPose().getTranslation();
+    boolean isAlignedInX = Math.abs(currentPosition.getX() - targetAmpPosition.getX()) < SwerveConstants.DEADBAND_ALIGNED_WITH_AMP_X;
+    boolean isAlignedInY = Math.abs(currentPosition.getY() - targetAmpPosition.getY()) < SwerveConstants.DEADBAND_ALIGNED_WITH_AMP_Y;
+    return isAlignedInX && isAlignedInY;
   }
 
   @Override

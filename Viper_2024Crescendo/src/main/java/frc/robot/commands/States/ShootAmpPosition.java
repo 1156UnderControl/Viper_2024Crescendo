@@ -2,24 +2,27 @@ package frc.robot.commands.States;
 
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotSubsystems;
 import frc.robot.Joysticks.ControlBoard;
 import frc.robot.commands.Intake.GoToShootIntake;
 import frc.robot.commands.Shooter.ShootAmp;
+import frc.robot.commands.Swerve.SwerveAlignWithAmp;
 import frc.robot.subsystems.LEDs.LedColor;
+import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
 public class ShootAmpPosition extends SequentialCommandGroup {
-  ControlBoard mControlBoard = ControlBoard.getInstance();
+  ControlBoard controlBoard = ControlBoard.getInstance();
 
-  public ShootAmpPosition(RobotSubsystems robot) {
+  public ShootAmpPosition(RobotSubsystems robot, SwerveSubsystem swerve) {
     addCommands(
         new InstantCommand(() -> RobotSubsystems.shootFinished = false),
         new InstantCommand(() -> robot.led.setSolidColor(LedColor.YELLOW)),
         new GoToShootIntake(robot),
-        new ShootAmp(robot),
+        new ParallelCommandGroup(new ShootAmp(robot), new SwerveAlignWithAmp(swerve)),
         new InstantCommand(() -> robot.led.setSolidColor(LedColor.GREEN)),
-        Commands.waitUntil(mControlBoard.getShoot()),
+        Commands.waitUntil(this.controlBoard.getShoot()),
         Commands.runOnce(() -> robot.shooter.shoot(), robot),
         new InstantCommand(() -> robot.led.setBlink(LedColor.GREEN, 3)),
         Commands.waitSeconds(1),
