@@ -23,7 +23,6 @@ import frc.robot.commands.Autonomous.AutonomousAimSteal;
 import frc.robot.commands.Autonomous.AutonomousAimSubwoofer;
 import frc.robot.commands.Autonomous.AutonomousCollect;
 import frc.robot.commands.Autonomous.AutonomousShoot;
-import frc.robot.commands.Autonomous.AutonomousVisionUpdate;
 import frc.robot.commands.States.ClimbPosition;
 import frc.robot.commands.States.CollectHPposition;
 import frc.robot.commands.States.CollectPosition;
@@ -57,7 +56,6 @@ public class RobotContainer {
     this.swerve = SwerveSubsystem.getInstance(new File(Filesystem.getDeployDirectory(),
         "swerve/swerve"));
     this.robot = new RobotSubsystems();
-    NamedCommands.registerCommand("Vision Update", new AutonomousVisionUpdate(swerve));
     NamedCommands.registerCommand("Intake", new AutonomousCollect(robot));
     NamedCommands.registerCommand("Shoot", new AutonomousShoot(robot).andThen(Commands.waitSeconds(0.1)));
     NamedCommands.registerCommand("Aim Shoot Subwoofer", new AutonomousAimSubwoofer(robot));
@@ -77,8 +75,6 @@ public class RobotContainer {
     mControlBoard.setHeadingBack().onTrue(new InstantCommand(swerve::setAngle180));
     mControlBoard.setHeadingLeft().onTrue(new InstantCommand(swerve::setAngle90));
     mControlBoard.setHeadingRight().onTrue(new InstantCommand(swerve::setAngleNeg90));
-    mControlBoard.setHeading45Left().onTrue(new InstantCommand(swerve::setAngle45));
-    mControlBoard.setHeading45Right().onTrue(new InstantCommand(swerve::setAngleNeg45));
     mControlBoard.getIntake().onTrue(new CollectPosition(robot, swerve));
     mControlBoard.getIntakeFromHP().onTrue(new CollectHPposition(robot));
     mControlBoard.getSecured().onTrue(new SecuredPosition(robot));

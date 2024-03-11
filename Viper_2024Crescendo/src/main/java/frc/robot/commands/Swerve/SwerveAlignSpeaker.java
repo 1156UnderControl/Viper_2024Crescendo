@@ -6,13 +6,13 @@
 package frc.robot.commands.Swerve;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
+import frc.Java_Is_UnderControl.Limelight.Limelight;
 import frc.robot.RobotSubsystems;
-import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.Swerve.ISwerve;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
 public class SwerveAlignSpeaker extends Command {
+  private Limelight limelight = Limelight.getInstance();
   private ISwerve swerve;
 
   public SwerveAlignSpeaker(SwerveSubsystem swerve) {
@@ -23,16 +23,12 @@ public class SwerveAlignSpeaker extends Command {
   @Override
   public void initialize() {
     Limelight.notUsingLLforOdometry = true;
-    Limelight.setPipelineToTrackSpeaker();
+    limelight.setPipeline(1);
   }
 
   @Override
   public void execute() {
-    if (LimelightHelpers.getCurrentPipelineIndex("") == 1) {
-      swerve.driveAlignSpeaker();
-    } else {
-      swerve.driveAlignAngleButton();
-    }
+    swerve.driveAlignSpeaker();
   }
 
   @Override

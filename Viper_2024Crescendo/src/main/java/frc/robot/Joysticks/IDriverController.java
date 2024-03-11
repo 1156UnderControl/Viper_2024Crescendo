@@ -23,9 +23,9 @@ public interface IDriverController {
 
   Trigger setHeadingLeft();
 
-  Trigger setHeading45Left();
+  Trigger rotateLeft();
 
-  Trigger setHeading45Right();
+  Trigger rotateRight();
 
   boolean isForcingDriverControl();
 }
