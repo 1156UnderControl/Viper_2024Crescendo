@@ -11,7 +11,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 public final class FieldConstants {
   public static Translation2d blueGoalPos = new Translation2d(0.076, 5.547868);
   public static Translation2d redGoalPos = new Translation2d(16.465042, 5.547868);
-  public static Pose2d blueAmp = new Pose2d(1.82, 7.7, new Rotation2d());
-  public static Pose2d redAmp = new Pose2d(14.73, 7.7, new Rotation2d());
+  public static Pose2d blueAmp = new Pose2d(1.82, 6, new Rotation2d());
+  public static Pose2d redAmp = new Pose2d(14.73, 6, new Rotation2d());
   public static double midFieldLine = 8.270875;
 }
