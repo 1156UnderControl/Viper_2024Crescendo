@@ -9,6 +9,10 @@ public interface ISwerve {
 
   void driveAlignNote();
 
+  void driveToAmp();
+
+  double getDistanceToNearestAmp();
+
   boolean isSwerveAlignedWithSpeaker();
 
   boolean isSwerveInAutoShootZone();
@@ -16,4 +20,6 @@ public interface ISwerve {
   boolean isSwerveInVelocityToAutoShoot();
 
   boolean isSwerveInVelocityToShoot();
+
+  boolean isAlignedWithAmp();
 }

@@ -20,6 +20,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.datalog.BooleanLogEntry;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
@@ -141,6 +144,17 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   private double targetNotePositionX;
 
+  private TrapezoidProfile autoPositionMotionProfileX = new TrapezoidProfile(
+      new Constraints(SwerveConstants.MOTION_PROFILE_MAX_VEL, SwerveConstants.MOTION_PROFILE_MAX_ACCEL));
+
+  private TrapezoidProfile autoPositionMotionProfileY = new TrapezoidProfile(
+      new Constraints(SwerveConstants.MOTION_PROFILE_MAX_VEL, SwerveConstants.MOTION_PROFILE_MAX_ACCEL));
+
+  private PIDController xVelToPose = new PIDController(0.7, 0, 0);
+  private PIDController yVelToPose = new PIDController(0.7, 0, 0);
+
+  private double kDt = 0.02;
+
   public static SwerveSubsystem getInstance(File directory) {
     if (swerveInstance == null) {
       swerveInstance = new SwerveSubsystem(directory);
@@ -196,6 +210,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   }
 
   private void updateSmartDashboardValues() {
+    SmartDashboard.putString("Target Chassis Speeds", targetSpeeds.toString());
     SmartDashboard.putNumber("Heading Odometry", swerveDrive.getOdometryHeading().getDegrees());
     SmartDashboard.putNumber("Distance LL", limelight.getDistance());
     SmartDashboard.putNumber("Distance Odom", distanceFromSpeaker());
@@ -274,12 +289,68 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     this.state = "DRIVE_ALIGN_NOTE";
   }
 
+  @Override
+  public void driveToAmp() {
+    Pose2d targetPose;
+    if (this.getPose().getX() > FieldConstants.midFieldLine) {
+      targetPose = FieldConstants.redAmp;
+    } else {
+      targetPose = FieldConstants.blueAmp;
+    }
+    driveToPose(new Pose2d(targetPose.getX(), targetPose.getY(), new Rotation2d(Units.degreesToRadians(90))));
+    this.state = "DRIVE_TO_AMP";
+  }
+
+  private void driveToPose(Pose2d targetPose) {
+    if (this.controller.isForcingDriverControl()) {
+      driveAlignAngleButton();
+      return;
+    }
+    Pose2d currentPose = this.getPose();
+    ChassisSpeeds currentSpeeds = this.getFieldVelocity();
+    double[] speeds = pidXyVelocity(targetPose.getX(), currentPose.getX(),
+        targetPose.getY(), currentPose.getY());
+    ChassisSpeeds targetSpeeds = getTargetSpeedsAngle(-1 * speeds[0], -1 * speeds[1],
+        targetPose.getRotation().getDegrees());
+    SmartDashboard.putString("target speeds amp", targetSpeeds.toString());
+    this.driveFieldOriented(targetSpeeds);
+  }
+
+  @Override
+  public double getDistanceToNearestAmp() {
+    if (this.getPose().getX() > FieldConstants.midFieldLine) {
+      return this.getPose().getTranslation().getDistance(FieldConstants.redAmp.getTranslation());
+    } else {
+      return this.getPose().getTranslation().getDistance(FieldConstants.blueAmp.getTranslation());
+    }
+  }
+
+  @Override
   public boolean isSwerveAlignedWithSpeaker() {
     boolean aligned = this.alignedToSpeakerStabilizeChecker.isStableInRange(
         headingDegrees,
         angleToAimAtSpeaker,
         SwerveConstants.DEADBAND_ALIGNED_WITH_SPEAKER);
     return aligned;
+  }
+
+  @Override
+  public boolean isAlignedWithAmp() {
+    Translation2d targetAmpPosition;
+    if (this.getPose().getX() > FieldConstants.midFieldLine) {
+      targetAmpPosition = FieldConstants.redAmp.getTranslation();
+    } else {
+      targetAmpPosition = FieldConstants.blueAmp.getTranslation();
+    }
+    Translation2d currentPosition = this.getPose().getTranslation();
+    boolean isAlignedInX = Math
+        .abs(currentPosition.getX() - targetAmpPosition.getX()) < SwerveConstants.DEADBAND_ALIGNED_WITH_AMP_X;
+    boolean isAlignedInY = Math
+        .abs(currentPosition.getY() - targetAmpPosition.getY()) < SwerveConstants.DEADBAND_ALIGNED_WITH_AMP_Y;
+
+    SmartDashboard.putBoolean("isAlignedInX", isAlignedInX);
+    SmartDashboard.putBoolean("isAlignedInY", isAlignedInY);
+    return isAlignedInX && isAlignedInY;
   }
 
   @Override
@@ -370,16 +441,6 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
         invertOmega ? -pid.calculate(measurement, setpoint) : pid.calculate(measurement, setpoint));
     SmartDashboard.putNumber("Omega PID", speedsPID.omegaRadiansPerSecond);
     swerveDrive.driveFieldOriented(speedsPID);
-    this.targetSpeeds = speedsPID;
-  }
-
-  private void driveOmegaPidRobotOriented(ChassisSpeeds speeds, double setpoint, double measurement, PIDController pid,
-      boolean invertOmega) {
-    ChassisSpeeds speedsPID;
-    speedsPID = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond,
-        invertOmega ? -pid.calculate(measurement, setpoint) : pid.calculate(measurement, setpoint));
-    SmartDashboard.putNumber("Omega PID", speedsPID.omegaRadiansPerSecond);
-    swerveDrive.drive(speedsPID);
     this.targetSpeeds = speedsPID;
   }
 
@@ -478,12 +539,6 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   }
 
   /*
-   * public double trackNote() {
-   * return pidTrackNotes.calculate();
-   * }
-   */
-
-  /*
    * ANGLE CONTROL
    */
 
@@ -527,5 +582,27 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     this.txMeasurementLlLogEntry.append(this.lastTxMeasurement);
     this.tvMeasurementLlLogEntry.append(limelight.getTV());
     this.stateLogEntry.append(this.state);
+  }
+
+  private double[] pidXyVelocity(double goalPositionX, double currentPositionX, double goalPositionY,
+      double currentPositionY) {
+    double[] XYvel = {
+        xVelToPose.calculate(currentPositionX, goalPositionX),
+        yVelToPose.calculate(currentPositionY, goalPositionY) };
+
+    SmartDashboard.putNumber("Goal X Pose AMP", goalPositionX);
+    SmartDashboard.putNumber("Goal Y Pose AMP", goalPositionY);
+    SmartDashboard.putNumber("Current X Pose", currentPositionX);
+    SmartDashboard.putNumber("Current Y Pose", currentPositionY);
+    return XYvel;
+  }
+
+  private double profileVelocity(double goalPosition, TrapezoidProfile motionProfile, double currentPosition,
+      double currentVelocity) {
+    State motionProfileGoal = new State(goalPosition, 0);
+    State motionProfileCurrent = new State(currentPosition, currentVelocity);
+    State motionProfileCurrentTargetState = motionProfile.calculate(kDt, motionProfileCurrent,
+        motionProfileGoal);
+    return motionProfileCurrentTargetState.velocity;
   }
 }

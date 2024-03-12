@@ -7,8 +7,13 @@ import swervelib.math.SwerveMath;
 
 public class SwerveConstants {
   public static final double DEADBAND_ALIGNED_WITH_SPEAKER = 5;
+  public static final double DEADBAND_ALIGNED_WITH_AMP_X = 0.15;
+  public static final double DEADBAND_ALIGNED_WITH_AMP_Y = 0.1;
 
   public static final double MAX_VEL = Units.feetToMeters(14.5);
+
+  public static final double MOTION_PROFILE_MAX_VEL = 4;
+  public static final double MOTION_PROFILE_MAX_ACCEL = 5;
 
   public static final double DriveConversionFactor = SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(4),
       6.12, 1);

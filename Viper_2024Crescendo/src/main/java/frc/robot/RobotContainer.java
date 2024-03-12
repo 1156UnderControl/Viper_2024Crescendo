@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.wpilibj2.command.Commands.parallel;
-
 import java.io.File;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -29,7 +27,6 @@ import frc.robot.commands.States.CollectPosition;
 import frc.robot.commands.States.ExpellPosition;
 import frc.robot.commands.States.SecuredPosition;
 import frc.robot.commands.States.ShootAmpPosition;
-import frc.robot.commands.States.ShootOverStagePosition;
 import frc.robot.commands.States.ShootSpeakerPosition;
 import frc.robot.commands.Swerve.SwerveAlignSpeaker;
 import frc.robot.commands.Swerve.SwerveTeleopControl;
@@ -50,7 +47,7 @@ public class RobotContainer {
 
   private final SendableChooser<Command> autoChooser;
 
-  public ControlBoard mControlBoard = ControlBoard.getInstance();
+  public ControlBoard controlBoard = ControlBoard.getInstance();
 
   public RobotContainer() {
     this.swerve = SwerveSubsystem.getInstance(new File(Filesystem.getDeployDirectory(),
@@ -71,23 +68,29 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    mControlBoard.setHeadingFront().onTrue(new InstantCommand(swerve::setAngle0));
-    mControlBoard.setHeadingBack().onTrue(new InstantCommand(swerve::setAngle180));
-    mControlBoard.setHeadingLeft().onTrue(new InstantCommand(swerve::setAngle90));
-    mControlBoard.setHeadingRight().onTrue(new InstantCommand(swerve::setAngleNeg90));
-    mControlBoard.getIntake().onTrue(new CollectPosition(robot, swerve));
-    mControlBoard.getIntakeFromHP().onTrue(new CollectHPposition(robot));
-    mControlBoard.getSecured().onTrue(new SecuredPosition(robot));
-    mControlBoard.getSecured().onTrue(new SwerveTeleopControl(swerve));
-    mControlBoard.getPrepareAmp().onTrue(new ShootAmpPosition(robot));
-    mControlBoard.getPrepareSpeaker().onTrue(new ShootSpeakerPosition(robot));
-    mControlBoard.getPrepareSpeaker().onTrue(new SwerveAlignSpeaker(swerve));
-    mControlBoard.getDoNotShoot().and(() -> !robot.preparingShoot).onTrue(parallel(
-        new ShootOverStagePosition(robot), new InstantCommand(swerve::setAngle45)));
-    mControlBoard.release().onTrue(new ClimbPosition(robot));
-    mControlBoard.expell().onTrue(new ExpellPosition(robot));
-    mControlBoard.falseNegative().onTrue(new InstantCommand(() -> robot.shooter.setHasNoteTrue()));
-    mControlBoard.falsePositive().onTrue(new InstantCommand(() -> robot.shooter.setHasNoteFalse()));
+    this.configureSwerveBindings();
+    this.configureRobotBindings();
+    this.controlBoard.getIntake().onTrue(new CollectPosition(robot, swerve));
+  }
+
+  private void configureSwerveBindings() {
+    this.controlBoard.setHeadingFront().onTrue(new InstantCommand(swerve::setAngle0));
+    this.controlBoard.setHeadingBack().onTrue(new InstantCommand(swerve::setAngle180));
+    this.controlBoard.setHeadingLeft().onTrue(new InstantCommand(swerve::setAngle90));
+    this.controlBoard.setHeadingRight().onTrue(new InstantCommand(swerve::setAngleNeg90));
+    this.controlBoard.getSecured().onTrue(new SwerveTeleopControl(swerve));
+    this.controlBoard.getPrepareSpeaker().onTrue(new SwerveAlignSpeaker(swerve));
+  }
+
+  private void configureRobotBindings() {
+    this.controlBoard.getIntakeFromHP().onTrue(new CollectHPposition(robot));
+    this.controlBoard.getSecured().onTrue(new SecuredPosition(robot));
+    this.controlBoard.getPrepareAmp().onTrue(new ShootAmpPosition(robot, swerve));
+    this.controlBoard.getPrepareSpeaker().onTrue(new ShootSpeakerPosition(robot));
+    this.controlBoard.release().onTrue(new ClimbPosition(robot));
+    this.controlBoard.expell().onTrue(new ExpellPosition(robot));
+    this.controlBoard.falseNegative().onTrue(new InstantCommand(() -> robot.shooter.setHasNoteTrue()));
+    this.controlBoard.falsePositive().onTrue(new InstantCommand(() -> robot.shooter.setHasNoteFalse()));
   }
 
   public Command getAutonomousCommand() {
