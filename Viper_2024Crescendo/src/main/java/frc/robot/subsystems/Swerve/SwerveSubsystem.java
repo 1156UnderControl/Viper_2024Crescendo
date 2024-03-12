@@ -5,9 +5,11 @@
 package frc.robot.subsystems.Swerve;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -193,11 +195,14 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     Optional<EstimatedRobotPose> estimation = limelight
         .getEstimatedGlobalPose(swerveDrive.swerveDrivePoseEstimator.getEstimatedPosition());
     if (estimation.isPresent()) {
+      EstimatedRobotPose fakeRobotPoseIfNull = new EstimatedRobotPose(new Pose3d(),
+          0, new ArrayList<>(), PoseStrategy.LOWEST_AMBIGUITY);
+
       limelight.setPipeline(0);
       SmartDashboard.putNumber("tags", estimation.get().targetsUsed.size());
-      poseVision2D = estimation.get().estimatedPose.toPose2d();
-      poseVision3D = estimation.get().estimatedPose;
-      if (estimation.get().targetsUsed.size() >= 2) {
+      poseVision2D = estimation.orElse(fakeRobotPoseIfNull).estimatedPose.toPose2d();
+      poseVision3D = estimation.orElse(fakeRobotPoseIfNull).estimatedPose;
+      if (estimation.orElse(fakeRobotPoseIfNull).targetsUsed.size() >= 2) {
         aprField2d.setRobotPose(poseVision2D);
         swerveDrive.addVisionMeasurement(poseVision2D, estimation.get().timestampSeconds);
       }

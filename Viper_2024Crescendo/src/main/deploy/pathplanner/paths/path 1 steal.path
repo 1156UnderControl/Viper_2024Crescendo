@@ -16,32 +16,60 @@
     },
     {
       "anchor": {
-        "x": 8.094593992326358,
-        "y": 0.6792285196553272
+        "x": 7.356811289942123,
+        "y": 0.7260718658384518
       },
       "prevControl": {
-        "x": 5.764137519715838,
-        "y": 0.9134452505709578
+        "x": 5.026354817331604,
+        "y": 0.9602885967540825
+      },
+      "nextControl": {
+        "x": 9.687267762552636,
+        "y": 0.4918551349228212
+      },
+      "isLocked": false,
+      "linkedName": "end path 1 steal"
+    },
+    {
+      "anchor": {
+        "x": 2.0166698250657547,
+        "y": 3.6069376561007047
+      },
+      "prevControl": {
+        "x": 5.986643414085687,
+        "y": 1.5341195874973768
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "end path 1 steal"
+      "linkedName": "end path 1 steal v2"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.25,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [
     {
       "name": "New Event Marker",
       "waypointRelativePos": 0.45,
       "command": {
-        "type": "parallel",
+        "type": "sequential",
         "data": {
           "commands": [
             {
               "type": "named",
               "data": {
                 "name": "Intake"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Aim Shoot Steal"
               }
             }
           ]
@@ -57,7 +85,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0,
+    "rotation": -50.829999999999984,
     "rotateFast": false
   },
   "reversed": false,

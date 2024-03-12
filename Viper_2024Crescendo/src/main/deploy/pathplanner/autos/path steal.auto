@@ -30,18 +30,6 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "path 2 steal"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Aim Shoot Steal"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "Shoot"
@@ -50,19 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "path 3 steal"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "path 4 steal"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Aim Shoot Steal"
+            "pathName": "path 2 steal"
           }
         },
         {

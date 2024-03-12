@@ -3,37 +3,59 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.094593992326358,
-        "y": 0.6792285196553272
+        "x": 2.0166698250657547,
+        "y": 3.6069376561007047
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.103751779543502,
-        "y": 0.14053003854937662
+        "x": 3.8435603262076694,
+        "y": 1.6629387895009728
       },
       "isLocked": false,
-      "linkedName": "end path 1 steal"
+      "linkedName": "end path 1 steal v2"
     },
     {
       "anchor": {
-        "x": 1.8878506230621577,
-        "y": 4.028527771748839
+        "x": 7.930642280685416,
+        "y": 2.459275674614116
       },
       "prevControl": {
-        "x": 1.9581156423368469,
-        "y": 2.9511308095369406
+        "x": 8.353398824096478,
+        "y": 1.465797797598116
+      },
+      "nextControl": {
+        "x": 7.696425549769787,
+        "y": 3.0096849922658473
+      },
+      "isLocked": false,
+      "linkedName": "shoot steal"
+    },
+    {
+      "anchor": {
+        "x": 2.0166698250657547,
+        "y": 3.6069376561007047
+      },
+      "prevControl": {
+        "x": 6.302836000821786,
+        "y": 0.5504093176517296
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "shoot steal"
+      "linkedName": "end path 1 steal v2"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0,
+      "waypointRelativePos": 0.35,
       "command": {
         "type": "sequential",
         "data": {
@@ -69,7 +91,7 @@
   "reversed": false,
   "folder": "auto steal 2",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": -50.829999999999984,
     "velocity": 0
   },
   "useDefaultConstraints": false

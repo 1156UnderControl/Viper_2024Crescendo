@@ -23,7 +23,6 @@ public class ShootAmpPosition extends SequentialCommandGroup {
         new GoToShootIntake(robot),
         new ParallelCommandGroup(new ShootAmp(robot), new SwerveAlignWithAmp(swerve)),
         new InstantCommand(() -> robot.led.setSolidColor(LedColor.GREEN)),
-        Commands.waitUntil(this.controlBoard.getShoot()),
         Commands.runOnce(() -> robot.shooter.shoot(), robot),
         new InstantCommand(() -> robot.led.setBlink(LedColor.GREEN, 3)),
         Commands.waitSeconds(1),
