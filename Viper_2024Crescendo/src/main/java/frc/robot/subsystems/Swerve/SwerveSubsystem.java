@@ -199,12 +199,11 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
           0, new ArrayList<>(), PoseStrategy.LOWEST_AMBIGUITY);
 
       limelight.setPipeline(0);
-      SmartDashboard.putNumber("tags", estimation.get().targetsUsed.size());
       poseVision2D = estimation.orElse(fakeRobotPoseIfNull).estimatedPose.toPose2d();
       poseVision3D = estimation.orElse(fakeRobotPoseIfNull).estimatedPose;
       if (estimation.orElse(fakeRobotPoseIfNull).targetsUsed.size() >= 2) {
         aprField2d.setRobotPose(poseVision2D);
-        swerveDrive.addVisionMeasurement(poseVision2D, estimation.get().timestampSeconds);
+        swerveDrive.addVisionMeasurement(poseVision2D, estimation.orElse(fakeRobotPoseIfNull).timestampSeconds);
       }
     }
   }
@@ -297,12 +296,19 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   @Override
   public void driveToAmp() {
     Pose2d targetPose;
+    double angleAlignAmp;
     if (this.getPose().getX() > FieldConstants.midFieldLine) {
       targetPose = FieldConstants.redAmp;
     } else {
       targetPose = FieldConstants.blueAmp;
     }
-    driveToPose(new Pose2d(targetPose.getX(), targetPose.getY(), new Rotation2d(Units.degreesToRadians(90))));
+    if (DriverStation.getAlliance().get() == Alliance.Red) {
+      angleAlignAmp = 90;
+    } else {
+      angleAlignAmp = -90;
+    }
+    driveToPose(
+        new Pose2d(targetPose.getX(), targetPose.getY(), new Rotation2d(Units.degreesToRadians(angleAlignAmp))));
     this.state = "DRIVE_TO_AMP";
   }
 
