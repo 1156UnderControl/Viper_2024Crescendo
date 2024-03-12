@@ -123,6 +123,12 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   private DoubleLogEntry angleToAimSpeakerLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
       "/SwerveSubsystem/TargetSpeeds/Omega");
 
+  private DoubleLogEntry distanceToNearestAmpLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
+      "/SwerveSubsystem/AutoAmp/DistanceToNearestAmp");
+
+  private BooleanLogEntry isAlingedWithAmpLogEntry = new BooleanLogEntry(DataLogManager.getLog(),
+      "/SwerveSubsystem/AutoAmp/isAlignedWithAmp");
+
   private BooleanLogEntry tvMeasurementLlLogEntry = new BooleanLogEntry(DataLogManager.getLog(),
       "/SwerveSubsystem/SpeakerAlign/tvLL");
 
@@ -185,7 +191,6 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     if (estimation.isPresent() && !Robot.isInAutonomous) {
       EstimatedRobotPose fakeRobotPoseIfNull = new EstimatedRobotPose(new Pose3d(),
           0, new ArrayList<>(), PoseStrategy.LOWEST_AMBIGUITY);
-
       limelight.setPipeline(0);
       poseVision2D = estimation.orElse(fakeRobotPoseIfNull).estimatedPose.toPose2d();
       poseVision3D = estimation.orElse(fakeRobotPoseIfNull).estimatedPose;
@@ -484,12 +489,11 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
       yInput = -yInput;
     }
     double angleTarget = angle;
-    ChassisSpeeds targetSpeeds;
     SmartDashboard.putNumber("Angle Target Speeds", angleTarget);
     double angleRadians = Units.degreesToRadians(angle);
-    targetSpeeds = swerveDrive.swerveController.getTargetSpeeds(xInput, yInput, angleRadians,
+    this.targetSpeeds = swerveDrive.swerveController.getTargetSpeeds(xInput, yInput, angleRadians,
         headingRadians, SwerveConstants.MAX_VEL);
-    return targetSpeeds;
+    return this.targetSpeeds;
   }
 
   private ChassisSpeeds getTargetSpeedsAngleJoystick(double xInput, double yInput, double headingX, double headingY) {
@@ -498,11 +502,10 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
       yInput = -yInput;
     }
     double angleTarget = Math.atan2(headingX, headingY);
-    ChassisSpeeds targetSpeeds;
     SmartDashboard.putNumber("Angle Target Speeds", Units.radiansToDegrees(angleTarget));
-    targetSpeeds = swerveDrive.swerveController.getTargetSpeeds(xInput, yInput, headingX, headingY,
+    this.targetSpeeds = swerveDrive.swerveController.getTargetSpeeds(xInput, yInput, headingX, headingY,
         headingRadians, SwerveConstants.MAX_VEL);
-    return targetSpeeds;
+    return this.targetSpeeds;
   }
 
   public ChassisSpeeds getFieldVelocity() {
@@ -572,6 +575,8 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     this.isSwerveInAutoShootZoneLogEntry.append(isSwerveInAutoShootZone());
     this.isSwerveInShootVelocityLogEntry.append(isSwerveInVelocityToShoot());
     this.isSwerveInAutoShootVelocityLogEntry.append(isSwerveInVelocityToAutoShoot());
+    this.distanceToNearestAmpLogEntry.append(getDistanceToNearestAmp());
+    this.isAlingedWithAmpLogEntry.append(isAlignedWithAmp());
     this.velocityCalculatedLogEntry.append(calculateVelocity());
     this.angleToAimSpeakerLogEntry.append(this.angleToAimAtSpeaker);
     this.txMeasurementLlLogEntry.append(this.lastTxMeasurement);
