@@ -41,7 +41,6 @@ import frc.Java_Is_UnderControl.Util.StabilizeChecker;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CommandsConstants;
 import frc.robot.Constants.FieldConstants;
-import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Joysticks.ControlBoard;
 import swervelib.SwerveController;
@@ -149,7 +148,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
       new Constraints(SwerveConstants.MOTION_PROFILE_MAX_VEL, SwerveConstants.MOTION_PROFILE_MAX_ACCEL));
 
   private TrapezoidProfile autoPositionMotionProfileY = new TrapezoidProfile(
-    new Constraints(SwerveConstants.MOTION_PROFILE_MAX_VEL, SwerveConstants.MOTION_PROFILE_MAX_ACCEL));
+      new Constraints(SwerveConstants.MOTION_PROFILE_MAX_VEL, SwerveConstants.MOTION_PROFILE_MAX_ACCEL));
 
   private double kDt = 0.02;
 
@@ -305,9 +304,12 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     }
     Pose2d currentPose = this.getPose();
     ChassisSpeeds currentSpeeds = this.getFieldVelocity();
-    double targetSpeedX = this.profileVelocity(targetPose.getX(), autoPositionMotionProfileX, currentPose.getX(), currentSpeeds.vxMetersPerSecond);
-    double targetSpeedY = this.profileVelocity(targetPose.getY(), autoPositionMotionProfileY, currentPose.getY(), currentSpeeds.vyMetersPerSecond);
-    ChassisSpeeds targetSpeeds = new ChassisSpeeds(targetSpeedX, targetSpeedY, targetPose.getRotation().getDegrees());
+    double targetSpeedX = this.profileVelocity(targetPose.getX(), autoPositionMotionProfileX, currentPose.getX(),
+        currentSpeeds.vxMetersPerSecond);
+    double targetSpeedY = this.profileVelocity(targetPose.getY(), autoPositionMotionProfileY, currentPose.getY(),
+        currentSpeeds.vyMetersPerSecond);
+    ChassisSpeeds targetSpeeds = getTargetSpeedsAngle(targetSpeedX, targetSpeedY,
+        targetPose.getRotation().getDegrees());
     this.driveFieldOriented(targetSpeeds);
   }
 
@@ -338,8 +340,10 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
       targetAmpPosition = FieldConstants.blueAmp.getTranslation();
     }
     Translation2d currentPosition = this.getPose().getTranslation();
-    boolean isAlignedInX = Math.abs(currentPosition.getX() - targetAmpPosition.getX()) < SwerveConstants.DEADBAND_ALIGNED_WITH_AMP_X;
-    boolean isAlignedInY = Math.abs(currentPosition.getY() - targetAmpPosition.getY()) < SwerveConstants.DEADBAND_ALIGNED_WITH_AMP_Y;
+    boolean isAlignedInX = Math
+        .abs(currentPosition.getX() - targetAmpPosition.getX()) < SwerveConstants.DEADBAND_ALIGNED_WITH_AMP_X;
+    boolean isAlignedInY = Math
+        .abs(currentPosition.getY() - targetAmpPosition.getY()) < SwerveConstants.DEADBAND_ALIGNED_WITH_AMP_Y;
     return isAlignedInX && isAlignedInY;
   }
 
@@ -566,7 +570,8 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     this.stateLogEntry.append(this.state);
   }
 
-  private double profileVelocity(double goalPosition, TrapezoidProfile motionProfile, double currentPosition, double currentVelocity) {
+  private double profileVelocity(double goalPosition, TrapezoidProfile motionProfile, double currentPosition,
+      double currentVelocity) {
     State motionProfileGoal = new State(goalPosition, 0);
     State motionProfileCurrent = new State(currentPosition, currentVelocity);
     State motionProfileCurrentTargetState = motionProfile.calculate(kDt, motionProfileCurrent, motionProfileGoal);
