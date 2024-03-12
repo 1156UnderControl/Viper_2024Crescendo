@@ -96,6 +96,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
+    Robot.isInAutonomous = false;
     this.robotContainer.setMotorBrake(false);
     this.robotContainer.robot.led.setRainbow();
     this.disabledTimer.reset();
@@ -138,7 +139,7 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     SwerveConstants.ACELL_CORREC = true;
     this.robotContainer.robot.setDefaultCommand(new SecuredPosition(robotContainer.robot));
-    isInAutonomous = false;
+    Robot.isInAutonomous = false;
     this.robotContainer.setHeadingCorrection(true);
     if (this.autonomousCommand != null) {
       autonomousCommand.cancel();

@@ -37,6 +37,7 @@ import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
 import frc.Java_Is_UnderControl.Logging.Pose2dLogEntry;
 import frc.Java_Is_UnderControl.PhotonVision.PhotonVision;
 import frc.Java_Is_UnderControl.Util.StabilizeChecker;
+import frc.robot.Robot;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CommandsConstants;
 import frc.robot.Constants.FieldConstants;
@@ -181,7 +182,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     swerveDrive.updateOdometry();
     Optional<EstimatedRobotPose> estimation = limelight
         .getEstimatedGlobalPose(swerveDrive.swerveDrivePoseEstimator.getEstimatedPosition());
-    if (estimation.isPresent()) {
+    if (estimation.isPresent() && !Robot.isInAutonomous) {
       EstimatedRobotPose fakeRobotPoseIfNull = new EstimatedRobotPose(new Pose3d(),
           0, new ArrayList<>(), PoseStrategy.LOWEST_AMBIGUITY);
 
