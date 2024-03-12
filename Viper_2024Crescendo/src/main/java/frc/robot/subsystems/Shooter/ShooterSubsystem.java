@@ -11,7 +11,6 @@ import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.Java_Is_UnderControl.Limelight.Limelight;
 import frc.Java_Is_UnderControl.Util.StabilizeChecker;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Motors.Motor;
@@ -50,10 +49,6 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   private DigitalInput noteSensorOut = new InfraRed(ShooterConstants.port_IR_OUT, false);
 
   private DigitalInput noteSensorIn = new InfraRed(ShooterConstants.port_IR_IN, false);
-
-  private boolean tvAfterTweak = true;
-
-  private Limelight limelight;
 
   SimpleMotorFeedforward pivotFeedforward = new SimpleMotorFeedforward(ShooterConstants.tunning_values_pivot.KS,
       ShooterConstants.tunning_values_pivot.KV);
@@ -94,7 +89,6 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   }
 
   private ShooterSubsystem() {
-    this.limelight = Limelight.getInstance();
     this.hasNote = false;
     this.wasNoteIn = false;
     this.configureFlywheelMotor(this.upperFlywheelMotor);

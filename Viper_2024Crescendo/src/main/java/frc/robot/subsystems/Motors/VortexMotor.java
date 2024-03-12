@@ -96,9 +96,11 @@ public class VortexMotor implements Motor {
     this.targetOutputLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/targetOutput");
     this.targetPositionLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/targetPosition");
     this.targetSpeedLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/targetSpeed");
-    StringLogEntry firmwareVersionLog = new StringLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/firmwareVersion");
+    StringLogEntry firmwareVersionLog = new StringLogEntry(DataLogManager.getLog(),
+        "/motors/" + motorId + "/firmwareVersion");
     firmwareVersionLog.append(this.motor.getFirmwareString());
-    BooleanLogEntry isAlternateEncoderLog = new BooleanLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/isAlternateEncoder");
+    BooleanLogEntry isAlternateEncoderLog = new BooleanLogEntry(DataLogManager.getLog(),
+        "/motors/" + motorId + "/isAlternateEncoder");
     isAlternateEncoderLog.append(isAlternateEncoder);
     BooleanLogEntry isFollowerLog = new BooleanLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/isFollower");
     isFollowerLog.append(this.motor.isFollower());
@@ -130,7 +132,7 @@ public class VortexMotor implements Motor {
 
   @Override
   public void setVoltageCompensation(double nominalVoltage) {
-    if (nominalVoltage != this.nominalVoltage){
+    if (nominalVoltage != this.nominalVoltage) {
       configureSparkFlex(() -> motor.enableVoltageCompensation(nominalVoltage));
     }
     this.nominalVoltage = nominalVoltage;
@@ -138,7 +140,7 @@ public class VortexMotor implements Motor {
 
   @Override
   public void setCurrentLimit(int currentLimit) {
-    if (currentLimit != this.currentLimit){
+    if (currentLimit != this.currentLimit) {
       configureSparkFlex(() -> motor.setSmartCurrentLimit(currentLimit));
     }
     this.currentLimit = currentLimit;
@@ -146,7 +148,7 @@ public class VortexMotor implements Motor {
 
   @Override
   public void setLoopRampRate(double rampRate) {
-    if (rampRate != this.rampRate){
+    if (rampRate != this.rampRate) {
       configureSparkFlex(() -> motor.setClosedLoopRampRate(rampRate));
       configureSparkFlex(() -> motor.setOpenLoopRampRate(rampRate));
     }
@@ -173,7 +175,7 @@ public class VortexMotor implements Motor {
 
   @Override
   public void setPositionFactor(double positionConversionFactor) {
-    if (positionConversionFactor != this.encoderPositionFactor){
+    if (positionConversionFactor != this.encoderPositionFactor) {
       configureSparkFlex(() -> encoder.setPositionConversionFactor(positionConversionFactor));
       configureSparkFlex(() -> encoder.setVelocityConversionFactor(positionConversionFactor / 60));
       configureCANStatusFrames(10, 20, 20, 500, 500);
@@ -183,7 +185,7 @@ public class VortexMotor implements Motor {
 
   @Override
   public void setVelocityFactor(double factor) {
-    if (factor != this.encoderVelocityFactor){
+    if (factor != this.encoderVelocityFactor) {
       configureSparkFlex(() -> encoder.setVelocityConversionFactor(factor));
       configureCANStatusFrames(10, 20, 20, 500, 500);
     }
@@ -193,19 +195,19 @@ public class VortexMotor implements Motor {
   @Override
   public void configurePIDF(double p, double i, double d, double f, double iZone) {
     int pidSlot = 0;
-    if (p != this.pidP){
+    if (p != this.pidP) {
       configureSparkFlex(() -> pid.setP(p, pidSlot));
     }
-    if (i != this.pidI){
+    if (i != this.pidI) {
       configureSparkFlex(() -> pid.setI(i, pidSlot));
     }
-    if (d != this.pidD){
+    if (d != this.pidD) {
       configureSparkFlex(() -> pid.setD(d, pidSlot));
     }
-    if (f != this.pidF){
+    if (f != this.pidF) {
       configureSparkFlex(() -> pid.setFF(f, pidSlot));
     }
-    if (iZone != this.pidIZone){
+    if (iZone != this.pidIZone) {
       configureSparkFlex(() -> pid.setIZone(iZone, pidSlot));
     }
     this.pidP = p;
@@ -222,7 +224,7 @@ public class VortexMotor implements Motor {
 
   @Override
   public void configurePIDWrapping(double minInput, double maxInput) {
-    if (minInput != this.wrappingMinInput || maxInput != this.wrappingMaxInput){
+    if (minInput != this.wrappingMinInput || maxInput != this.wrappingMaxInput) {
       configureSparkFlex(() -> pid.setPositionPIDWrappingEnabled(true));
       configureSparkFlex(() -> pid.setPositionPIDWrappingMinInput(minInput));
       configureSparkFlex(() -> pid.setPositionPIDWrappingMaxInput(maxInput));
@@ -249,7 +251,6 @@ public class VortexMotor implements Motor {
     configureSparkFlex(() -> motor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, CANStatus2));
     configureSparkFlex(() -> motor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, CANStatus3));
     configureSparkFlex(() -> motor.setPeriodicFramePeriod(PeriodicFrame.kStatus4, CANStatus4));
-    // TODO: Configure Status Frame 5 and 6 if necessary
     // https://docs.revrobotics.com/sparkmax/operating-modes/control-interfaces
   }
 
@@ -274,7 +275,7 @@ public class VortexMotor implements Motor {
 
   @Override
   public void set(double percentOutput) {
-    if (percentOutput != this.targetPercentage){
+    if (percentOutput != this.targetPercentage) {
       motor.set(percentOutput);
     }
     this.targetPercentage = percentOutput;
@@ -285,7 +286,7 @@ public class VortexMotor implements Motor {
 
   @Override
   public void setPositionReference(double position) {
-    if (position != this.targetPosition){
+    if (position != this.targetPosition) {
       configureSparkFlex(() -> pid.setReference(position, ControlType.kPosition, 0));
     }
     this.targetPercentage = Double.NaN;
@@ -296,7 +297,7 @@ public class VortexMotor implements Motor {
 
   @Override
   public void setPositionReferenceArbFF(double setpoint, double feedforward) {
-    if (setpoint != this.targetPosition){
+    if (setpoint != this.targetPosition) {
       configureSparkFlex(() -> pid.setReference(setpoint, ControlType.kPosition, 0, feedforward));
     }
     this.targetPercentage = Double.NaN;
@@ -307,7 +308,7 @@ public class VortexMotor implements Motor {
 
   @Override
   public void setVelocityReference(double velocity, double feedforward) {
-    if (velocity != this.targetSpeed){
+    if (velocity != this.targetSpeed) {
       configureSparkFlex(() -> pid.setReference(velocity, ControlType.kVelocity, 0, feedforward));
     }
     this.targetPercentage = Double.NaN;

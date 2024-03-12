@@ -22,9 +22,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.datalog.BooleanLogEntry;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
@@ -63,8 +60,6 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   private final int MAX_LOST_SPEAKER_FRAMES = 2;
 
   private final int MAX_LOST_NOTE_FRAMES = 2;
-
-  private int lostSpeakerFramesCounter = this.MAX_LOST_SPEAKER_FRAMES;
 
   private int lostNotesFrameCounter = this.MAX_LOST_NOTE_FRAMES;
 
@@ -146,16 +141,8 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   private double targetNotePositionX;
 
-  private TrapezoidProfile autoPositionMotionProfileX = new TrapezoidProfile(
-      new Constraints(SwerveConstants.MOTION_PROFILE_MAX_VEL, SwerveConstants.MOTION_PROFILE_MAX_ACCEL));
-
-  private TrapezoidProfile autoPositionMotionProfileY = new TrapezoidProfile(
-      new Constraints(SwerveConstants.MOTION_PROFILE_MAX_VEL, SwerveConstants.MOTION_PROFILE_MAX_ACCEL));
-
   private PIDController xVelToPose = new PIDController(0.7, 0, 0);
   private PIDController yVelToPose = new PIDController(0.7, 0, 0);
-
-  private double kDt = 0.02;
 
   public static SwerveSubsystem getInstance(File directory) {
     if (swerveInstance == null) {
@@ -319,7 +306,6 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     }
     angleAlign = targetPose.getRotation();
     Pose2d currentPose = this.getPose();
-    ChassisSpeeds currentSpeeds = this.getFieldVelocity();
     double[] speeds = pidXyVelocity(targetPose.getX(), currentPose.getX(),
         targetPose.getY(), currentPose.getY());
     ChassisSpeeds targetSpeeds = getTargetSpeedsAngle(-1 * speeds[0], -1 * speeds[1],
@@ -461,11 +447,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   }
 
   public void resetOdometry(Pose2d initialHolonomicPose) {
-    SmartDashboard.putNumber("Pose inicial X", initialHolonomicPose.getX());
-    SmartDashboard.putNumber("Pose inicial Y", initialHolonomicPose.getY());
-    SmartDashboard.putNumber("Angulo Inicial", initialHolonomicPose.getRotation().getDegrees());
     swerveDrive.resetOdometry(initialHolonomicPose);
-
   }
 
   public Pose2d getPose() {
@@ -609,12 +591,4 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     return XYvel;
   }
 
-  private double profileVelocity(double goalPosition, TrapezoidProfile motionProfile, double currentPosition,
-      double currentVelocity) {
-    State motionProfileGoal = new State(goalPosition, 0);
-    State motionProfileCurrent = new State(currentPosition, currentVelocity);
-    State motionProfileCurrentTargetState = motionProfile.calculate(kDt, motionProfileCurrent,
-        motionProfileGoal);
-    return motionProfileCurrentTargetState.velocity;
-  }
 }

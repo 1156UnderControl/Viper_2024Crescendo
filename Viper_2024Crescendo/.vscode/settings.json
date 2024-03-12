@@ -43,6 +43,22 @@
   ],
   "java.test.defaultConfig": "WPIlibUnitTests",
   "cSpell.words": [
-    "YAGSL"
+    "Brushless",
+    "Dsmartdashboard",
+    "expell",
+    "Feedforward",
+    "Holonomic",
+    "inicial",
+    "INTAKING",
+    "Odometry",
+    "PIDF",
+    "setpoint",
+    "setpoints",
+    "Shooted",
+    "Subwoofer",
+    "Teleop",
+    "wpilibj",
+    "YAGSL",
+    "Yvel"
   ]
 }
