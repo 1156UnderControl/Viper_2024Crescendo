@@ -150,8 +150,8 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   private TrapezoidProfile autoPositionMotionProfileY = new TrapezoidProfile(
       new Constraints(SwerveConstants.MOTION_PROFILE_MAX_VEL, SwerveConstants.MOTION_PROFILE_MAX_ACCEL));
 
-  private PIDController xVelToPose = new PIDController(0.5, 0, 0);
-  private PIDController yVelToPose = new PIDController(0.5, 0, 0);
+  private PIDController xVelToPose = new PIDController(0.7, 0, 0);
+  private PIDController yVelToPose = new PIDController(0.7, 0, 0);
 
   private double kDt = 0.02;
 
@@ -210,6 +210,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   }
 
   private void updateSmartDashboardValues() {
+    SmartDashboard.putString("Target Chassis Speeds", targetSpeeds.toString());
     SmartDashboard.putNumber("Heading Odometry", swerveDrive.getOdometryHeading().getDegrees());
     SmartDashboard.putNumber("Distance LL", limelight.getDistance());
     SmartDashboard.putNumber("Distance Odom", distanceFromSpeaker());
@@ -296,7 +297,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     } else {
       targetPose = FieldConstants.blueAmp;
     }
-    driveToPose(new Pose2d(targetPose.getX(), targetPose.getY(), new Rotation2d(90)));
+    driveToPose(new Pose2d(targetPose.getX(), targetPose.getY(), new Rotation2d(Units.degreesToRadians(90))));
     this.state = "DRIVE_TO_AMP";
   }
 
@@ -347,8 +348,9 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     boolean isAlignedInY = Math
         .abs(currentPosition.getY() - targetAmpPosition.getY()) < SwerveConstants.DEADBAND_ALIGNED_WITH_AMP_Y;
 
-    boolean isInCorrectAngle = Math.abs(this.getHeading().minus(targetAmpPosition.getAngle()).getDegrees()) < 5;
-    return isAlignedInX && isAlignedInY && isInCorrectAngle;
+    SmartDashboard.putBoolean("isAlignedInX", isAlignedInX);
+    SmartDashboard.putBoolean("isAlignedInY", isAlignedInY);
+    return isAlignedInX && isAlignedInY;
   }
 
   @Override
@@ -579,6 +581,11 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     double[] XYvel = {
         xVelToPose.calculate(currentPositionX, goalPositionX),
         yVelToPose.calculate(currentPositionY, goalPositionY) };
+
+    SmartDashboard.putNumber("Goal X Pose AMP", goalPositionX);
+    SmartDashboard.putNumber("Goal Y Pose AMP", goalPositionY);
+    SmartDashboard.putNumber("Current X Pose", currentPositionX);
+    SmartDashboard.putNumber("Current Y Pose", currentPositionY);
     return XYvel;
   }
 
