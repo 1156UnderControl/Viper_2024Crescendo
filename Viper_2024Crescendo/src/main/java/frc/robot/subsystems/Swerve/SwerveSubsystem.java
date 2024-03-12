@@ -150,6 +150,9 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   private TrapezoidProfile autoPositionMotionProfileY = new TrapezoidProfile(
       new Constraints(SwerveConstants.MOTION_PROFILE_MAX_VEL, SwerveConstants.MOTION_PROFILE_MAX_ACCEL));
 
+  private PIDController xVelToPose = new PIDController(0.5, 0, 0);
+  private PIDController yVelToPose = new PIDController(0.5, 0, 0);
+
   private double kDt = 0.02;
 
   public static SwerveSubsystem getInstance(File directory) {
@@ -304,12 +307,11 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     }
     Pose2d currentPose = this.getPose();
     ChassisSpeeds currentSpeeds = this.getFieldVelocity();
-    double targetSpeedX = this.profileVelocity(targetPose.getX(), autoPositionMotionProfileX, currentPose.getX(),
-        currentSpeeds.vxMetersPerSecond);
-    double targetSpeedY = this.profileVelocity(targetPose.getY(), autoPositionMotionProfileY, currentPose.getY(),
-        currentSpeeds.vyMetersPerSecond);
-    ChassisSpeeds targetSpeeds = getTargetSpeedsAngle(targetSpeedX, targetSpeedY,
+    double[] speeds = pidXyVelocity(targetPose.getX(), currentPose.getX(),
+        targetPose.getY(), currentPose.getY());
+    ChassisSpeeds targetSpeeds = getTargetSpeedsAngle(-1 * speeds[0], -1 * speeds[1],
         targetPose.getRotation().getDegrees());
+    SmartDashboard.putString("target speeds amp", targetSpeeds.toString());
     this.driveFieldOriented(targetSpeeds);
   }
 
@@ -344,7 +346,9 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
         .abs(currentPosition.getX() - targetAmpPosition.getX()) < SwerveConstants.DEADBAND_ALIGNED_WITH_AMP_X;
     boolean isAlignedInY = Math
         .abs(currentPosition.getY() - targetAmpPosition.getY()) < SwerveConstants.DEADBAND_ALIGNED_WITH_AMP_Y;
-    return isAlignedInX && isAlignedInY;
+
+    boolean isInCorrectAngle = Math.abs(this.getHeading().minus(targetAmpPosition.getAngle()).getDegrees()) < 5;
+    return isAlignedInX && isAlignedInY && isInCorrectAngle;
   }
 
   @Override
@@ -570,11 +574,20 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     this.stateLogEntry.append(this.state);
   }
 
+  private double[] pidXyVelocity(double goalPositionX, double currentPositionX, double goalPositionY,
+      double currentPositionY) {
+    double[] XYvel = {
+        xVelToPose.calculate(currentPositionX, goalPositionX),
+        yVelToPose.calculate(currentPositionY, goalPositionY) };
+    return XYvel;
+  }
+
   private double profileVelocity(double goalPosition, TrapezoidProfile motionProfile, double currentPosition,
       double currentVelocity) {
     State motionProfileGoal = new State(goalPosition, 0);
     State motionProfileCurrent = new State(currentPosition, currentVelocity);
-    State motionProfileCurrentTargetState = motionProfile.calculate(kDt, motionProfileCurrent, motionProfileGoal);
+    State motionProfileCurrentTargetState = motionProfile.calculate(kDt, motionProfileCurrent,
+        motionProfileGoal);
     return motionProfileCurrentTargetState.velocity;
   }
 }
