@@ -87,7 +87,7 @@ public class RobotContainer {
   private void configureRobotBindings() {
     this.controlBoard.getIntakeFromHP().onTrue(new CollectHPposition(robot));
     this.controlBoard.getSecured().onTrue(new SecuredPosition(robot));
-    this.controlBoard.getPrepareAmp().onTrue(new ShootAmpPosition(robot));
+    this.controlBoard.getPrepareAmp().onTrue(new ShootAmpPosition(robot, swerve));
     this.controlBoard.getPrepareSpeaker().onTrue(new ShootSpeakerPosition(robot));
     this.controlBoard.release().onTrue(new ClimbPosition(robot));
     this.controlBoard.expell().onTrue(new ExpellPosition(robot));
