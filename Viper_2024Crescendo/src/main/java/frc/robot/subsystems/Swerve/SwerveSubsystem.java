@@ -317,6 +317,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
       driveAlignAngleButton();
       return;
     }
+    angleAlign = targetPose.getRotation();
     Pose2d currentPose = this.getPose();
     ChassisSpeeds currentSpeeds = this.getFieldVelocity();
     double[] speeds = pidXyVelocity(targetPose.getX(), currentPose.getX(),
