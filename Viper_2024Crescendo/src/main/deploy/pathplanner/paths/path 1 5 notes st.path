@@ -1,0 +1,68 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.7636103146671328,
+        "y": 6.569779302183426
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.1454890270693507,
+        "y": 6.37069508090514
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.187753479643905,
+        "y": 6.300430061630451
+      },
+      "prevControl": {
+        "x": 2.321901865815942,
+        "y": 6.250089851524175
+      },
+      "nextControl": {
+        "x": 4.194885422581115,
+        "y": 6.358984244359359
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.965774790322761,
+        "y": 7.4598028796628215
+      },
+      "prevControl": {
+        "x": 5.807414894430358,
+        "y": 6.82156228791773
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 200.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Auto 5 Notes steal",
+  "previewStartingState": {
+    "rotation": 58.392497753751094,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}
