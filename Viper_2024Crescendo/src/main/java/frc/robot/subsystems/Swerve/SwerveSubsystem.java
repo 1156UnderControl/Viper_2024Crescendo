@@ -38,7 +38,6 @@ import frc.Java_Is_UnderControl.Logging.Pose2dLogEntry;
 import frc.Java_Is_UnderControl.PhotonVision.PhotonVision;
 import frc.Java_Is_UnderControl.Util.StabilizeChecker;
 import frc.Java_Is_UnderControl.Util.Util;
-import frc.robot.Robot;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CommandsConstants;
 import frc.robot.Constants.FieldConstants;
@@ -194,7 +193,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     swerveDrive.updateOdometry();
     Optional<EstimatedRobotPose> estimation = limelight
         .getEstimatedGlobalPose(swerveDrive.swerveDrivePoseEstimator.getEstimatedPosition());
-    if (estimation.isPresent() && !Robot.isInAutonomous) {
+    if (estimation.isPresent()) {
       EstimatedRobotPose fakeRobotPoseIfNull = new EstimatedRobotPose(new Pose3d(),
           0, new ArrayList<>(), PoseStrategy.LOWEST_AMBIGUITY);
       limelight.setPipeline(0);
@@ -213,6 +212,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   }
 
   private void updateSmartDashboardValues() {
+    SmartDashboard.putString("state swerve", state);
     SmartDashboard.putString("Target Chassis Speeds", targetSpeeds.toString());
     SmartDashboard.putNumber("Heading Odometry", swerveDrive.getOdometryHeading().getDegrees());
     SmartDashboard.putNumber("Distance LL", limelight.getDistance());
@@ -259,6 +259,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
     this.angleToAimAtSpeaker = angleSpeaker.rotateBy(new Rotation2d(Math.PI)).getAngle().getDegrees();
 
+    SmartDashboard.putNumber("angle to aim speaker", angleToAimAtSpeaker);
     ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(),
         this.angleToAimAtSpeaker);
 
@@ -322,7 +323,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   }
 
   @Override
-  public void alignWithAmpAprilTag(){
+  public void alignWithAmpAprilTag() {
     double angleAlignAmp = defineAngleToAlignWithAmp();
     this.alignWithAprilTag(0.0, SwerveConstants.ALIGNED_WITH_AMP_GOAL, angleAlignAmp);
     this.state = "ALIGN_WITH_AMP";
@@ -341,7 +342,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
       driveAlignAngleButton();
       return;
     }
-    if (!this.shooterTopCamera.hasTarget()){
+    if (!this.shooterTopCamera.hasTarget()) {
       driveAlignAngleButton();
       return;
     }
@@ -392,16 +393,16 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   }
 
   @Override
-  public boolean isAlignedWithAmp(){
+  public boolean isAlignedWithAmp() {
     return this.isAlignedWithAprilTag(
-      0,
-      SwerveConstants.ALIGNED_WITH_AMP_GOAL,
-      SwerveConstants.DEADBAND_ALIGNED_WITH_AMP_X,
-      SwerveConstants.DEADBAND_ALIGNED_WITH_AMP_Y);
+        0,
+        SwerveConstants.ALIGNED_WITH_AMP_GOAL,
+        SwerveConstants.DEADBAND_ALIGNED_WITH_AMP_X,
+        SwerveConstants.DEADBAND_ALIGNED_WITH_AMP_Y);
   }
 
   private boolean isAlignedWithAprilTag(double targetX, double targetY, double deadbandX, double deadbandY) {
-    if(!this.shooterTopCamera.hasTarget()){
+    if (!this.shooterTopCamera.hasTarget()) {
       return false;
     }
     double aprilTagX = this.shooterTopCamera.targetPositionX();

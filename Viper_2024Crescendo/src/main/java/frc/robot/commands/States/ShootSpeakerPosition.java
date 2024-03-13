@@ -14,7 +14,7 @@ public class ShootSpeakerPosition extends SequentialCommandGroup {
 
   public ShootSpeakerPosition(RobotSubsystems robot) {
     addCommands(
-        new InstantCommand(() -> RobotSubsystems.shootFinished = true),
+        new InstantCommand(() -> RobotSubsystems.shootFinished = false),
         new InstantCommand(() -> robot.preparingShoot = true),
         new InstantCommand(() -> robot.led.setSolidColor(LedColor.YELLOW)),
         new GoToShootIntake(robot),
