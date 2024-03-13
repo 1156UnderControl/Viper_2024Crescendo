@@ -11,6 +11,8 @@ public interface ISwerve {
 
   void driveToAmp();
 
+  void alignWithAmpAprilTag();
+
   double getDistanceToNearestAmp();
 
   boolean isSwerveAlignedWithSpeaker();
@@ -20,6 +22,8 @@ public interface ISwerve {
   boolean isSwerveInVelocityToAutoShoot();
 
   boolean isSwerveInVelocityToShoot();
+
+  boolean isAtAmpPosition();
 
   boolean isAlignedWithAmp();
 }

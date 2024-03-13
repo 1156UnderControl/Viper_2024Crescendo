@@ -7,8 +7,11 @@ import swervelib.math.SwerveMath;
 
 public class SwerveConstants {
   public static final double DEADBAND_ALIGNED_WITH_SPEAKER = 5;
-  public static final double DEADBAND_ALIGNED_WITH_AMP_X = 0.15;
-  public static final double DEADBAND_ALIGNED_WITH_AMP_Y = 0.1;
+  public static final double DEADBAND_AT_AMP_POSITION_X = 0.15;
+  public static final double DEADBAND_AT_AMP_POSITION_Y = 0.1;
+  public static final double DEADBAND_ALIGNED_WITH_AMP_X = 5;
+  public static final double DEADBAND_ALIGNED_WITH_AMP_Y = 5;
+  public static final double ALIGNED_WITH_AMP_GOAL = 0;
 
   public static final double MAX_VEL = Units.feetToMeters(14.5);
 

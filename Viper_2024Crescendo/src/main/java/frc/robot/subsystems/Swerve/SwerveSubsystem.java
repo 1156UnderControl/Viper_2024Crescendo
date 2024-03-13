@@ -37,6 +37,7 @@ import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
 import frc.Java_Is_UnderControl.Logging.Pose2dLogEntry;
 import frc.Java_Is_UnderControl.PhotonVision.PhotonVision;
 import frc.Java_Is_UnderControl.Util.StabilizeChecker;
+import frc.Java_Is_UnderControl.Util.Util;
 import frc.robot.Robot;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CommandsConstants;
@@ -150,6 +151,11 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   private PIDController xVelToPose = new PIDController(0.7, 0, 0);
   private PIDController yVelToPose = new PIDController(0.7, 0, 0);
+
+  private PIDController xVelToAprilTag = new PIDController(0.001, 0, 0);
+  private PIDController yVelToAprilTag = new PIDController(0.001, 0, 0);
+
+  private PhotonVision shooterTopCamera = new PhotonVision("Microsoft_LifeCam_HD-3000");
 
   public static SwerveSubsystem getInstance(File directory) {
     if (swerveInstance == null) {
@@ -289,17 +295,12 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   @Override
   public void driveToAmp() {
     Pose2d targetPose;
-    double angleAlignAmp;
     if (this.getPose().getX() > FieldConstants.midFieldLine) {
       targetPose = FieldConstants.redAmp;
     } else {
       targetPose = FieldConstants.blueAmp;
     }
-    if (DriverStation.getAlliance().get() == Alliance.Red) {
-      angleAlignAmp = 90;
-    } else {
-      angleAlignAmp = -90;
-    }
+    double angleAlignAmp = defineAngleToAlignWithAmp();
     driveToPose(
         new Pose2d(targetPose.getX(), targetPose.getY(), new Rotation2d(Units.degreesToRadians(angleAlignAmp))));
     this.state = "DRIVE_TO_AMP";
@@ -321,6 +322,39 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   }
 
   @Override
+  public void alignWithAmpAprilTag(){
+    double angleAlignAmp = defineAngleToAlignWithAmp();
+    this.alignWithAprilTag(0.0, SwerveConstants.ALIGNED_WITH_AMP_GOAL, angleAlignAmp);
+    this.state = "ALIGN_WITH_AMP";
+  }
+
+  private double defineAngleToAlignWithAmp() {
+    if (DriverStation.getAlliance().get() == Alliance.Red) {
+      return 90;
+    } else {
+      return -90;
+    }
+  }
+
+  private void alignWithAprilTag(double targetX, double targetY, double targetAngle) {
+    if (this.controller.isForcingDriverControl()) {
+      driveAlignAngleButton();
+      return;
+    }
+    if (!this.shooterTopCamera.hasTarget()){
+      driveAlignAngleButton();
+      return;
+    }
+    double aprilTagX = this.shooterTopCamera.targetPositionX();
+    double aprilTagY = this.shooterTopCamera.targetPositionY();
+    double velocityX = xVelToAprilTag.calculate(aprilTagX, targetX);
+    double velocityY = yVelToAprilTag.calculate(aprilTagY, targetY);
+    ChassisSpeeds targetSpeeds = getTargetSpeedsAngle(velocityX, velocityY, targetAngle);
+    SmartDashboard.putString("Target speeds april tag", targetSpeeds.toString());
+    this.driveRobotOriented(targetSpeeds);
+  }
+
+  @Override
   public double getDistanceToNearestAmp() {
     if (this.getPose().getX() > FieldConstants.midFieldLine) {
       return this.getPose().getTranslation().getDistance(FieldConstants.redAmp.getTranslation());
@@ -339,7 +373,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   }
 
   @Override
-  public boolean isAlignedWithAmp() {
+  public boolean isAtAmpPosition() {
     Translation2d targetAmpPosition;
     if (this.getPose().getX() > FieldConstants.midFieldLine) {
       targetAmpPosition = FieldConstants.redAmp.getTranslation();
@@ -348,12 +382,32 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     }
     Translation2d currentPosition = this.getPose().getTranslation();
     boolean isAlignedInX = Math
-        .abs(currentPosition.getX() - targetAmpPosition.getX()) < SwerveConstants.DEADBAND_ALIGNED_WITH_AMP_X;
+        .abs(currentPosition.getX() - targetAmpPosition.getX()) < SwerveConstants.DEADBAND_AT_AMP_POSITION_X;
     boolean isAlignedInY = Math
-        .abs(currentPosition.getY() - targetAmpPosition.getY()) < SwerveConstants.DEADBAND_ALIGNED_WITH_AMP_Y;
+        .abs(currentPosition.getY() - targetAmpPosition.getY()) < SwerveConstants.DEADBAND_AT_AMP_POSITION_Y;
 
     SmartDashboard.putBoolean("isAlignedInX", isAlignedInX);
     SmartDashboard.putBoolean("isAlignedInY", isAlignedInY);
+    return isAlignedInX && isAlignedInY;
+  }
+
+  @Override
+  public boolean isAlignedWithAmp(){
+    return this.isAlignedWithAprilTag(
+      0,
+      SwerveConstants.ALIGNED_WITH_AMP_GOAL,
+      SwerveConstants.DEADBAND_ALIGNED_WITH_AMP_X,
+      SwerveConstants.DEADBAND_ALIGNED_WITH_AMP_Y);
+  }
+
+  private boolean isAlignedWithAprilTag(double targetX, double targetY, double deadbandX, double deadbandY) {
+    if(!this.shooterTopCamera.hasTarget()){
+      return false;
+    }
+    double aprilTagX = this.shooterTopCamera.targetPositionX();
+    double aprilTagY = this.shooterTopCamera.targetPositionY();
+    boolean isAlignedInX = Util.inRange(aprilTagX, targetX - deadbandX, targetX + deadbandX);
+    boolean isAlignedInY = Util.inRange(aprilTagY, targetY - deadbandY, targetY + deadbandY);
     return isAlignedInX && isAlignedInY;
   }
 
@@ -436,6 +490,19 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
       speedsRotate = speeds;
     }
     swerveDrive.driveFieldOriented(speedsRotate);
+    this.targetSpeeds = speeds;
+  }
+
+  private void driveRobotOriented(ChassisSpeeds speeds) {
+    ChassisSpeeds speedsRotate;
+    if (this.controller.rotateLeft().getAsBoolean()) {
+      speedsRotate = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, 8);
+    } else if (this.controller.rotateRight().getAsBoolean()) {
+      speedsRotate = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, -8);
+    } else {
+      speedsRotate = speeds;
+    }
+    swerveDrive.drive(speedsRotate);
     this.targetSpeeds = speeds;
   }
 
@@ -576,7 +643,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     this.isSwerveInShootVelocityLogEntry.append(isSwerveInVelocityToShoot());
     this.isSwerveInAutoShootVelocityLogEntry.append(isSwerveInVelocityToAutoShoot());
     this.distanceToNearestAmpLogEntry.append(getDistanceToNearestAmp());
-    this.isAlingedWithAmpLogEntry.append(isAlignedWithAmp());
+    this.isAlingedWithAmpLogEntry.append(isAtAmpPosition());
     this.velocityCalculatedLogEntry.append(calculateVelocity());
     this.angleToAimSpeakerLogEntry.append(this.angleToAimAtSpeaker);
     this.txMeasurementLlLogEntry.append(this.lastTxMeasurement);

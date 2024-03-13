@@ -7,8 +7,6 @@ import frc.robot.subsystems.Swerve.SwerveSubsystem;
 public class SwerveMoveToAmp extends Command {
     private ISwerve swerve;
 
-
-  
     public SwerveMoveToAmp(SwerveSubsystem swerve) {
       this.swerve = swerve;
       addRequirements(swerve);
@@ -25,6 +23,6 @@ public class SwerveMoveToAmp extends Command {
   
     @Override
     public boolean isFinished() {
-      return this.swerve.isAlignedWithAmp();
+      return this.swerve.isAtAmpPosition();
     }
   }
