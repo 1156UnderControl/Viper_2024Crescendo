@@ -77,6 +77,7 @@ public class RobotContainer {
   }
 
   private void configureSwerveBindings() {
+    this.controlBoard.resetGyro().onTrue(new InstantCommand(swerve::zeroGyro));
     this.controlBoard.setHeadingFront().onTrue(new InstantCommand(swerve::setAngle0));
     this.controlBoard.setHeadingBack().onTrue(new InstantCommand(swerve::setAngle180));
     this.controlBoard.setHeadingLeft().onTrue(new InstantCommand(swerve::setAngle90));

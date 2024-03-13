@@ -98,4 +98,8 @@ public class DriverController implements IDriverController {
     return 0.2 < driverController.getLeftTriggerAxis();
   }
 
+  @Override
+  public Trigger resetGyro() {
+    return driverController.back();
+  }
 }

@@ -5,24 +5,25 @@ import frc.robot.subsystems.Swerve.ISwerve;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
 public class SwerveAlignWithAmp extends Command {
-    private ISwerve swerve;
-  
-    public SwerveAlignWithAmp(SwerveSubsystem swerve) {
-      this.swerve = swerve;
-      addRequirements(swerve);
-    }
-  
-    @Override
-    public void execute() {
-      this.swerve.alignWithAmpAprilTag();
-    }
-  
-    @Override
-    public void end(boolean interrupted) {
-    }
-  
-    @Override
-    public boolean isFinished() {
-      return this.swerve.isAlignedWithAmp();
-    }
+  private ISwerve swerve;
+
+  public SwerveAlignWithAmp(SwerveSubsystem swerve) {
+    this.swerve = swerve;
+    addRequirements(swerve);
   }
+
+  @Override
+  public void execute() {
+    this.swerve.alignWithAmpAprilTag();
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+  }
+
+  @Override
+  public boolean isFinished() {
+    // return this.swerve.isAlignedWithAmp();
+    return false;
+  }
+}
