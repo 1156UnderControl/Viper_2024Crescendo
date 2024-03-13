@@ -326,7 +326,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   public void alignWithAmpAprilTag() {
     double angleAlignAmp = defineAngleToAlignWithAmp();
     this.alignWithAprilTag(0.0, SwerveConstants.ALIGNED_WITH_AMP_GOAL, angleAlignAmp);
-    this.state = "ALIGN_WITH_AMP";
+    this.state = "ALIGN_WITH_AMP_APRILTAG";
   }
 
   private double defineAngleToAlignWithAmp() {
