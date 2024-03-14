@@ -39,7 +39,7 @@ public class ClimberSubsystem extends SubsystemBase implements IClimber {
     if (isAtSetpoint()) {
       climberMotor.set(0);
     } else {
-      climberMotor.set(0.8);
+      climberMotor.set(1);
     }
   }
 
@@ -49,7 +49,7 @@ public class ClimberSubsystem extends SubsystemBase implements IClimber {
     if (isAtSetpoint()) {
       climberMotor.set(0);
     } else {
-      climberMotor.set(-0.8);
+      climberMotor.set(-1);
     }
   }
 
