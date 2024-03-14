@@ -187,6 +187,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public void intake() {
+    this.setVelocityFlywheel(0);
     this.goToIntakePosition();
     this.runNoteDetection();
     this.feederMotor.set(this.hasNote ? 0 : ShooterConstants.setpoints.VELOCITY_FEED_COLLECT);
@@ -256,9 +257,15 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public void prepareSpeakerShot() {
-    this.feederMotor.set(0);
-    setVelocityFlywheel(verifyManualValue(ShooterConstants.setpoints.VELOCITY_SHOOT_SPEAKER,
-        "Setpoint Vel Shooter"));
+    if (noteSensorOut.getBoolean() || noteSensorIn.getBoolean()) {
+      this.feederMotor.set(0);
+      this.setVelocityFlywheel(verifyManualValue(ShooterConstants.setpoints.VELOCITY_SHOOT_SPEAKER,
+          "Setpoint Vel Shooter"));
+    } else {
+      this.lowerFlywheelMotor.set(ShooterConstants.setpoints.VELOCITY_SHOOTER_CORRECT_PASSED_NOTE);
+      this.upperFlywheelMotor.set(ShooterConstants.setpoints.VELOCITY_SHOOTER_CORRECT_PASSED_NOTE);
+      this.feederMotor.set(ShooterConstants.setpoints.VELOCITY_FEED_CORRECT_PASSED_NOTE);
+    }
     goal = verifyManualValue(calculateGoalSpeaker(), "Setpoint Pos Shoot Pivot");
     this.state = "PREPARING_SPEAKER_SHOT";
   }

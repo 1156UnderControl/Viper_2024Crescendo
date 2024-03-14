@@ -31,7 +31,7 @@ public class RobotSubsystems extends SubsystemBase {
 
   private ControlBoard controlBoard = ControlBoard.getInstance();
 
-  public static boolean shootFinished;
+  public static boolean shootFinished = true;
   public boolean preparingShoot = false;
   public boolean climbing;
 

@@ -21,9 +21,7 @@ public class AutonomousShoot extends Command {
 
   @Override
   public void execute() {
-    if (this.robot.intake.isSecureForShooter()) {
-      this.robot.shooter.shoot();
-    }
+    this.robot.shooter.shoot();
   }
 
   @Override

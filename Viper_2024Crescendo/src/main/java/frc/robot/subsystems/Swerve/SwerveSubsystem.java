@@ -151,8 +151,8 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   private PIDController xVelToPose = new PIDController(0.7, 0, 0);
   private PIDController yVelToPose = new PIDController(0.7, 0, 0);
 
-  private PIDController xVelToAprilTag = new PIDController(0.001, 0, 0);
-  private PIDController yVelToAprilTag = new PIDController(0.001, 0, 0);
+  private PIDController xVelToAprilTag = new PIDController(0.01, 0, 0);
+  private PIDController yVelToAprilTag = new PIDController(0.01, 0, 0);
 
   private PhotonVision shooterTopCamera = new PhotonVision("Microsoft_LifeCam_HD-3000");
 
@@ -348,7 +348,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     }
     double aprilTagX = this.shooterTopCamera.targetPositionX();
     double aprilTagY = this.shooterTopCamera.targetPositionY();
-    double velocityX = xVelToAprilTag.calculate(aprilTagX, targetX);
+    double velocityX = -xVelToAprilTag.calculate(aprilTagX, targetX);
     double velocityY = yVelToAprilTag.calculate(aprilTagY, targetY);
     ChassisSpeeds targetSpeeds = getTargetSpeedsAngle(velocityX, velocityY, targetAngle);
     SmartDashboard.putString("Target speeds april tag", targetSpeeds.toString());
