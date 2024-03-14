@@ -14,7 +14,7 @@ public class SwerveAlignWithAmp extends Command {
 
   @Override
   public void execute() {
-    this.swerve.alignWithAmpAprilTag();
+    this.swerve.driveAlignAngleButton();
   }
 
   @Override
@@ -23,7 +23,6 @@ public class SwerveAlignWithAmp extends Command {
 
   @Override
   public boolean isFinished() {
-    // return this.swerve.isAlignedWithAmp();
-    return false;
+    return this.swerve.isAlignedWithAmp();
   }
 }
