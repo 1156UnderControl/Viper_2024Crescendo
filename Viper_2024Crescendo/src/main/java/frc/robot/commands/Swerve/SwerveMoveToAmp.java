@@ -25,6 +25,6 @@ public class SwerveMoveToAmp extends Command {
 
   @Override
   public boolean isFinished() {
-    return this.swerve.isAtAmpPosition() || controller.isForcingDriverControl();
+    return this.swerve.isAtAmpPosition() || controller.isForcingDriverControl() || this.swerve.isAlignedWithAmp();
   }
 }

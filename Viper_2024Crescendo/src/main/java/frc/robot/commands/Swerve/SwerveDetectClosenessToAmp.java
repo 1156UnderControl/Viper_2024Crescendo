@@ -23,6 +23,6 @@ public class SwerveDetectClosenessToAmp extends Command {
 
   @Override
   public boolean isFinished() {
-    return this.swerve.getDistanceToNearestAmp() < 1.5;
+    return this.swerve.getDistanceToNearestAmp() < 2.5 || this.swerve.isAlignedWithAmp();
   }
 }
