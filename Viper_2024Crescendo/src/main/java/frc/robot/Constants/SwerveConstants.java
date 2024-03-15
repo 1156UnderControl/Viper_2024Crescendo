@@ -9,7 +9,7 @@ public class SwerveConstants {
   public static final double DEADBAND_ALIGNED_WITH_SPEAKER = 5;
   public static final double DEADBAND_AT_AMP_POSITION_X = 0.15;
   public static final double DEADBAND_AT_AMP_POSITION_Y = 0.1;
-  public static final double DEADBAND_ALIGNED_WITH_AMP_X = 10;
+  public static final double DEADBAND_ALIGNED_WITH_AMP_X = 8;
   public static final double DEADBAND_ALIGNED_WITH_AMP_Y = 12;
   public static final double ALIGNED_WITH_AMP_GOAL = 7.2;
 

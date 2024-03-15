@@ -174,7 +174,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     this.limelight = Limelight.getInstance();
     this.photonVision = new PhotonVision();
     SmartDashboard.putData("POSE APRIL", aprField2d);
-    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.LOW;
+    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     setupYAGSL_JSON(directory);
     setupPathPlanner();
     this.updateLogs();
@@ -408,7 +408,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     double aprilTagX = this.shooterTopCamera.targetPositionX();
     double aprilTagY = this.shooterTopCamera.targetPositionY();
     boolean isAlignedInX = Util.inRange(aprilTagX, targetX - deadbandX, targetX + deadbandX);
-    boolean isAlignedInY = aprilTagY > 2;
+    boolean isAlignedInY = aprilTagY > 4;
     return isAlignedInX && isAlignedInY;
   }
 
@@ -484,9 +484,9 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   private void driveFieldOriented(ChassisSpeeds speeds) {
     ChassisSpeeds speedsRotate;
     if (this.controller.rotateLeft().getAsBoolean()) {
-      speedsRotate = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, 8);
+      speedsRotate = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, 5);
     } else if (this.controller.rotateRight().getAsBoolean()) {
-      speedsRotate = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, -8);
+      speedsRotate = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, -5);
     } else {
       speedsRotate = speeds;
     }
