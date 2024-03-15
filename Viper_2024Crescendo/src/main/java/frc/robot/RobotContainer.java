@@ -95,9 +95,9 @@ public class RobotContainer {
   private void configureRobotBindings() {
     this.controlBoard.getIntakeFromHP().onTrue(new CollectHPposition(robot));
     this.controlBoard.getSecured().onTrue(new SecuredPosition(robot));
-    this.controlBoard.getPrepareAmp().and(() -> robot.shooter.hasNote() && robot.shooter.getNoteSensor())
+    this.controlBoard.getPrepareAmp().and(() -> robot.shooter.hasNote())
         .onTrue(new ShootAmpPosition(robot, swerve));
-    this.controlBoard.getPrepareSpeaker().and(() -> robot.shooter.hasNote() && robot.shooter.getNoteSensor())
+    this.controlBoard.getPrepareSpeaker().and(() -> robot.shooter.hasNote())
         .onTrue(new ShootSpeakerPosition(robot));
     this.controlBoard.getDoNotShoot().and(() -> !robot.preparingShoot).onTrue(parallel(
         new ShootOverStagePosition(robot), new InstantCommand(swerve::setAngle45)));
