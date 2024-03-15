@@ -185,7 +185,6 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     updateHeadingVariables();
     updateSmartDashboardValues();
     updateOdometryWithVision();
-
     this.updateLogs();
   }
 
@@ -408,7 +407,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     double aprilTagX = this.shooterTopCamera.targetPositionX();
     double aprilTagY = this.shooterTopCamera.targetPositionY();
     boolean isAlignedInX = Util.inRange(aprilTagX, targetX - deadbandX, targetX + deadbandX);
-    boolean isAlignedInY = aprilTagY > 4;
+    boolean isAlignedInY = aprilTagY > -2;
     return isAlignedInX && isAlignedInY;
   }
 
