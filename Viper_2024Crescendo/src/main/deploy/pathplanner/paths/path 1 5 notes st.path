@@ -3,45 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.7636103146671328,
-        "y": 6.569779302183426
+        "x": 1.2437546130441748,
+        "y": 5.691466561249813
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.1454890270693507,
-        "y": 6.37069508090514
+        "x": 1.6067905459634015,
+        "y": 6.136478349989511
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.187753479643905,
-        "y": 6.300430061630451
+        "x": 7.872088097956508,
+        "y": 7.448092043117039
       },
       "prevControl": {
-        "x": 2.321901865815942,
-        "y": 6.250089851524175
+        "x": 6.518948276244921,
+        "y": 7.098894669772112
       },
       "nextControl": {
-        "x": 4.194885422581115,
-        "y": 6.358984244359359
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 7.825244751773384,
-        "y": 7.284140331476098
-      },
-      "prevControl": {
-        "x": 6.472104930061796,
-        "y": 6.934942958131171
-      },
-      "nextControl": {
-        "x": 8.188280684692607,
-        "y": 7.37782702384235
+        "x": 8.235124030875728,
+        "y": 7.541778735483291
       },
       "isLocked": false,
       "linkedName": null
@@ -62,12 +46,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.7,
-      "rotationDegrees": 0,
-      "rotateFast": false
-    },
-    {
-      "waypointRelativePos": 0.25,
+      "waypointRelativePos": 0.35,
       "rotationDegrees": 0,
       "rotateFast": false
     }
@@ -76,7 +55,7 @@
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 1.1500000000000001,
+      "waypointRelativePos": 0.6,
       "command": {
         "type": "sequential",
         "data": {
@@ -129,7 +108,7 @@
   "reversed": false,
   "folder": "Auto 5 Notes steal",
   "previewStartingState": {
-    "rotation": 58.392497753751094,
+    "rotation": 0.0,
     "velocity": 0
   },
   "useDefaultConstraints": true
