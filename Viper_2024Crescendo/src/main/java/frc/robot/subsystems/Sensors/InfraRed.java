@@ -33,4 +33,9 @@ public class InfraRed implements frc.robot.subsystems.Sensors.DigitalInput {
       return 0;
     }
   }
+
+  @Override
+  public boolean getAsBoolean() {
+    return this.getBoolean();
+  }
 }

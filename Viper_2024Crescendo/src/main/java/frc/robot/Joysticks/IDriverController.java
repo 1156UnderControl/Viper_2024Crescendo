@@ -27,5 +27,7 @@ public interface IDriverController {
 
   Trigger rotateRight();
 
+  Trigger resetGyro();
+
   boolean isForcingDriverControl();
 }

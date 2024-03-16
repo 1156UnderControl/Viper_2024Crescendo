@@ -1,6 +1,8 @@
 package frc.robot.subsystems.Sensors;
 
-public interface DigitalInput {
+import java.util.function.BooleanSupplier;
+
+public interface DigitalInput extends BooleanSupplier {
   boolean getBoolean();
 
   int getBinary();

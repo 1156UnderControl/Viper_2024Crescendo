@@ -37,6 +37,8 @@ import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
 import frc.Java_Is_UnderControl.Logging.Pose2dLogEntry;
 import frc.Java_Is_UnderControl.PhotonVision.PhotonVision;
 import frc.Java_Is_UnderControl.Util.StabilizeChecker;
+import frc.Java_Is_UnderControl.Util.Util;
+import frc.robot.Robot;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CommandsConstants;
 import frc.robot.Constants.FieldConstants;
@@ -55,7 +57,9 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   private ControlBoard controller = ControlBoard.getInstance();
 
-  public boolean notUsingLLforOdometry = false;
+  public boolean twoApriltagsDetected = false;
+
+  public boolean alignedWithAngle;
 
   private final int MAX_LOST_SPEAKER_FRAMES = 2;
 
@@ -150,6 +154,11 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   private PIDController xVelToPose = new PIDController(0.7, 0, 0);
   private PIDController yVelToPose = new PIDController(0.7, 0, 0);
 
+  private PIDController xVelToAprilTag = new PIDController(0.01, 0, 0);
+  private PIDController yVelToAprilTag = new PIDController(0.01, 0, 0);
+
+  private PhotonVision shooterTopCamera = new PhotonVision("Microsoft_LifeCam_HD-3000");
+
   public static SwerveSubsystem getInstance(File directory) {
     if (swerveInstance == null) {
       swerveInstance = new SwerveSubsystem(directory);
@@ -168,7 +177,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     this.limelight = Limelight.getInstance();
     this.photonVision = new PhotonVision();
     SmartDashboard.putData("POSE APRIL", aprField2d);
-    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.LOW;
+    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     setupYAGSL_JSON(directory);
     setupPathPlanner();
     this.updateLogs();
@@ -179,7 +188,6 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     updateHeadingVariables();
     updateSmartDashboardValues();
     updateOdometryWithVision();
-
     this.updateLogs();
   }
 
@@ -193,10 +201,43 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
       limelight.setPipeline(0);
       poseVision2D = estimation.orElse(fakeRobotPoseIfNull).estimatedPose.toPose2d();
       poseVision3D = estimation.orElse(fakeRobotPoseIfNull).estimatedPose;
-      if (estimation.orElse(fakeRobotPoseIfNull).targetsUsed.size() >= 2) {
-        aprField2d.setRobotPose(poseVision2D);
-        swerveDrive.addVisionMeasurement(poseVision2D, estimation.orElse(fakeRobotPoseIfNull).timestampSeconds);
+      if (Robot.isInAutonomous) {
+        OdometryCorrectionInAuto(estimation, fakeRobotPoseIfNull);
+      } else {
+        OdometryCorrectionInTeleOp(estimation, fakeRobotPoseIfNull);
       }
+    }
+  }
+
+  private void OdometryCorrectionInTeleOp(Optional<EstimatedRobotPose> estimation,
+      EstimatedRobotPose fakeRobotPoseIfNull) {
+    if (estimation.get().targetsUsed.size() >= 2) {
+      aprField2d.setRobotPose(poseVision2D);
+      swerveDrive.addVisionMeasurement(poseVision2D, estimation.orElse(fakeRobotPoseIfNull).timestampSeconds);
+      twoApriltagsDetected = true;
+    } else if (poseVision2D.getTranslation().getDistance(getPose().getTranslation()) < 0.7
+        && poseInTheField(poseVision2D)
+        && limelight.getTV() && limelight.getDistance() < 2) {
+      aprField2d.setRobotPose(poseVision2D);
+      swerveDrive.addVisionMeasurement(poseVision2D, estimation.orElse(fakeRobotPoseIfNull).timestampSeconds);
+      twoApriltagsDetected = false;
+    } else {
+      twoApriltagsDetected = false;
+    }
+  }
+
+  private boolean poseInTheField(Pose2d pose) {
+    boolean poseInXofField = pose.getX() > 0 && pose.getX() < 16.5;
+    boolean poseInYofField = pose.getY() > 0 && pose.getY() < 8;
+    return poseInXofField && poseInYofField;
+  }
+
+  private void OdometryCorrectionInAuto(Optional<EstimatedRobotPose> estimation,
+      EstimatedRobotPose fakeRobotPoseIfNull) {
+    if (estimation.get().targetsUsed.size() >= 2) {
+      aprField2d.setRobotPose(poseVision2D);
+      swerveDrive.addVisionMeasurement(poseVision2D, estimation.orElse(fakeRobotPoseIfNull).timestampSeconds);
+      twoApriltagsDetected = true;
     }
   }
 
@@ -245,13 +286,14 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
       return;
     }
     Translation2d angleSpeaker;
-    if (DriverStation.getAlliance().get() == Alliance.Red) {
+    Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Red;
+    if (alliance == Alliance.Red) {
       angleSpeaker = getPose().getTranslation().minus(FieldConstants.redGoalPos);
+      this.angleToAimAtSpeaker = angleSpeaker.rotateBy(new Rotation2d(Math.PI)).getAngle().getDegrees();
     } else {
       angleSpeaker = getPose().getTranslation().minus(FieldConstants.blueGoalPos);
+      this.angleToAimAtSpeaker = angleSpeaker.getAngle().getDegrees();
     }
-
-    this.angleToAimAtSpeaker = angleSpeaker.rotateBy(new Rotation2d(Math.PI)).getAngle().getDegrees();
 
     SmartDashboard.putNumber("angle to aim speaker", angleToAimAtSpeaker);
     ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(),
@@ -290,19 +332,14 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   @Override
   public void driveToAmp() {
     Pose2d targetPose;
-    double angleAlignAmp;
     if (this.getPose().getX() > FieldConstants.midFieldLine) {
       targetPose = FieldConstants.redAmp;
     } else {
       targetPose = FieldConstants.blueAmp;
     }
-    if (DriverStation.getAlliance().get() == Alliance.Red) {
-      angleAlignAmp = 90;
-    } else {
-      angleAlignAmp = -90;
-    }
     driveToPose(
-        new Pose2d(targetPose.getX(), targetPose.getY(), new Rotation2d(Units.degreesToRadians(angleAlignAmp))));
+        new Pose2d(targetPose.getX(), targetPose.getY(),
+            new Rotation2d(Units.degreesToRadians(angleAlign.getDegrees()))));
     this.state = "DRIVE_TO_AMP";
   }
 
@@ -311,14 +348,57 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
       driveAlignAngleButton();
       return;
     }
+
     angleAlign = targetPose.getRotation();
     Pose2d currentPose = this.getPose();
+    ChassisSpeeds targetSpeeds;
     double[] speeds = pidXyVelocity(targetPose.getX(), currentPose.getX(),
         targetPose.getY(), currentPose.getY());
-    ChassisSpeeds targetSpeeds = getTargetSpeedsAngle(-1 * speeds[0], -1 * speeds[1],
-        targetPose.getRotation().getDegrees());
+
+    Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Red;
+    if (alliance == Alliance.Red) {
+      targetSpeeds = getTargetSpeedsAngle(-1 * speeds[0], -1 * speeds[1],
+          targetPose.getRotation().getDegrees());
+    } else {
+      targetSpeeds = getTargetSpeedsAngle(speeds[0], speeds[1],
+          targetPose.getRotation().getDegrees());
+    }
     SmartDashboard.putString("target speeds amp", targetSpeeds.toString());
     this.driveFieldOriented(targetSpeeds);
+  }
+
+  @Override
+  public void alignWithAmpAprilTag() {
+    double angleAlignAmp = defineAngleToAlignWithAmp();
+    this.alignWithAprilTag(0.0, SwerveConstants.ALIGNED_WITH_AMP_GOAL, angleAlignAmp);
+    this.state = "ALIGN_WITH_AMP_APRILTAG";
+  }
+
+  private double defineAngleToAlignWithAmp() {
+    Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Red;
+    if (alliance == Alliance.Red) {
+      return 90;
+    } else {
+      return -90;
+    }
+  }
+
+  private void alignWithAprilTag(double targetX, double targetY, double targetAngle) {
+    if (this.controller.isForcingDriverControl()) {
+      driveAlignAngleButton();
+      return;
+    }
+    if (!this.shooterTopCamera.hasTarget()) {
+      driveAlignAngleButton();
+      return;
+    }
+    double aprilTagX = this.shooterTopCamera.targetPositionX();
+    double aprilTagY = this.shooterTopCamera.targetPositionY();
+    double velocityX = -xVelToAprilTag.calculate(aprilTagX, targetX);
+    double velocityY = yVelToAprilTag.calculate(aprilTagY, targetY);
+    ChassisSpeeds targetSpeeds = getTargetSpeedsAngle(velocityX, velocityY, targetAngle);
+    SmartDashboard.putString("Target speeds april tag", targetSpeeds.toString());
+    this.driveRobotOriented(targetSpeeds);
   }
 
   @Override
@@ -340,7 +420,20 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   }
 
   @Override
-  public boolean isAlignedWithAmp() {
+  public boolean isAlignedWithAngle() {
+    alignedWithAngle = Util.inRange(Math.abs(headingDegrees), Math.abs(angleAlign.getDegrees()) - 5,
+        Math.abs(angleAlign.getDegrees()) + 5);
+    return alignedWithAngle;
+  }
+
+  @Override
+  public void setAngleToAmp() {
+    double angleAlignAmp = defineAngleToAlignWithAmp();
+    this.angleAlign = new Rotation2d(Units.degreesToRadians(angleAlignAmp));
+  }
+
+  @Override
+  public boolean isAtAmpPosition() {
     Translation2d targetAmpPosition;
     if (this.getPose().getX() > FieldConstants.midFieldLine) {
       targetAmpPosition = FieldConstants.redAmp.getTranslation();
@@ -349,13 +442,35 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     }
     Translation2d currentPosition = this.getPose().getTranslation();
     boolean isAlignedInX = Math
-        .abs(currentPosition.getX() - targetAmpPosition.getX()) < SwerveConstants.DEADBAND_ALIGNED_WITH_AMP_X;
+        .abs(currentPosition.getX() - targetAmpPosition.getX()) < SwerveConstants.DEADBAND_AT_AMP_POSITION_X;
     boolean isAlignedInY = Math
-        .abs(currentPosition.getY() - targetAmpPosition.getY()) < SwerveConstants.DEADBAND_ALIGNED_WITH_AMP_Y;
+        .abs(currentPosition.getY() - targetAmpPosition.getY()) < SwerveConstants.DEADBAND_AT_AMP_POSITION_Y;
 
     SmartDashboard.putBoolean("isAlignedInX", isAlignedInX);
     SmartDashboard.putBoolean("isAlignedInY", isAlignedInY);
     return isAlignedInX && isAlignedInY;
+  }
+
+  @Override
+  public boolean isAlignedWithAmp() {
+    return this.isAlignedWithAprilTag(
+        0,
+        SwerveConstants.ALIGNED_WITH_AMP_GOAL,
+        SwerveConstants.DEADBAND_ALIGNED_WITH_AMP_X,
+        SwerveConstants.DEADBAND_ALIGNED_WITH_AMP_Y);
+  }
+
+  private boolean isAlignedWithAprilTag(double targetX, double targetY, double deadbandX, double deadbandY) {
+    if (!this.shooterTopCamera.hasTarget()) {
+      return false;
+    }
+    double aprilTagX = this.shooterTopCamera.targetPositionX();
+    double aprilTagY = this.shooterTopCamera.targetPositionY();
+    boolean isAlignedInX = Util.inRange(aprilTagX, targetX - deadbandX, targetX + deadbandX);
+    boolean isAlignedInY = aprilTagY > -6;
+    boolean alignedWithAngle = Util.inRange(Math.abs(headingDegrees), Math.abs(angleAlign.getDegrees()) - 5,
+        Math.abs(angleAlign.getDegrees()) + 5);
+    return isAlignedInX && isAlignedInY && alignedWithAngle;
   }
 
   @Override
@@ -430,13 +545,26 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   private void driveFieldOriented(ChassisSpeeds speeds) {
     ChassisSpeeds speedsRotate;
     if (this.controller.rotateLeft().getAsBoolean()) {
+      speedsRotate = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, 5);
+    } else if (this.controller.rotateRight().getAsBoolean()) {
+      speedsRotate = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, -5);
+    } else {
+      speedsRotate = speeds;
+    }
+    swerveDrive.driveFieldOriented(speedsRotate);
+    this.targetSpeeds = speeds;
+  }
+
+  private void driveRobotOriented(ChassisSpeeds speeds) {
+    ChassisSpeeds speedsRotate;
+    if (this.controller.rotateLeft().getAsBoolean()) {
       speedsRotate = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, 8);
     } else if (this.controller.rotateRight().getAsBoolean()) {
       speedsRotate = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, -8);
     } else {
       speedsRotate = speeds;
     }
-    swerveDrive.driveFieldOriented(speedsRotate);
+    swerveDrive.drive(speedsRotate);
     this.targetSpeeds = speeds;
   }
 
@@ -485,7 +613,8 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   }
 
   private ChassisSpeeds getTargetSpeedsAngle(double xInput, double yInput, double angle) {
-    if (DriverStation.getAlliance().get() == Alliance.Red) {
+    Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Red;
+    if (alliance == Alliance.Red) {
       xInput = -xInput;
       yInput = -yInput;
     }
@@ -494,11 +623,16 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     double angleRadians = Units.degreesToRadians(angle);
     this.targetSpeeds = swerveDrive.swerveController.getTargetSpeeds(xInput, yInput, angleRadians,
         headingRadians, SwerveConstants.MAX_VEL);
+    double omegamaxed = targetSpeeds.omegaRadiansPerSecond > swerveDrive.getMaximumAngularVelocity()
+        ? swerveDrive.getMaximumAngularVelocity()
+        : targetSpeeds.omegaRadiansPerSecond;
+    targetSpeeds = new ChassisSpeeds(targetSpeeds.vxMetersPerSecond, targetSpeeds.vyMetersPerSecond, omegamaxed);
     return this.targetSpeeds;
   }
 
   private ChassisSpeeds getTargetSpeedsAngleJoystick(double xInput, double yInput, double headingX, double headingY) {
-    if (DriverStation.getAlliance().get() == Alliance.Red) {
+    Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Red;
+    if (alliance == Alliance.Red) {
       xInput = -xInput;
       yInput = -yInput;
     }
@@ -506,6 +640,10 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     SmartDashboard.putNumber("Angle Target Speeds", Units.radiansToDegrees(angleTarget));
     this.targetSpeeds = swerveDrive.swerveController.getTargetSpeeds(xInput, yInput, headingX, headingY,
         headingRadians, SwerveConstants.MAX_VEL);
+    double omegamaxed = targetSpeeds.omegaRadiansPerSecond > swerveDrive.getMaximumAngularVelocity()
+        ? swerveDrive.getMaximumAngularVelocity()
+        : targetSpeeds.omegaRadiansPerSecond;
+    targetSpeeds = new ChassisSpeeds(targetSpeeds.vxMetersPerSecond, targetSpeeds.vyMetersPerSecond, omegamaxed);
     return this.targetSpeeds;
   }
 
@@ -526,7 +664,8 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   }
 
   public double distanceFromSpeaker() {
-    if (DriverStation.getAlliance().get() == Alliance.Red) {
+    Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Red;
+    if (alliance == Alliance.Red) {
       return getPose().getTranslation().getDistance(FieldConstants.redGoalPos);
     } else {
       return getPose().getTranslation().getDistance(FieldConstants.blueGoalPos);
@@ -558,7 +697,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   }
 
   public void setAngle45() {
-    angleAlign = new Rotation2d(Units.degreesToRadians(45));
+    angleAlign = new Rotation2d(Units.degreesToRadians(35));
   }
 
   public void setAngleNeg45() {
@@ -577,7 +716,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     this.isSwerveInShootVelocityLogEntry.append(isSwerveInVelocityToShoot());
     this.isSwerveInAutoShootVelocityLogEntry.append(isSwerveInVelocityToAutoShoot());
     this.distanceToNearestAmpLogEntry.append(getDistanceToNearestAmp());
-    this.isAlingedWithAmpLogEntry.append(isAlignedWithAmp());
+    this.isAlingedWithAmpLogEntry.append(isAtAmpPosition());
     this.velocityCalculatedLogEntry.append(calculateVelocity());
     this.angleToAimSpeakerLogEntry.append(this.angleToAimAtSpeaker);
     this.txMeasurementLlLogEntry.append(this.lastTxMeasurement);

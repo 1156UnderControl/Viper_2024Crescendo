@@ -7,7 +7,7 @@ import frc.robot.RobotSubsystems;
 public class AutonomousAim extends Command {
   private RobotSubsystems robot;
   private int shootNumber;
-  private double[] shotPositions = { 63, 60, 58, 66 };
+  private double[] shotPositions = { 72, 60, 65, 60 };
 
   public AutonomousAim(RobotSubsystems robot, int shootNumber) {
     this.robot = robot;

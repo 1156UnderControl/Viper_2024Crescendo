@@ -38,6 +38,8 @@ public class Robot extends TimedRobot {
 
   public static boolean isInAutonomous;
 
+  public static boolean isDisabled = true;
+
   public static String autonomousState = "NONE";
 
   public Robot() {
@@ -54,6 +56,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our
     // autonomous chooser on the dashboard.
@@ -79,6 +82,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+
     // Runs the Scheduler. This is responsible for polling buttons, adding
     // newly-scheduled
     // commands, running already-scheduled commands, removing finished or
@@ -89,6 +93,7 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
 
     SmartDashboard.putData("Robot", robotContainer.robot);
+    isDisabled = isDisabled();
   }
 
   /**

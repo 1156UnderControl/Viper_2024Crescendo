@@ -8,7 +8,7 @@ import frc.robot.RobotSubsystems;
 import frc.robot.Joysticks.ControlBoard;
 import frc.robot.commands.Intake.GoToShootIntake;
 import frc.robot.commands.Shooter.ShootAmp;
-import frc.robot.commands.Swerve.SwerveAlignWithAmp;
+import frc.robot.commands.Swerve.SwerveAutoAmpRoutine;
 import frc.robot.subsystems.LEDs.LedColor;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
@@ -21,11 +21,11 @@ public class ShootAmpPosition extends SequentialCommandGroup {
         new InstantCommand(() -> robot.preparingShoot = true),
         new InstantCommand(() -> robot.led.setSolidColor(LedColor.YELLOW)),
         new GoToShootIntake(robot),
-        new ParallelCommandGroup(new ShootAmp(robot), new SwerveAlignWithAmp(swerve)),
+        new ParallelCommandGroup(new ShootAmp(robot), new SwerveAutoAmpRoutine(swerve)),
         new InstantCommand(() -> robot.led.setSolidColor(LedColor.GREEN)),
         Commands.runOnce(() -> robot.shooter.shoot(), robot),
         new InstantCommand(() -> robot.led.setBlink(LedColor.GREEN, 3)),
-        Commands.waitSeconds(1),
+        Commands.waitSeconds(0.5),
         new InstantCommand(() -> RobotSubsystems.shootFinished = true));
   }
 }

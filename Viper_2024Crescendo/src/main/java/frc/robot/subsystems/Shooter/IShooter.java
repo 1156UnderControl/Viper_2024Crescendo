@@ -17,6 +17,8 @@ public interface IShooter {
 
   boolean getNoteSensor();
 
+  boolean getAnyNoteSensor();
+
   void prepareSpeakerShot();
 
   void prepareAmpShot();

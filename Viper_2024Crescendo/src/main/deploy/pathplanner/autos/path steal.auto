@@ -46,6 +46,12 @@
           "data": {
             "name": "Shoot"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "path 3 steal"
+          }
         }
       ]
     }

@@ -2,9 +2,11 @@ package frc.robot.commands.Shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotSubsystems;
+import frc.robot.Joysticks.ControlBoard;
 
 public class ShootOverStage extends Command {
   private RobotSubsystems robot;
+  private ControlBoard controller = ControlBoard.getInstance();
 
   public ShootOverStage(RobotSubsystems robot) {
     this.robot = robot;
@@ -18,6 +20,7 @@ public class ShootOverStage extends Command {
 
   @Override
   public boolean isFinished() {
-    return this.robot.shooter.isPivotAtSetpoint();
+    return this.robot.shooter.isPivotAtSetpoint() && controller.getShoot().getAsBoolean()
+        && this.robot.shooter.getAnyNoteSensor();
   }
 }
