@@ -13,9 +13,13 @@ public interface ISwerve {
 
   void alignWithAmpAprilTag();
 
+  void setAngleToAmp();
+
   double getDistanceToNearestAmp();
 
   boolean isSwerveAlignedWithSpeaker();
+
+  boolean isAlignedWithAngle();
 
   boolean isSwerveInAutoShootZone();
 

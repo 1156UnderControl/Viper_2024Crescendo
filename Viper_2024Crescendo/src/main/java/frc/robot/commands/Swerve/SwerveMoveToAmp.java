@@ -17,8 +17,21 @@ public class SwerveMoveToAmp extends Command {
   }
 
   @Override
+  public void initialize() {
+    angleAligned = false;
+  }
+
+  @Override
   public void execute() {
-    swerve.driveToAmp();
+    if (swerve.isAlignedWithAngle()) {
+      angleAligned = true;
+    }
+    if (angleAligned) {
+      swerve.driveToAmp();
+
+    } else {
+      swerve.driveAlignAngleButton();
+    }
   }
 
   @Override

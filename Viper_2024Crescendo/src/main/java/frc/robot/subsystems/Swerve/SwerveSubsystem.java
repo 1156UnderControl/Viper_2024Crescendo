@@ -244,8 +244,6 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   private void updateHeadingVariables() {
     headingDegrees = getHeading().getDegrees();
     headingRadians = getHeading().getRadians();
-    alignedWithAngle = Util.inRange(Math.abs(headingDegrees), Math.abs(angleAlign.getDegrees()) - 5,
-        Math.abs(angleAlign.getDegrees()) + 5);
   }
 
   private void updateSmartDashboardValues() {
@@ -339,10 +337,9 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     } else {
       targetPose = FieldConstants.blueAmp;
     }
-    double angleAlignAmp = defineAngleToAlignWithAmp();
-    this.angleAlign = new Rotation2d(Units.degreesToRadians(angleAlignAmp));
     driveToPose(
-        new Pose2d(targetPose.getX(), targetPose.getY(), new Rotation2d(Units.degreesToRadians(angleAlignAmp))));
+        new Pose2d(targetPose.getX(), targetPose.getY(),
+            new Rotation2d(Units.degreesToRadians(angleAlign.getDegrees()))));
     this.state = "DRIVE_TO_AMP";
   }
 
@@ -411,6 +408,19 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
         angleToAimAtSpeaker,
         SwerveConstants.DEADBAND_ALIGNED_WITH_SPEAKER);
     return aligned;
+  }
+
+  @Override
+  public boolean isAlignedWithAngle() {
+    alignedWithAngle = Util.inRange(Math.abs(headingDegrees), Math.abs(angleAlign.getDegrees()) - 5,
+        Math.abs(angleAlign.getDegrees()) + 5);
+    return alignedWithAngle;
+  }
+
+  @Override
+  public void setAngleToAmp() {
+    double angleAlignAmp = defineAngleToAlignWithAmp();
+    this.angleAlign = new Rotation2d(Units.degreesToRadians(angleAlignAmp));
   }
 
   @Override
