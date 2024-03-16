@@ -59,6 +59,8 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   public boolean twoApriltagsDetected = false;
 
+  public boolean alignedWithAngle;
+
   private final int MAX_LOST_SPEAKER_FRAMES = 2;
 
   private final int MAX_LOST_NOTE_FRAMES = 2;
@@ -242,6 +244,8 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   private void updateHeadingVariables() {
     headingDegrees = getHeading().getDegrees();
     headingRadians = getHeading().getRadians();
+    alignedWithAngle = Util.inRange(Math.abs(headingDegrees), Math.abs(angleAlign.getDegrees()) - 5,
+        Math.abs(angleAlign.getDegrees()) + 5);
   }
 
   private void updateSmartDashboardValues() {
@@ -336,6 +340,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
       targetPose = FieldConstants.blueAmp;
     }
     double angleAlignAmp = defineAngleToAlignWithAmp();
+    this.angleAlign = new Rotation2d(Units.degreesToRadians(angleAlignAmp));
     driveToPose(
         new Pose2d(targetPose.getX(), targetPose.getY(), new Rotation2d(Units.degreesToRadians(angleAlignAmp))));
     this.state = "DRIVE_TO_AMP";
@@ -444,7 +449,9 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     double aprilTagY = this.shooterTopCamera.targetPositionY();
     boolean isAlignedInX = Util.inRange(aprilTagX, targetX - deadbandX, targetX + deadbandX);
     boolean isAlignedInY = aprilTagY > -6;
-    return isAlignedInX && isAlignedInY;
+    boolean alignedWithAngle = Util.inRange(Math.abs(headingDegrees), Math.abs(angleAlign.getDegrees()) - 5,
+        Math.abs(angleAlign.getDegrees()) + 5);
+    return isAlignedInX && isAlignedInY && alignedWithAngle;
   }
 
   @Override

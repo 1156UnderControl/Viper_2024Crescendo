@@ -8,10 +8,12 @@ import frc.robot.subsystems.Swerve.SwerveSubsystem;
 public class SwerveMoveToAmp extends Command {
   private ISwerve swerve;
   private ControlBoard controller = ControlBoard.getInstance();
+  boolean angleAligned;
 
   public SwerveMoveToAmp(SwerveSubsystem swerve) {
     this.swerve = swerve;
     addRequirements(swerve);
+    angleAligned = false;
   }
 
   @Override
