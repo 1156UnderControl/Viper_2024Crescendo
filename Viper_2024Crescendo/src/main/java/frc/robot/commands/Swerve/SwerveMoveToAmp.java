@@ -28,7 +28,6 @@ public class SwerveMoveToAmp extends Command {
     }
     if (angleAligned) {
       swerve.driveToAmp();
-
     } else {
       swerve.driveAlignAngleButton();
     }

@@ -289,11 +289,11 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Red;
     if (alliance == Alliance.Red) {
       angleSpeaker = getPose().getTranslation().minus(FieldConstants.redGoalPos);
+      this.angleToAimAtSpeaker = angleSpeaker.rotateBy(new Rotation2d(Math.PI)).getAngle().getDegrees();
     } else {
       angleSpeaker = getPose().getTranslation().minus(FieldConstants.blueGoalPos);
+      this.angleToAimAtSpeaker = angleSpeaker.getAngle().getDegrees();
     }
-
-    this.angleToAimAtSpeaker = angleSpeaker.rotateBy(new Rotation2d(Math.PI)).getAngle().getDegrees();
 
     SmartDashboard.putNumber("angle to aim speaker", angleToAimAtSpeaker);
     ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(),
@@ -348,12 +348,21 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
       driveAlignAngleButton();
       return;
     }
+
     angleAlign = targetPose.getRotation();
     Pose2d currentPose = this.getPose();
+    ChassisSpeeds targetSpeeds;
     double[] speeds = pidXyVelocity(targetPose.getX(), currentPose.getX(),
         targetPose.getY(), currentPose.getY());
-    ChassisSpeeds targetSpeeds = getTargetSpeedsAngle(-1 * speeds[0], -1 * speeds[1],
-        targetPose.getRotation().getDegrees());
+
+    Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Red;
+    if (alliance == Alliance.Red) {
+      targetSpeeds = getTargetSpeedsAngle(-1 * speeds[0], -1 * speeds[1],
+          targetPose.getRotation().getDegrees());
+    } else {
+      targetSpeeds = getTargetSpeedsAngle(speeds[0], speeds[1],
+          targetPose.getRotation().getDegrees());
+    }
     SmartDashboard.putString("target speeds amp", targetSpeeds.toString());
     this.driveFieldOriented(targetSpeeds);
   }
