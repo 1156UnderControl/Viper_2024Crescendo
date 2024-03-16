@@ -69,7 +69,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Deploy Intake", new AutonomousDeployOnlyIntake(robot));
     NamedCommands.registerCommand("Secured", new AutonomousSecured(robot));
 
-    autoChooser = AutoBuilder.buildAutoChooser("New Auto");
+    autoChooser = AutoBuilder.buildAutoChooser("None");
     SmartDashboard.putData("Aut Chooser", autoChooser);
     configureBindings();
     swerve.setDefaultCommand(new SwerveTeleopControl(swerve));
@@ -99,8 +99,9 @@ public class RobotContainer {
         .onTrue(new ShootAmpPosition(robot, swerve));
     this.controlBoard.getPrepareSpeaker().and(() -> robot.shooter.hasNote())
         .onTrue(new ShootSpeakerPosition(robot));
-    this.controlBoard.getDoNotShoot().and(() -> !robot.preparingShoot).onTrue(parallel(
-        new ShootOverStagePosition(robot), new InstantCommand(swerve::setAngle45)));
+    this.controlBoard.getDoNotShoot().and(() -> !robot.preparingShoot).and(() -> robot.shooter.hasNote())
+        .onTrue(parallel(
+            new ShootOverStagePosition(robot), new InstantCommand(swerve::setAngle45)));
     this.controlBoard.release().onTrue(new ClimbPosition(robot));
     this.controlBoard.expell().onTrue(new ExpellPosition(robot));
     this.controlBoard.falseNegative().onTrue(new InstantCommand(() -> robot.shooter.setHasNoteTrue()));

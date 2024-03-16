@@ -58,6 +58,7 @@ public final class Limelight {
     fieldAprils.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
     photonPoseEstimator = new PhotonPoseEstimator(fieldAprils,
         PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, robotToCam);
+    photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
   }
 
   public Limelight(String cameraName) {
@@ -115,13 +116,10 @@ public final class Limelight {
     var result = camera.getLatestResult();
     double distance = 0;
     if (result.hasTargets()) {
-      for (PhotonTrackedTarget target : result.getTargets()) {
-        if (target.getFiducialId() == 4 || target.getFiducialId() == 7) {
-          distance = PhotonUtils.calculateDistanceToTargetMeters(limelightLensHeightMeters, goalHeightMeters,
-              Units.degreesToRadians(limelightMountAngleDegreesDEG), Units.degreesToRadians(target.getPitch()));
-          return distance;
-        }
-      }
+      PhotonTrackedTarget target = result.getBestTarget();
+      distance = PhotonUtils.calculateDistanceToTargetMeters(limelightLensHeightMeters, goalHeightMeters,
+          Units.degreesToRadians(limelightMountAngleDegreesDEG), Units.degreesToRadians(target.getPitch()));
+      return distance;
     }
     return distance;
   }

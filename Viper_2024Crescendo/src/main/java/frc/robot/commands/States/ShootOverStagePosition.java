@@ -20,11 +20,10 @@ public class ShootOverStagePosition extends SequentialCommandGroup {
         new GoToShootIntake(robot),
         new ShootOverStage(robot),
         new InstantCommand(() -> robot.led.setSolidColor(LedColor.GREEN)),
-        Commands.waitUntil(mControlBoard.getShoot()),
-        new InstantCommand(() -> robot.preparingShoot = false),
         Commands.runOnce(() -> robot.shooter.shoot(), robot),
         new InstantCommand(() -> robot.led.setBlink(LedColor.GREEN, 3)),
-        Commands.waitSeconds(1),
+        Commands.waitSeconds(0.1),
+        new InstantCommand(() -> robot.preparingShoot = false),
         new InstantCommand(() -> RobotSubsystems.shootFinished = true));
   }
 }

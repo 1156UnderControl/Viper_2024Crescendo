@@ -10,7 +10,9 @@ import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.Java_Is_UnderControl.Util.StabilizeChecker;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Motors.Motor;
@@ -81,6 +83,12 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   private StabilizeChecker upperFlywheelStability = new StabilizeChecker();
   private StabilizeChecker pivotStabilizeChecker = new StabilizeChecker();
 
+  private long numberOfHasNoteChecks = 0;
+
+  private Trigger inSensorTrigger;
+
+  private Trigger outSensorTrigger;
+
   public static ShooterSubsystem getInstance() {
     if (shooterInstance == null) {
       shooterInstance = new ShooterSubsystem();
@@ -98,6 +106,11 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     this.goToSecuredPosition();
     this.initializeSmartDashboardVariables();
     this.updateLogs();
+    inSensorTrigger = new Trigger(this.noteSensorIn);
+    inSensorTrigger.onTrue(new InstantCommand(() -> this.wasNoteIn = this.state == "INTAKING" ? true : this.wasNoteIn));
+    outSensorTrigger = new Trigger(this.noteSensorOut);
+    outSensorTrigger.onTrue(
+        new InstantCommand(() -> this.hasNote = this.state == "INTAKING" && this.wasNoteIn ? true : this.hasNote));
   }
 
   private void configureFlywheelMotor(Motor flywheelMotor) {
@@ -182,6 +195,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     SmartDashboard.putNumber("Velocity Feeder", this.feederMotor.getVelocity());
     SmartDashboard.putNumber("Output Shooter Flywheel", this.upperFlywheelMotor.getAppliedOutput());
     SmartDashboard.putBoolean("hasNote", this.hasNote);
+    SmartDashboard.putBoolean("wasNoteIn", this.wasNoteIn);
+    SmartDashboard.putString("Intake State", state);
     SmartDashboard.putBoolean("Shooter At Setpoint", this.isPivotAtSetpoint());
   }
 
@@ -210,11 +225,16 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   }
 
   private void runNoteDetection() {
+    this.numberOfHasNoteChecks++;
+    SmartDashboard.putBoolean("IR Out", this.noteSensorOut.getBoolean());
+    SmartDashboard.putBoolean("IR In", this.noteSensorIn.getBoolean());
+    SmartDashboard.putNumber("Number of Note Checks", this.numberOfHasNoteChecks);
     if (noteSensorIn.getBoolean()) {
       this.wasNoteIn = true;
     }
     if (this.wasNoteIn && noteSensorOut.getBoolean()) {
       this.hasNote = true;
+      this.feederMotor.set(0);
     }
   }
 
@@ -273,7 +293,14 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   @Override
   public void prepareShootOverStage() {
     this.feederMotor.set(0);
-    setVelocityFlywheel(ShooterConstants.setpoints.VELOCITY_SHOOT_OVER_STAGE);
+    if (noteSensorOut.getBoolean() || noteSensorIn.getBoolean()) {
+      this.feederMotor.set(0);
+      setVelocityFlywheel(ShooterConstants.setpoints.VELOCITY_SHOOT_OVER_STAGE);
+    } else {
+      this.lowerFlywheelMotor.set(ShooterConstants.setpoints.VELOCITY_SHOOTER_CORRECT_PASSED_NOTE);
+      this.upperFlywheelMotor.set(ShooterConstants.setpoints.VELOCITY_SHOOTER_CORRECT_PASSED_NOTE);
+      this.feederMotor.set(-0.05);
+    }
     this.goal = ShooterConstants.setpoints.ANGLE_SHOOT_OVER_STAGE;
     this.state = "PREPARING_SHOT_OVER_STAGE";
   }
@@ -335,6 +362,10 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   @Override
   public boolean getNoteSensor() {
     return noteSensorOut.getBoolean();
+  }
+
+  public boolean getAnyNoteSensor() {
+    return noteSensorOut.getBoolean() || noteSensorIn.getBoolean();
   }
 
   @Override

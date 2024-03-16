@@ -17,6 +17,7 @@ public class CollectPosition extends SequentialCommandGroup {
 
   public CollectPosition(RobotSubsystems robot, SwerveSubsystem swerve) {
     addCommands(
+        new InstantCommand(() -> robot.preparingShoot = false),
         new GoToIntakeIntake(robot),
         new ParallelRaceGroup(new CollectToShooter(robot), new SwerveAlignNote(swerve)),
         new InstantCommand(() -> robot.led.setBlink(LedColor.GREEN, 3, LedColor.WHITE)),
