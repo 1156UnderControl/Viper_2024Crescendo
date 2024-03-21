@@ -61,6 +61,8 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   public boolean alignedWithAngle;
 
+  private boolean notAbleToRotate = false;
+
   private final int MAX_LOST_SPEAKER_FRAMES = 2;
 
   private final int MAX_LOST_NOTE_FRAMES = 2;
@@ -259,6 +261,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   @Override
   public void driveAlignAngleButton() {
+    notAbleToRotate = false;
     if (controller.notUsingJoystick()) {
       ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(),
           angleAlign.getDegrees());
@@ -272,6 +275,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   @Override
   public void driveAlignAngleJoy() {
+    notAbleToRotate = false;
     ChassisSpeeds speeds = getTargetSpeedsAngleJoystick(controller.getYtranslation(), controller.getXtranslation(),
         controller.getCOS_Joystick(), controller.getSIN_Joystick());
     SmartDashboard.putString("Chassis Speed", speeds.toString());
@@ -281,6 +285,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   @Override
   public void driveAlignSpeaker() {
+    notAbleToRotate = true;
     if (this.controller.isForcingDriverControl()) {
       driveAlignAngleButton();
       return;
@@ -304,6 +309,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   @Override
   public void driveAlignNote() {
+    notAbleToRotate = true;
     if (this.controller.isForcingDriverControl()) {
       driveAlignAngleButton();
       return;
@@ -330,6 +336,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   @Override
   public void driveToAmp() {
+    notAbleToRotate = true;
     Pose2d targetPose;
     if (this.getPose().getX() > FieldConstants.midFieldLine) {
       targetPose = FieldConstants.redAmp;
@@ -543,22 +550,23 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
 
   private void driveFieldOriented(ChassisSpeeds speeds) {
     ChassisSpeeds speedsRotate;
-    if (this.controller.rotateLeft().getAsBoolean()) {
+    if (this.controller.rotateLeft()) {
       speedsRotate = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, 5);
-    } else if (this.controller.rotateRight().getAsBoolean()) {
+    } else if (this.controller.rotateRight()) {
       speedsRotate = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, -5);
     } else {
       speedsRotate = speeds;
     }
+
     swerveDrive.driveFieldOriented(speedsRotate);
     this.targetSpeeds = speeds;
   }
 
   private void driveRobotOriented(ChassisSpeeds speeds) {
     ChassisSpeeds speedsRotate;
-    if (this.controller.rotateLeft().getAsBoolean()) {
+    if (this.controller.rotateLeft()) {
       speedsRotate = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, 8);
-    } else if (this.controller.rotateRight().getAsBoolean()) {
+    } else if (this.controller.rotateRight()) {
       speedsRotate = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, -8);
     } else {
       speedsRotate = speeds;

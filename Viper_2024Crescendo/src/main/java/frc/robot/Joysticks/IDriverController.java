@@ -23,9 +23,9 @@ public interface IDriverController {
 
   Trigger setHeadingLeft();
 
-  Trigger rotateLeft();
+  boolean rotateLeft();
 
-  Trigger rotateRight();
+  boolean rotateRight();
 
   Trigger resetGyro();
 

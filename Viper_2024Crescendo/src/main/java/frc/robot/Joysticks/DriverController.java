@@ -84,13 +84,13 @@ public class DriverController implements IDriverController {
   }
 
   @Override
-  public Trigger rotateLeft() {
-    return driverController.leftBumper();
+  public boolean rotateLeft() {
+    return driverController.leftBumper().getAsBoolean();
   }
 
   @Override
-  public Trigger rotateRight() {
-    return driverController.rightBumper();
+  public boolean rotateRight() {
+    return driverController.rightBumper().getAsBoolean();
   }
 
   @Override
