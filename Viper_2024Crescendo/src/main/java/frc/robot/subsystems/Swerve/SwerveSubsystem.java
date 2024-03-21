@@ -467,7 +467,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     double aprilTagX = this.shooterTopCamera.targetPositionX();
     double aprilTagY = this.shooterTopCamera.targetPositionY();
     boolean isAlignedInX = Util.inRange(aprilTagX, targetX - deadbandX, targetX + deadbandX);
-    boolean isAlignedInY = aprilTagY > -6;
+    boolean isAlignedInY = aprilTagY > 1;
     boolean alignedWithAngle = Util.inRange(Math.abs(headingDegrees), Math.abs(angleAlign.getDegrees()) - 5,
         Math.abs(angleAlign.getDegrees()) + 5);
     return isAlignedInX && isAlignedInY && alignedWithAngle;
