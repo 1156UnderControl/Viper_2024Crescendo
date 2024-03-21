@@ -14,6 +14,7 @@ import frc.robot.subsystems.Swerve.SwerveSubsystem;
 public class SwerveAlignSpeaker extends Command {
   private Limelight limelight = Limelight.getInstance();
   private ISwerve swerve;
+  private boolean hasSeen2Targets;
 
   public SwerveAlignSpeaker(SwerveSubsystem swerve) {
     this.swerve = swerve;
@@ -24,11 +25,19 @@ public class SwerveAlignSpeaker extends Command {
   public void initialize() {
     Limelight.notUsingLLforOdometry = true;
     limelight.setPipeline(1);
+    this.hasSeen2Targets = false;
   }
 
   @Override
   public void execute() {
-    swerve.driveAlignSpeaker();
+    if (limelight.getNumberOfTargetsDetected() >= 2) {
+      this.hasSeen2Targets = true;
+    }
+    if (this.hasSeen2Targets) {
+      swerve.driveAlignSpeaker();
+    } else {
+      swerve.driveAlignAngleButton();
+    }
   }
 
   @Override

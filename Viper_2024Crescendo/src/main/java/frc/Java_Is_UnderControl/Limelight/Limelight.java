@@ -112,6 +112,11 @@ public final class Limelight {
 
   private static final double goalHeightMeters = 1.368552;
 
+  public double getNumberOfTargetsDetected() {
+    var result = camera.getLatestResult();
+    return result.targets.size();
+  }
+
   public double getDistance() {
     var result = camera.getLatestResult();
     double distance = 0;

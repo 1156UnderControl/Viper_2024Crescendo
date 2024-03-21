@@ -298,7 +298,6 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     SmartDashboard.putNumber("angle to aim speaker", angleToAimAtSpeaker);
     ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(),
         this.angleToAimAtSpeaker);
-
     driveFieldOriented(speeds);
     this.state = "DRIVE_ALIGN_SPEAKER";
   }
@@ -697,7 +696,12 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   }
 
   public void setAngle45() {
-    angleAlign = new Rotation2d(Units.degreesToRadians(35));
+    Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Red;
+    if (alliance == Alliance.Red) {
+      angleAlign = new Rotation2d(Units.degreesToRadians(40));
+    } else {
+      angleAlign = new Rotation2d(Units.degreesToRadians(-40));
+    }
   }
 
   public void setAngleNeg45() {
