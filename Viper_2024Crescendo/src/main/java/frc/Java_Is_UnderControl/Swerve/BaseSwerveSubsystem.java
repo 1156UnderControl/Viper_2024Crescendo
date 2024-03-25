@@ -12,6 +12,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomChassisSpeedsLogger;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomPose2dLogger;
 import frc.robot.Constants.SwerveConstants;
 import swervelib.SwerveDrive;
 import swervelib.parser.SwerveParser;
@@ -20,11 +21,13 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 public abstract class BaseSwerveSubsystem extends SubsystemBase {
   
-  private SwerveDrive swerveDrive;
+  protected SwerveDrive swerveDrive;
 
   private ChassisSpeeds targetSpeeds = new ChassisSpeeds();
 
   private CustomChassisSpeedsLogger targetSpeedsLogger = new CustomChassisSpeedsLogger("/SwerveSubsystem/TargetSpeeds");
+
+  private CustomPose2dLogger poseLogger = new CustomPose2dLogger("/SwerveSubsystem/Pose");
 
   protected BaseSwerveSubsystem(File directory, SwervePathPlannerConfig config) {
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.LOW;
@@ -109,6 +112,7 @@ public abstract class BaseSwerveSubsystem extends SubsystemBase {
   }
 
   private void updateBaseLogs() {
+    poseLogger.appendRadians(this.getPose());
     targetSpeedsLogger.append(this.targetSpeeds);
   }
 }

@@ -11,17 +11,12 @@ import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.ReplanningConfig;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.datalog.BooleanLogEntry;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
@@ -31,7 +26,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.Java_Is_UnderControl.Limelight.Limelight;
 import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
 import frc.Java_Is_UnderControl.Logging.Pose2dLogEntry;
@@ -46,16 +40,8 @@ import frc.robot.Constants.CommandsConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Joysticks.ControlBoard;
-import swervelib.SwerveController;
-import swervelib.SwerveDrive;
-import swervelib.parser.SwerveDriveConfiguration;
-import swervelib.parser.SwerveParser;
-import swervelib.telemetry.SwerveDriveTelemetry;
-import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 public class SwerveSubsystem extends BaseSwerveSubsystem implements ISwerve {
-
-  private SwerveDrive swerveDrive;
 
   private ControlBoard controller = ControlBoard.getInstance();
 
@@ -94,21 +80,10 @@ public class SwerveSubsystem extends BaseSwerveSubsystem implements ISwerve {
 
   Field2d aprField2d = new Field2d();
 
-  private Pose2dLogEntry poseLogEntry = new Pose2dLogEntry(DataLogManager.getLog(), "/SwerveSubsystem/Pose");
-
   private Pose2dLogEntry poseVisionLogEntry = new Pose2dLogEntry(DataLogManager.getLog(),
       "/SwerveSubsystem/PoseVision");
 
   private ChassisSpeeds targetSpeeds = new ChassisSpeeds();
-
-  private DoubleLogEntry targetXSpeedLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
-      "/SwerveSubsystem/TargetSpeeds/X");
-
-  private DoubleLogEntry targetYSpeedLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
-      "/SwerveSubsystem/TargetSpeeds/Y");
-
-  private DoubleLogEntry targetOmegaSpeedLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
-      "/SwerveSubsystem/TargetSpeeds/Omega");
 
   private BooleanLogEntry isAlignedWithSpeakerLogEntry = new BooleanLogEntry(DataLogManager.getLog(),
       "/SwerveSubsystem/SpeakerAlign/isAligned");
@@ -582,14 +557,6 @@ public class SwerveSubsystem extends BaseSwerveSubsystem implements ISwerve {
     return swerveDrive.getRobotVelocity();
   }
 
-  public SwerveController getSwerveController() {
-    return swerveDrive.swerveController;
-  }
-
-  public SwerveDriveConfiguration getSwerveDriveConfiguration() {
-    return swerveDrive.swerveDriveConfiguration;
-  }
-
   public double distanceFromSpeaker() {
     Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Red;
     if (alliance == Alliance.Red) {
@@ -631,13 +598,9 @@ public class SwerveSubsystem extends BaseSwerveSubsystem implements ISwerve {
     angleAlign = new Rotation2d(Units.degreesToRadians(-45));
   }
 
-  private void updateLogs() {
-    this.poseLogEntry.appendRadians(this.swerveDrive.getPose());
+  protected void updateLogs() {
     this.poseVisionLogEntry.appendRadians(this.poseVision2D);
-    this.targetXSpeedLogEntry.append(this.targetSpeeds.vxMetersPerSecond);
-    this.targetYSpeedLogEntry.append(this.targetSpeeds.vyMetersPerSecond);
     this.fieldVelocityCalculatedLogEntry.append(calculateVelocity());
-    this.targetOmegaSpeedLogEntry.append(this.targetSpeeds.omegaRadiansPerSecond);
     this.isAlignedWithSpeakerLogEntry.append(isSwerveAlignedWithSpeaker());
     this.isSwerveInAutoShootZoneLogEntry.append(isSwerveInAutoShootZone());
     this.isSwerveInShootVelocityLogEntry.append(isSwerveInVelocityToShoot());
