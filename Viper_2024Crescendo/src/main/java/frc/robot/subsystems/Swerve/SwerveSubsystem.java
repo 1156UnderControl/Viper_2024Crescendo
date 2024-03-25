@@ -36,6 +36,8 @@ import frc.Java_Is_UnderControl.Limelight.Limelight;
 import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
 import frc.Java_Is_UnderControl.Logging.Pose2dLogEntry;
 import frc.Java_Is_UnderControl.PhotonVision.PhotonVision;
+import frc.Java_Is_UnderControl.Swerve.BaseSwerveSubsystem;
+import frc.Java_Is_UnderControl.Swerve.SwervePathPlannerConfig;
 import frc.Java_Is_UnderControl.Util.StabilizeChecker;
 import frc.Java_Is_UnderControl.Util.Util;
 import frc.robot.Robot;
@@ -51,7 +53,7 @@ import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
-public class SwerveSubsystem extends SubsystemBase implements ISwerve {
+public class SwerveSubsystem extends BaseSwerveSubsystem implements ISwerve {
 
   private SwerveDrive swerveDrive;
 
@@ -174,17 +176,20 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   }
 
   private SwerveSubsystem(File directory) {
+    super(directory, new SwervePathPlannerConfig(
+      AutoConstants.TranslationPID,
+      AutoConstants.angleAutoPID,
+      4.5
+    ));
     this.limelight = Limelight.getInstance();
     this.photonVision = new PhotonVision();
     SmartDashboard.putData("POSE APRIL", aprField2d);
-    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
-    setupYAGSL_JSON(directory);
-    setupPathPlanner();
     this.updateLogs();
   }
 
   @Override
   public void periodic() {
+    super.periodic();
     updateHeadingVariables();
     updateSmartDashboardValues();
     updateOdometryWithVision();
@@ -499,49 +504,6 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     return velocity;
   }
 
-  private void setupYAGSL_JSON(File directory) {
-    try {
-      swerveDrive = new SwerveParser(directory).createSwerveDrive(SwerveConstants.MAX_VEL,
-          SwerveConstants.SteeringConversionFactor,
-          SwerveConstants.DriveConversionFactor);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  /**
-   * Setup AutoBuilder for PathPlanner.
-   */
-  public void setupPathPlanner() {
-    AutoBuilder.configureHolonomic(
-        this::getPose, // Robot pose supplier
-        this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
-        this::getRobotVelocity, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-        this::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-        new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-            AutoConstants.TranslationPID,
-            // Translation PID constants
-            AutoConstants.angleAutoPID,
-            // Rotation PID constants
-            4.5,
-            // Max module speed, in m/s
-            swerveDrive.swerveDriveConfiguration.getDriveBaseRadiusMeters(),
-            // Drive base radius in meters. Distance from robot center to furthest module.
-            new ReplanningConfig()
-        // Default path replanning config. See the API for the options here
-        ),
-        () -> {
-          // Boolean supplier that controls when the path will be mirrored for the red
-          // alliance
-          // This will flip the path being followed to the red side of the field.
-          // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-          var alliance = DriverStation.getAlliance();
-          return alliance.isPresent() ? alliance.get() == DriverStation.Alliance.Red : false;
-        },
-        this // Reference to this subsystem to set requirements
-    );
-  }
-
   private void driveFieldOriented(ChassisSpeeds speeds) {
     ChassisSpeeds speedsRotate;
     if (this.controller.rotateLeft().getAsBoolean()) {
@@ -575,41 +537,6 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     SmartDashboard.putNumber("Omega PID", speedsPID.omegaRadiansPerSecond);
     swerveDrive.driveFieldOriented(speedsPID);
     this.targetSpeeds = speedsPID;
-  }
-
-  public SwerveDriveKinematics getKinematics() {
-    return swerveDrive.kinematics;
-  }
-
-  public void resetOdometry(Pose2d initialHolonomicPose) {
-    swerveDrive.resetOdometry(initialHolonomicPose);
-  }
-
-  public Pose2d getPose() {
-    return swerveDrive.getPose();
-  }
-
-  public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
-    chassisSpeeds = new ChassisSpeeds(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond,
-        chassisSpeeds.omegaRadiansPerSecond);
-    swerveDrive.setChassisSpeeds(chassisSpeeds);
-    this.targetSpeeds = chassisSpeeds;
-  }
-
-  public void zeroGyro() {
-    swerveDrive.zeroGyro();
-  }
-
-  public void setHeadingCorrection(boolean active) {
-    swerveDrive.setHeadingCorrection(active);
-  }
-
-  public void setMotorBrake(boolean brake) {
-    swerveDrive.setMotorIdleMode(brake);
-  }
-
-  private Rotation2d getHeading() {
-    return swerveDrive.getYaw();
   }
 
   private ChassisSpeeds getTargetSpeedsAngle(double xInput, double yInput, double angle) {
