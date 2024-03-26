@@ -237,6 +237,10 @@ public class SwerveSubsystem extends BaseSwerveSubsystem implements ISwerve {
 
   @Override
   public void driveAlignAngleButton() {
+    if(this.isControllerAskingForRotation()){
+      this.driveRotating();
+      return;
+    }
     if (controller.notUsingJoystick()) {
       ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation(), controller.getXtranslation());
       this.driveFieldOrientedLockedAngle(desiredSpeeds, angleAlign);
@@ -252,6 +256,23 @@ public class SwerveSubsystem extends BaseSwerveSubsystem implements ISwerve {
     double angleTarget = Math.atan2(controller.getCOS_Joystick(), controller.getSIN_Joystick());
     this.driveFieldOrientedLockedAngle(desiredSpeeds, Rotation2d.fromRadians(angleTarget));
     this.state = "DRIVE_ALIGN_ANGLE_JOY";
+  }
+
+  public void driveRotating(){
+    ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation(), controller.getXtranslation());
+    ChassisSpeeds speedsRotate;
+    if (this.controller.rotateLeft().getAsBoolean()) {
+      speedsRotate = new ChassisSpeeds(desiredSpeeds.vxMetersPerSecond, desiredSpeeds.vyMetersPerSecond, SwerveConstants.ROTATION_BUTTON_SPEED);
+    } else if (this.controller.rotateRight().getAsBoolean()) {
+      speedsRotate = new ChassisSpeeds(desiredSpeeds.vxMetersPerSecond, desiredSpeeds.vyMetersPerSecond, -SwerveConstants.ROTATION_BUTTON_SPEED);
+    } else {
+      speedsRotate = desiredSpeeds;
+    }
+    this.driveFieldOriented(speedsRotate);
+  }
+
+  private boolean isControllerAskingForRotation(){
+    return controller.rotateLeft().getAsBoolean() || controller.rotateRight().getAsBoolean();
   }
 
   @Override
@@ -448,32 +469,6 @@ public class SwerveSubsystem extends BaseSwerveSubsystem implements ISwerve {
     double velocity = this.getAbsoluteRobotVelocity();
     return velocity < 2.5;
   }
-
-  // private void driveFieldOriented(ChassisSpeeds speeds) {
-  //   ChassisSpeeds speedsRotate;
-  //   if (this.controller.rotateLeft().getAsBoolean()) {
-  //     speedsRotate = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, 5);
-  //   } else if (this.controller.rotateRight().getAsBoolean()) {
-  //     speedsRotate = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, -5);
-  //   } else {
-  //     speedsRotate = speeds;
-  //   }
-  //   swerveDrive.driveFieldOriented(speedsRotate);
-  //   this.targetSpeeds = speeds;
-  // }
-
-  // private void driveRobotOriented(ChassisSpeeds speeds) {
-  //   ChassisSpeeds speedsRotate;
-  //   if (this.controller.rotateLeft().getAsBoolean()) {
-  //     speedsRotate = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, 8);
-  //   } else if (this.controller.rotateRight().getAsBoolean()) {
-  //     speedsRotate = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, -8);
-  //   } else {
-  //     speedsRotate = speeds;
-  //   }
-  //   swerveDrive.drive(speedsRotate);
-  //   this.targetSpeeds = speeds;
-  // }
 
   private void driveOmegaPidFieldOriented(ChassisSpeeds speeds, double setpoint, double measurement, PIDController pid,
       boolean invertOmega) {
