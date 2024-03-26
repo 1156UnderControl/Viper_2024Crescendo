@@ -14,6 +14,7 @@ public class SwerveConstants {
   public static final double ALIGNED_WITH_AMP_GOAL = 7.2;
 
   public static final double MAX_VEL = Units.feetToMeters(14.5);
+  public static final double MAX_ROTATION_VEL = 20;
 
   public static final double MOTION_PROFILE_MAX_VEL = 4;
   public static final double MOTION_PROFILE_MAX_ACCEL = 5;

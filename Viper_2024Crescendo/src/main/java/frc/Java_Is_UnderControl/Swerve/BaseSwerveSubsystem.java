@@ -10,9 +10,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomChassisSpeedsLogger;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomDoubleLogger;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomPose2dLogger;
+import frc.Java_Is_UnderControl.Util.CustomMath;
 import frc.robot.Constants.SwerveConstants;
 import swervelib.SwerveDrive;
 import swervelib.parser.SwerveParser;
@@ -23,16 +26,37 @@ public abstract class BaseSwerveSubsystem extends SubsystemBase {
   
   protected SwerveDrive swerveDrive;
 
+  protected double maxTranslationSpeed;
+
+  protected double maxRotationSpeed;
+
+  private Alliance defaultAlliance;
+
   private ChassisSpeeds targetSpeeds = new ChassisSpeeds();
+
+  private double targetHeadingDegrees = Double.NaN;
 
   private CustomChassisSpeedsLogger targetSpeedsLogger = new CustomChassisSpeedsLogger("/SwerveSubsystem/TargetSpeeds");
 
+  private CustomDoubleLogger absoluteTargetSpeedLogger = new CustomDoubleLogger("/SwerveSubsystem/AbsoluteTargetSpeed");
+
+  private CustomChassisSpeedsLogger measuredSpeedsLogger = new CustomChassisSpeedsLogger("/SwerveSubsystem/MeasuredSpeeds");
+
+  private CustomDoubleLogger absoluteMeasuredSpeedLogger = new CustomDoubleLogger("/SwerveSubsystem/AbsoluteMeasuredSpeed");
+
   private CustomPose2dLogger poseLogger = new CustomPose2dLogger("/SwerveSubsystem/Pose");
 
-  protected BaseSwerveSubsystem(File directory, SwervePathPlannerConfig config) {
+  private CustomDoubleLogger targetHeadingLogger = new CustomDoubleLogger("/SwerveSubsystem/TargetHeadingDegrees");
+
+  private CustomDoubleLogger measuredHeadingLogger = new CustomDoubleLogger("/SwerveSubsystem/MeasuredHeadingDegrees");
+
+  protected BaseSwerveSubsystem(File directory, BaseSwerveConfig config) {
+    this.maxTranslationSpeed = config.maxTranslationSpeed;
+    this.maxRotationSpeed = config.maxRotationSpeed;
+    this.defaultAlliance = config.defaultAlliance;
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.LOW;
     this.createSwerveDriveFromYagsl(directory);
-    this.setupPathPlanner(config);
+    this.setupPathPlanner(config.pathPlannerConfig);
   }
 
   protected abstract void updateLogs();
@@ -71,38 +95,44 @@ public abstract class BaseSwerveSubsystem extends SubsystemBase {
   }
 
   public void resetOdometry(Pose2d initialHolonomicPose) {
-    swerveDrive.resetOdometry(initialHolonomicPose);
+    this.swerveDrive.resetOdometry(initialHolonomicPose);
   }
 
   public void zeroGyro() {
-    swerveDrive.zeroGyro();
+    this.swerveDrive.zeroGyro();
   }
 
   public void setHeadingCorrection(boolean active) {
-    swerveDrive.setHeadingCorrection(active);
+    this.swerveDrive.setHeadingCorrection(active);
   }
 
   public void setMotorBrake(boolean brake) {
-    swerveDrive.setMotorIdleMode(brake);
+    this.swerveDrive.setMotorIdleMode(brake);
   }
 
   protected Pose2d getPose() {
-    return swerveDrive.getPose();
+    return this.swerveDrive.getPose();
   }
 
   protected void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
-    chassisSpeeds = new ChassisSpeeds(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond,
-        chassisSpeeds.omegaRadiansPerSecond);
-    swerveDrive.setChassisSpeeds(chassisSpeeds);
+    this.swerveDrive.setChassisSpeeds(chassisSpeeds);
     this.targetSpeeds = chassisSpeeds;
   }
 
   protected ChassisSpeeds getRobotVelocity() {
-    return swerveDrive.getRobotVelocity();
+    return this.swerveDrive.getRobotVelocity();
+  }
+
+  protected double getAbsoluteRobotVelocity() {
+    return CustomMath.toAbsoluteSpeed(this.getRobotVelocity());
   }
 
   protected Rotation2d getHeading() {
-    return swerveDrive.getYaw();
+    return this.swerveDrive.getYaw();
+  }
+
+  public void lock() {
+    this.swerveDrive.lockPose();
   }
 
   @Override
@@ -112,7 +142,93 @@ public abstract class BaseSwerveSubsystem extends SubsystemBase {
   }
 
   private void updateBaseLogs() {
-    poseLogger.appendRadians(this.getPose());
-    targetSpeedsLogger.append(this.targetSpeeds);
+    this.poseLogger.appendRadians(this.getPose());
+    this.targetSpeedsLogger.append(this.targetSpeeds);
+    this.absoluteTargetSpeedLogger.append(CustomMath.toAbsoluteSpeed(this.targetSpeeds));
+    this.measuredSpeedsLogger.append(this.getRobotVelocity());
+    this.absoluteMeasuredSpeedLogger.append(this.getAbsoluteRobotVelocity());
+    this.targetHeadingLogger.append(this.targetHeadingDegrees);
+    this.measuredHeadingLogger.append(this.getHeading().getDegrees());
+  }
+
+  protected void driveFieldOrientedLockedAngle(ChassisSpeeds speeds, Rotation2d targetHeading) {
+    ChassisSpeeds speedsWithAngleAlignment = this.swerveDrive.swerveController.getRawTargetSpeeds(
+      speeds.vxMetersPerSecond,
+      speeds.vyMetersPerSecond,
+      targetHeading.getRadians(),
+      this.getHeading().getRadians());
+    if (speedsWithAngleAlignment.omegaRadiansPerSecond > this.swerveDrive.getMaximumAngularVelocity()) {
+      speedsWithAngleAlignment = new ChassisSpeeds(
+        speedsWithAngleAlignment.vxMetersPerSecond,
+        speedsWithAngleAlignment.vyMetersPerSecond,
+        this.swerveDrive.getMaximumAngularVelocity()
+      );
+    } else if (speedsWithAngleAlignment.omegaRadiansPerSecond < (-1 * this.swerveDrive.getMaximumAngularVelocity())) {
+      speedsWithAngleAlignment = new ChassisSpeeds(
+        speedsWithAngleAlignment.vxMetersPerSecond,
+        speedsWithAngleAlignment.vyMetersPerSecond,
+        -1 * this.swerveDrive.getMaximumAngularVelocity()
+      );
+    }
+    this.driveFieldOriented(speedsWithAngleAlignment);
+    this.targetHeadingDegrees = targetHeading.getDegrees();
+  }
+
+  protected void driveFieldOriented(ChassisSpeeds speeds) {
+    ChassisSpeeds correctedSpeeds = this.performAllianceSpeedDirectionCorrection(speeds);
+    this.swerveDrive.driveFieldOriented(correctedSpeeds);
+    this.targetSpeeds = correctedSpeeds;
+    this.targetHeadingDegrees = Double.NaN;
+  }
+
+  protected void driveRobotOrientedLockedAngle(ChassisSpeeds speeds, Rotation2d targetHeading) {
+    ChassisSpeeds speedsWithAngleAlignment = this.swerveDrive.swerveController.getRawTargetSpeeds(
+      speeds.vxMetersPerSecond,
+      speeds.vyMetersPerSecond,
+      targetHeading.getRadians(),
+      this.getHeading().getRadians());
+    if (speedsWithAngleAlignment.omegaRadiansPerSecond > this.swerveDrive.getMaximumAngularVelocity()) {
+      speedsWithAngleAlignment = new ChassisSpeeds(
+        speedsWithAngleAlignment.vxMetersPerSecond,
+        speedsWithAngleAlignment.vyMetersPerSecond,
+        this.swerveDrive.getMaximumAngularVelocity()
+      );
+    } else if (speedsWithAngleAlignment.omegaRadiansPerSecond < (-1 * this.swerveDrive.getMaximumAngularVelocity())) {
+      speedsWithAngleAlignment = new ChassisSpeeds(
+        speedsWithAngleAlignment.vxMetersPerSecond,
+        speedsWithAngleAlignment.vyMetersPerSecond,
+        -1 * this.swerveDrive.getMaximumAngularVelocity()
+      );
+    }
+    this.driveRobotOriented(speedsWithAngleAlignment);
+    this.targetHeadingDegrees = targetHeading.getDegrees();
+  }
+
+  protected void driveRobotOriented(ChassisSpeeds speeds) {
+    this.swerveDrive.drive(speeds);
+    this.targetSpeeds = speeds;
+    this.targetHeadingDegrees = Double.NaN;
+  }
+
+  private ChassisSpeeds performAllianceSpeedDirectionCorrection(ChassisSpeeds targetSpeeds){
+    Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : this.defaultAlliance;
+    if (alliance == Alliance.Red) {
+      targetSpeeds = new ChassisSpeeds(-targetSpeeds.vxMetersPerSecond, -targetSpeeds.vyMetersPerSecond, targetSpeeds.omegaRadiansPerSecond);
+    }
+    return targetSpeeds;
+  }
+
+  protected ChassisSpeeds inputsToChassisSpeeds(double xInput, double yInput) {
+    return new ChassisSpeeds(xInput * this.maxTranslationSpeed, yInput * this.maxTranslationSpeed, 0);
+  }
+
+  protected boolean isAtTargetAngle(double toleranceDegrees) {
+    if (this.targetHeadingDegrees == Double.NaN) {
+      return false;
+    }
+    Rotation2d targetHeading = Rotation2d.fromDegrees(this.targetHeadingDegrees);
+    Rotation2d currentHeading = this.getHeading();
+    double angleDifference = Math.abs(targetHeading.minus(currentHeading).getDegrees());
+    return angleDifference <= toleranceDegrees;
   }
 }

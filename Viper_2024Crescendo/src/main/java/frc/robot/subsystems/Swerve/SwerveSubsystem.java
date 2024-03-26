@@ -30,6 +30,7 @@ import frc.Java_Is_UnderControl.Limelight.Limelight;
 import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
 import frc.Java_Is_UnderControl.Logging.Pose2dLogEntry;
 import frc.Java_Is_UnderControl.PhotonVision.PhotonVision;
+import frc.Java_Is_UnderControl.Swerve.BaseSwerveConfig;
 import frc.Java_Is_UnderControl.Swerve.BaseSwerveSubsystem;
 import frc.Java_Is_UnderControl.Swerve.SwervePathPlannerConfig;
 import frc.Java_Is_UnderControl.Util.StabilizeChecker;
@@ -97,9 +98,6 @@ public class SwerveSubsystem extends BaseSwerveSubsystem implements ISwerve {
   private BooleanLogEntry isSwerveInShootVelocityLogEntry = new BooleanLogEntry(DataLogManager.getLog(),
       "/SwerveSubsystem/SpeakerAlign/isInShootVelocity");
 
-  private DoubleLogEntry velocityCalculatedLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
-      "/SwerveSubsystem/TargetSpeeds/Omega");
-
   private DoubleLogEntry angleToAimSpeakerLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
       "/SwerveSubsystem/TargetSpeeds/Omega");
 
@@ -114,9 +112,6 @@ public class SwerveSubsystem extends BaseSwerveSubsystem implements ISwerve {
 
   private DoubleLogEntry txMeasurementLlLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
       "/SwerveSubsystem/SpeakerAlign/txLL");
-
-  private DoubleLogEntry fieldVelocityCalculatedLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
-      "/SwerveSubsystem/Velocity/FieldVelocityCalculated");
 
   private String state = "DRIVE_ALIGN_ANGLE_BUTTON";
 
@@ -151,11 +146,14 @@ public class SwerveSubsystem extends BaseSwerveSubsystem implements ISwerve {
   }
 
   private SwerveSubsystem(File directory) {
-    super(directory, new SwervePathPlannerConfig(
-      AutoConstants.TranslationPID,
-      AutoConstants.angleAutoPID,
-      4.5
-    ));
+    super(directory, new BaseSwerveConfig(
+      SwerveConstants.MAX_VEL,
+      SwerveConstants.MAX_ROTATION_VEL,
+      Alliance.Red,
+      new SwervePathPlannerConfig(
+        AutoConstants.TranslationPID,
+        AutoConstants.angleAutoPID,
+        4.5)));
     this.limelight = Limelight.getInstance();
     this.photonVision = new PhotonVision();
     SmartDashboard.putData("POSE APRIL", aprField2d);
@@ -240,46 +238,39 @@ public class SwerveSubsystem extends BaseSwerveSubsystem implements ISwerve {
   @Override
   public void driveAlignAngleButton() {
     if (controller.notUsingJoystick()) {
-      ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(),
-          angleAlign.getDegrees());
-      SmartDashboard.putString("Chassis Speed", speeds.toString());
-      driveFieldOriented(speeds);
+      ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation(), controller.getXtranslation());
+      this.driveFieldOrientedLockedAngle(desiredSpeeds, angleAlign);
       this.state = "DRIVE_ALIGN_ANGLE_BUTTON";
     } else {
-      driveAlignAngleJoy();
+      this.driveAlignAngleJoy();
     }
   }
 
   @Override
   public void driveAlignAngleJoy() {
-    ChassisSpeeds speeds = getTargetSpeedsAngleJoystick(controller.getYtranslation(), controller.getXtranslation(),
-        controller.getCOS_Joystick(), controller.getSIN_Joystick());
-    SmartDashboard.putString("Chassis Speed", speeds.toString());
-    driveFieldOriented(speeds);
+    ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation(), controller.getXtranslation());
+    double angleTarget = Math.atan2(controller.getCOS_Joystick(), controller.getSIN_Joystick());
+    this.driveFieldOrientedLockedAngle(desiredSpeeds, Rotation2d.fromRadians(angleTarget));
     this.state = "DRIVE_ALIGN_ANGLE_JOY";
   }
 
   @Override
   public void driveAlignSpeaker() {
     if (this.controller.isForcingDriverControl()) {
-      driveAlignAngleButton();
+      this.driveAlignAngleButton();
       return;
     }
     Translation2d angleSpeaker;
     Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Red;
     if (alliance == Alliance.Red) {
-      angleSpeaker = getPose().getTranslation().minus(FieldConstants.redGoalPos);
+      angleSpeaker = this.getPose().getTranslation().minus(FieldConstants.redGoalPos);
       this.angleToAimAtSpeaker = angleSpeaker.rotateBy(new Rotation2d(Math.PI)).getAngle().getDegrees();
     } else {
-      angleSpeaker = getPose().getTranslation().minus(FieldConstants.blueGoalPos);
+      angleSpeaker = this.getPose().getTranslation().minus(FieldConstants.blueGoalPos);
       this.angleToAimAtSpeaker = angleSpeaker.getAngle().getDegrees();
     }
-
-    SmartDashboard.putNumber("angle to aim speaker", angleToAimAtSpeaker);
-    ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(),
-        this.angleToAimAtSpeaker);
-
-    driveFieldOriented(speeds);
+    ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation(), controller.getXtranslation());
+    this.driveFieldOrientedLockedAngle(desiredSpeeds, Rotation2d.fromDegrees(this.angleToAimAtSpeaker));
     this.state = "DRIVE_ALIGN_SPEAKER";
   }
 
@@ -293,15 +284,13 @@ public class SwerveSubsystem extends BaseSwerveSubsystem implements ISwerve {
     if (isDetectingNote) {
       this.lostNotesFrameCounter = 0;
       this.targetNotePositionX = photonVision.targetPositionX();
-      ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(),
-          0);
-      driveOmegaPidFieldOriented(speeds, 0, this.targetNotePositionX, this.pidTrackNote, false);
+      ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation(), controller.getXtranslation());
+      driveOmegaPidFieldOriented(desiredSpeeds, 0, this.targetNotePositionX, this.pidTrackNote, false);
     } else {
       this.lostNotesFrameCounter++;
       if (this.lostNotesFrameCounter <= this.MAX_LOST_SPEAKER_FRAMES) {
-        ChassisSpeeds speeds = getTargetSpeedsAngle(controller.getYtranslation(), controller.getXtranslation(),
-            0);
-        driveOmegaPidFieldOriented(speeds, 0, this.lastTxMeasurement, this.pidTrackNote, false);
+        ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation(), controller.getXtranslation());
+        driveOmegaPidFieldOriented(desiredSpeeds, 0, this.lastTxMeasurement, this.pidTrackNote, false);
       } else {
         driveAlignAngleButton();
       }
@@ -328,23 +317,12 @@ public class SwerveSubsystem extends BaseSwerveSubsystem implements ISwerve {
       driveAlignAngleButton();
       return;
     }
-
     angleAlign = targetPose.getRotation();
     Pose2d currentPose = this.getPose();
-    ChassisSpeeds targetSpeeds;
     double[] speeds = pidXyVelocity(targetPose.getX(), currentPose.getX(),
         targetPose.getY(), currentPose.getY());
-
-    Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Red;
-    if (alliance == Alliance.Red) {
-      targetSpeeds = getTargetSpeedsAngle(-1 * speeds[0], -1 * speeds[1],
-          targetPose.getRotation().getDegrees());
-    } else {
-      targetSpeeds = getTargetSpeedsAngle(speeds[0], speeds[1],
-          targetPose.getRotation().getDegrees());
-    }
-    SmartDashboard.putString("target speeds amp", targetSpeeds.toString());
-    this.driveFieldOriented(targetSpeeds);
+    ChassisSpeeds desiredSpeeds = new ChassisSpeeds(speeds[0], speeds[1], 0);
+    this.driveFieldOrientedLockedAngle(desiredSpeeds, targetPose.getRotation());  
   }
 
   @Override
@@ -365,20 +343,19 @@ public class SwerveSubsystem extends BaseSwerveSubsystem implements ISwerve {
 
   private void alignWithAprilTag(double targetX, double targetY, double targetAngle) {
     if (this.controller.isForcingDriverControl()) {
-      driveAlignAngleButton();
+      this.driveAlignAngleButton();
       return;
     }
     if (!this.shooterTopCamera.hasTarget()) {
-      driveAlignAngleButton();
+      this.driveAlignAngleButton();
       return;
     }
     double aprilTagX = this.shooterTopCamera.targetPositionX();
     double aprilTagY = this.shooterTopCamera.targetPositionY();
     double velocityX = -xVelToAprilTag.calculate(aprilTagX, targetX);
     double velocityY = yVelToAprilTag.calculate(aprilTagY, targetY);
-    ChassisSpeeds targetSpeeds = getTargetSpeedsAngle(velocityX, velocityY, targetAngle);
-    SmartDashboard.putString("Target speeds april tag", targetSpeeds.toString());
-    this.driveRobotOriented(targetSpeeds);
+    ChassisSpeeds targetSpeeds = this.inputsToChassisSpeeds(velocityX, velocityY);
+    this.driveRobotOrientedLockedAngle(targetSpeeds, Rotation2d.fromDegrees(targetAngle));
   }
 
   @Override
@@ -455,55 +432,48 @@ public class SwerveSubsystem extends BaseSwerveSubsystem implements ISwerve {
 
   @Override
   public boolean isSwerveInAutoShootZone() {
-    boolean isInFrontOfSpeaker = getPose().getY() > 2.9;
+    boolean isInFrontOfSpeaker = this.getPose().getY() > 2.9;
     boolean isNearSpeaker = distanceFromSpeaker() < 3.5;
     return isNearSpeaker && isInFrontOfSpeaker;
   }
 
   @Override
   public boolean isSwerveInVelocityToAutoShoot() {
-    double velocity = calculateVelocity();
+    double velocity = this.getAbsoluteRobotVelocity();
     return velocity < 1;
   }
 
   @Override
   public boolean isSwerveInVelocityToShoot() {
-    double velocity = calculateVelocity();
+    double velocity = this.getAbsoluteRobotVelocity();
     return velocity < 2.5;
   }
 
-  private double calculateVelocity() {
-    double velocity = Math.sqrt(Math.pow(swerveDrive.getFieldVelocity().vxMetersPerSecond, 2)
-        + Math.pow(swerveDrive.getFieldVelocity().vyMetersPerSecond, 2));
-    SmartDashboard.putNumber("Field Velocity Calculated", velocity);
-    return velocity;
-  }
+  // private void driveFieldOriented(ChassisSpeeds speeds) {
+  //   ChassisSpeeds speedsRotate;
+  //   if (this.controller.rotateLeft().getAsBoolean()) {
+  //     speedsRotate = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, 5);
+  //   } else if (this.controller.rotateRight().getAsBoolean()) {
+  //     speedsRotate = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, -5);
+  //   } else {
+  //     speedsRotate = speeds;
+  //   }
+  //   swerveDrive.driveFieldOriented(speedsRotate);
+  //   this.targetSpeeds = speeds;
+  // }
 
-  private void driveFieldOriented(ChassisSpeeds speeds) {
-    ChassisSpeeds speedsRotate;
-    if (this.controller.rotateLeft().getAsBoolean()) {
-      speedsRotate = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, 5);
-    } else if (this.controller.rotateRight().getAsBoolean()) {
-      speedsRotate = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, -5);
-    } else {
-      speedsRotate = speeds;
-    }
-    swerveDrive.driveFieldOriented(speedsRotate);
-    this.targetSpeeds = speeds;
-  }
-
-  private void driveRobotOriented(ChassisSpeeds speeds) {
-    ChassisSpeeds speedsRotate;
-    if (this.controller.rotateLeft().getAsBoolean()) {
-      speedsRotate = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, 8);
-    } else if (this.controller.rotateRight().getAsBoolean()) {
-      speedsRotate = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, -8);
-    } else {
-      speedsRotate = speeds;
-    }
-    swerveDrive.drive(speedsRotate);
-    this.targetSpeeds = speeds;
-  }
+  // private void driveRobotOriented(ChassisSpeeds speeds) {
+  //   ChassisSpeeds speedsRotate;
+  //   if (this.controller.rotateLeft().getAsBoolean()) {
+  //     speedsRotate = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, 8);
+  //   } else if (this.controller.rotateRight().getAsBoolean()) {
+  //     speedsRotate = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, -8);
+  //   } else {
+  //     speedsRotate = speeds;
+  //   }
+  //   swerveDrive.drive(speedsRotate);
+  //   this.targetSpeeds = speeds;
+  // }
 
   private void driveOmegaPidFieldOriented(ChassisSpeeds speeds, double setpoint, double measurement, PIDController pid,
       boolean invertOmega) {
@@ -514,49 +484,6 @@ public class SwerveSubsystem extends BaseSwerveSubsystem implements ISwerve {
     this.targetSpeeds = speedsPID;
   }
 
-  private ChassisSpeeds getTargetSpeedsAngle(double xInput, double yInput, double angle) {
-    Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Red;
-    if (alliance == Alliance.Red) {
-      xInput = -xInput;
-      yInput = -yInput;
-    }
-    double angleTarget = angle;
-    SmartDashboard.putNumber("Angle Target Speeds", angleTarget);
-    double angleRadians = Units.degreesToRadians(angle);
-    this.targetSpeeds = swerveDrive.swerveController.getTargetSpeeds(xInput, yInput, angleRadians,
-        headingRadians, SwerveConstants.MAX_VEL);
-    double omegamaxed = targetSpeeds.omegaRadiansPerSecond > swerveDrive.getMaximumAngularVelocity()
-        ? swerveDrive.getMaximumAngularVelocity()
-        : targetSpeeds.omegaRadiansPerSecond;
-    targetSpeeds = new ChassisSpeeds(targetSpeeds.vxMetersPerSecond, targetSpeeds.vyMetersPerSecond, omegamaxed);
-    return this.targetSpeeds;
-  }
-
-  private ChassisSpeeds getTargetSpeedsAngleJoystick(double xInput, double yInput, double headingX, double headingY) {
-    Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Red;
-    if (alliance == Alliance.Red) {
-      xInput = -xInput;
-      yInput = -yInput;
-    }
-    double angleTarget = Math.atan2(headingX, headingY);
-    SmartDashboard.putNumber("Angle Target Speeds", Units.radiansToDegrees(angleTarget));
-    this.targetSpeeds = swerveDrive.swerveController.getTargetSpeeds(xInput, yInput, headingX, headingY,
-        headingRadians, SwerveConstants.MAX_VEL);
-    double omegamaxed = targetSpeeds.omegaRadiansPerSecond > swerveDrive.getMaximumAngularVelocity()
-        ? swerveDrive.getMaximumAngularVelocity()
-        : targetSpeeds.omegaRadiansPerSecond;
-    targetSpeeds = new ChassisSpeeds(targetSpeeds.vxMetersPerSecond, targetSpeeds.vyMetersPerSecond, omegamaxed);
-    return this.targetSpeeds;
-  }
-
-  public ChassisSpeeds getFieldVelocity() {
-    return swerveDrive.getFieldVelocity();
-  }
-
-  public ChassisSpeeds getRobotVelocity() {
-    return swerveDrive.getRobotVelocity();
-  }
-
   public double distanceFromSpeaker() {
     Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Red;
     if (alliance == Alliance.Red) {
@@ -564,10 +491,6 @@ public class SwerveSubsystem extends BaseSwerveSubsystem implements ISwerve {
     } else {
       return getPose().getTranslation().getDistance(FieldConstants.blueGoalPos);
     }
-  }
-
-  public void lock() {
-    swerveDrive.lockPose();
   }
 
   /*
@@ -600,14 +523,12 @@ public class SwerveSubsystem extends BaseSwerveSubsystem implements ISwerve {
 
   protected void updateLogs() {
     this.poseVisionLogEntry.appendRadians(this.poseVision2D);
-    this.fieldVelocityCalculatedLogEntry.append(calculateVelocity());
     this.isAlignedWithSpeakerLogEntry.append(isSwerveAlignedWithSpeaker());
     this.isSwerveInAutoShootZoneLogEntry.append(isSwerveInAutoShootZone());
     this.isSwerveInShootVelocityLogEntry.append(isSwerveInVelocityToShoot());
     this.isSwerveInAutoShootVelocityLogEntry.append(isSwerveInVelocityToAutoShoot());
     this.distanceToNearestAmpLogEntry.append(getDistanceToNearestAmp());
     this.isAlingedWithAmpLogEntry.append(isAtAmpPosition());
-    this.velocityCalculatedLogEntry.append(calculateVelocity());
     this.angleToAimSpeakerLogEntry.append(this.angleToAimAtSpeaker);
     this.txMeasurementLlLogEntry.append(this.lastTxMeasurement);
     this.tvMeasurementLlLogEntry.append(limelight.getTV());
