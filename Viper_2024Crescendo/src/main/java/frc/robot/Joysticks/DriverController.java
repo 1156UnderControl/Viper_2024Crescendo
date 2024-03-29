@@ -1,6 +1,7 @@
 package frc.robot.Joysticks;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.JoystickConstants;
@@ -18,9 +19,11 @@ public class DriverController implements IDriverController {
   }
 
   final CommandXboxController driverController;
+  final XboxController driverControllerBoolean;
 
   private DriverController() {
     driverController = new CommandXboxController(0);
+    driverControllerBoolean = new XboxController(0);
   }
 
   @Override
@@ -85,12 +88,12 @@ public class DriverController implements IDriverController {
 
   @Override
   public boolean rotateLeft() {
-    return driverController.leftBumper().getAsBoolean();
+    return driverControllerBoolean.getLeftBumper();
   }
 
   @Override
   public boolean rotateRight() {
-    return driverController.rightBumper().getAsBoolean();
+    return driverControllerBoolean.getRightBumper();
   }
 
   @Override

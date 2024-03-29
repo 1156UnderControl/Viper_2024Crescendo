@@ -551,9 +551,9 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   private void driveFieldOriented(ChassisSpeeds speeds) {
     ChassisSpeeds speedsRotate;
     if (this.controller.rotateLeft()) {
-      speedsRotate = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, 5);
+      speedsRotate = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, 7);
     } else if (this.controller.rotateRight()) {
-      speedsRotate = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, -5);
+      speedsRotate = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, -7);
     } else {
       speedsRotate = speeds;
     }

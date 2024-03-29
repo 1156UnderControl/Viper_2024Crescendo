@@ -249,7 +249,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   }
 
   public void goToIntakePositionHP() {
-    this.goal = 105;
+    this.goal = 103;
   }
 
   @Override

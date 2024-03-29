@@ -5,6 +5,7 @@
 
 package frc.robot.commands.Swerve;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.Java_Is_UnderControl.Limelight.Limelight;
 import frc.robot.RobotSubsystems;
@@ -38,6 +39,7 @@ public class SwerveAlignSpeaker extends Command {
     } else {
       swerve.driveAlignAngleButton();
     }
+    SmartDashboard.putBoolean("hasSeen2Target", hasSeen2Targets);
   }
 
   @Override
