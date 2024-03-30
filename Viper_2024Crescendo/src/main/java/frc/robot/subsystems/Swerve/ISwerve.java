@@ -15,7 +15,7 @@ public interface ISwerve {
 
   void setAngleToAmp();
 
-  void overrideRotationAuto(boolean Override);
+  void overrideRotationAuto(boolean override);
 
   double getDistanceToNearestAmp();
 

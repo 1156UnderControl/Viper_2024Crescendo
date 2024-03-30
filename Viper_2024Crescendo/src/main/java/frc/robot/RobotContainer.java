@@ -22,7 +22,9 @@ import frc.robot.commands.Autonomous.AutonomousAim;
 import frc.robot.commands.Autonomous.AutonomousAimSteal;
 import frc.robot.commands.Autonomous.AutonomousAimSubwoofer;
 import frc.robot.commands.Autonomous.AutonomousCollect;
+import frc.robot.commands.Autonomous.AutonomousCollectAligning;
 import frc.robot.commands.Autonomous.AutonomousDeployOnlyIntake;
+import frc.robot.commands.Autonomous.AutonomousPassThrough;
 import frc.robot.commands.Autonomous.AutonomousSecured;
 import frc.robot.commands.Autonomous.AutonomousShoot;
 import frc.robot.commands.States.ClimbPosition;
@@ -59,6 +61,8 @@ public class RobotContainer {
         "swerve/swerve"));
     this.robot = new RobotSubsystems();
     NamedCommands.registerCommand("Intake", new AutonomousCollect(robot));
+    NamedCommands.registerCommand("Intake Aligning", new AutonomousCollectAligning(robot));
+    NamedCommands.registerCommand("Pass Through", new AutonomousPassThrough(robot));
     NamedCommands.registerCommand("Shoot", new AutonomousShoot(robot).andThen(Commands.waitSeconds(0.1)));
     NamedCommands.registerCommand("Aim Shoot Subwoofer", new AutonomousAimSubwoofer(robot));
     NamedCommands.registerCommand("Aim Shoot 1", new AutonomousAim(robot, 0));

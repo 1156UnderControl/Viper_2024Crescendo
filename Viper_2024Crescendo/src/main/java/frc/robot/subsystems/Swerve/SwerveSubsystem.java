@@ -553,7 +553,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   }
 
   public Optional<Rotation2d> getRotationTargetOverride() {
-    if (overrideRotationAuto) {
+    if (overrideRotationAuto && photonVision.hasTarget()) {
       return Optional.of(swerveDrive.getOdometryHeading()
           .minus(new Rotation2d(Units.degreesToRadians(photonVision.targetPositionX()))));
     } else {

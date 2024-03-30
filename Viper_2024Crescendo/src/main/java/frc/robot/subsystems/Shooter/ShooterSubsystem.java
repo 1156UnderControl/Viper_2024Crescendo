@@ -325,6 +325,14 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   }
 
   @Override
+  public void passThrough() {
+    this.setVelocityFlywheel(500);
+    this.goToIntakePosition();
+    this.feederMotor.set(ShooterConstants.setpoints.VELOCITY_FEED_COLLECT);
+    this.state = "PASSING_THROUGH";
+  }
+
+  @Override
   public void goToSecuredPosition() {
     correctNoteCollected();
     this.goal = ShooterConstants.setpoints.ANGLE_SECURED;

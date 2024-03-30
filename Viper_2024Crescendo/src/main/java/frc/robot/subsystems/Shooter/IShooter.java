@@ -7,6 +7,8 @@ public interface IShooter {
 
   void intakeAuto();
 
+  void passThrough();
+
   void stopIntaking();
 
   void stopFeeder();
