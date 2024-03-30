@@ -6,6 +6,7 @@ import frc.robot.RobotSubsystems;
 
 public class AutonomousShoot extends Command {
   private RobotSubsystems robot;
+  private edu.wpi.first.wpilibj.Timer timer = new edu.wpi.first.wpilibj.Timer();
 
   public AutonomousShoot(RobotSubsystems robot) {
     this.robot = robot;
@@ -17,6 +18,7 @@ public class AutonomousShoot extends Command {
     Robot.autonomousState = "Shoot";
     this.robot.intake.intake();
     this.robot.intake.goToIntakePosition();
+    timer.start();
   }
 
   @Override
@@ -26,10 +28,11 @@ public class AutonomousShoot extends Command {
 
   @Override
   public void end(boolean interrupted) {
+    timer.stop();
   }
 
   @Override
   public boolean isFinished() {
-    return this.robot.shooter.hasShooted();
+    return this.robot.shooter.hasShooted() || timer.get() > 2;
   }
 }
