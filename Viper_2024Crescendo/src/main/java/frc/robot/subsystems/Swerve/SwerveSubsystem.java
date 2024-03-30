@@ -12,6 +12,7 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
 
@@ -62,6 +63,8 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
   public boolean alignedWithAngle;
 
   private boolean notAbleToRotate = false;
+
+  private boolean overrideRotationAuto = false;
 
   private final int MAX_LOST_SPEAKER_FRAMES = 2;
 
@@ -182,6 +185,7 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     setupYAGSL_JSON(directory);
     setupPathPlanner();
+    PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
     this.updateLogs();
   }
 
@@ -546,6 +550,20 @@ public class SwerveSubsystem extends SubsystemBase implements ISwerve {
         },
         this // Reference to this subsystem to set requirements
     );
+  }
+
+  public Optional<Rotation2d> getRotationTargetOverride() {
+    if (overrideRotationAuto) {
+      return Optional.of(swerveDrive.getOdometryHeading()
+          .minus(new Rotation2d(Units.degreesToRadians(photonVision.targetPositionX()))));
+    } else {
+      return Optional.empty();
+    }
+  }
+
+  @Override
+  public void overrideRotationAuto(boolean Override) {
+    overrideRotationAuto = Override;
   }
 
   private void driveFieldOriented(ChassisSpeeds speeds) {
