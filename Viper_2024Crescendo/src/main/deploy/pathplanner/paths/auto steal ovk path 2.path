@@ -1,0 +1,134 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.787125015036219,
+        "y": 3.2999000290743905
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.835702716638713,
+        "y": 2.6406689696621193
+      },
+      "isLocked": false,
+      "linkedName": "end path1 steal ovk"
+    },
+    {
+      "anchor": {
+        "x": 6.125579960866886,
+        "y": 0.5039565383425201
+      },
+      "prevControl": {
+        "x": 5.4320195250824845,
+        "y": 0.39239258119394893
+      },
+      "nextControl": {
+        "x": 6.667247532688872,
+        "y": 0.5910874856307304
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.8672922543243673,
+        "y": 4.34399460081996
+      },
+      "prevControl": {
+        "x": 2.490299803213864,
+        "y": 3.844807992484736
+      },
+      "nextControl": {
+        "x": 1.3452977111576496,
+        "y": 4.762244244885038
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.3258883960232297,
+        "y": 3.1529588552616272
+      },
+      "prevControl": {
+        "x": 1.3296629710416998,
+        "y": 3.9434720061126085
+      },
+      "nextControl": {
+        "x": 1.3167111654977162,
+        "y": 1.2309619726165464
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.3258883960232297,
+        "y": 4.5216320284632365
+      },
+      "prevControl": {
+        "x": 0.04513731067237483,
+        "y": 1.7429881446952062
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.1,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 2.05,
+      "rotationDegrees": -27.933185354675928,
+      "rotateFast": true
+    },
+    {
+      "waypointRelativePos": 3.4,
+      "rotationDegrees": -93.44601520457313,
+      "rotateFast": true
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.35,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake Aligning"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 100.0,
+    "maxAngularAcceleration": 300.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -41.44627107617441,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "auto steal overkill",
+  "previewStartingState": {
+    "rotation": -36.94999999999999,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}
