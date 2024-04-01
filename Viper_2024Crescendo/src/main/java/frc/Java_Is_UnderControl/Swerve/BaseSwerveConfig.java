@@ -4,13 +4,13 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class BaseSwerveConfig {
 
-  public double maxTranslationSpeed;
+  public final double maxTranslationSpeed;
 
-  public double maxRotationSpeed;
+  public final double maxRotationSpeed;
 
-  public Alliance defaultAlliance;
+  public final Alliance defaultAlliance;
 
-  public SwervePathPlannerConfig pathPlannerConfig;
+  public final SwervePathPlannerConfig pathPlannerConfig;
 
   public BaseSwerveConfig(double maxTranslationSpeed, double maxRotationSpeed, Alliance defaultAlliance,
       SwervePathPlannerConfig pathPlannerConfig) {
