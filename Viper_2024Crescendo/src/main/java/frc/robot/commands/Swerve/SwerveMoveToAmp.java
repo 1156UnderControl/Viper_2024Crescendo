@@ -23,7 +23,7 @@ public class SwerveMoveToAmp extends Command {
 
   @Override
   public void execute() {
-    if (swerve.isAlignedWithAngle()) {
+    if (this.swerve.isAtAmpAngle()) {
       angleAligned = true;
     }
     if (angleAligned) {

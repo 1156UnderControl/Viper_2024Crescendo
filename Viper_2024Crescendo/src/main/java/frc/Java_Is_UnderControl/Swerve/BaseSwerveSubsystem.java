@@ -12,6 +12,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomBooleanLogger;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomChassisSpeedsLogger;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomDoubleLogger;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomPose2dLogger;
@@ -49,6 +50,8 @@ public abstract class BaseSwerveSubsystem extends SubsystemBase {
   private CustomDoubleLogger targetHeadingLogger = new CustomDoubleLogger("/SwerveSubsystem/TargetHeadingDegrees");
 
   private CustomDoubleLogger measuredHeadingLogger = new CustomDoubleLogger("/SwerveSubsystem/MeasuredHeadingDegrees");
+
+  private CustomBooleanLogger isAtTargetHeading = new CustomBooleanLogger("/SwerveSubsystem/IsAtTargetHeading");
 
   protected BaseSwerveSubsystem(File directory, BaseSwerveConfig config) {
     this.maxTranslationSpeed = config.maxTranslationSpeed;
@@ -222,13 +225,16 @@ public abstract class BaseSwerveSubsystem extends SubsystemBase {
     return new ChassisSpeeds(xInput * this.maxTranslationSpeed, yInput * this.maxTranslationSpeed, 0);
   }
 
-  protected boolean isAtTargetAngle(double toleranceDegrees) {
+  protected boolean isAtTargetHeading(double toleranceDegrees) {
     if (this.targetHeadingDegrees == Double.NaN) {
+      this.isAtTargetHeading.append(false);
       return false;
     }
     Rotation2d targetHeading = Rotation2d.fromDegrees(this.targetHeadingDegrees);
     Rotation2d currentHeading = this.getHeading();
-    double angleDifference = Math.abs(targetHeading.minus(currentHeading).getDegrees());
-    return angleDifference <= toleranceDegrees;
+    double headingDifferenceDegrees = Math.abs(targetHeading.minus(currentHeading).getDegrees());
+    boolean isAtHeading = headingDifferenceDegrees <= toleranceDegrees;
+    this.isAtTargetHeading.append(isAtHeading);
+    return isAtHeading;
   }
 }
