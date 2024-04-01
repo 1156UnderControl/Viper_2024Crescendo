@@ -10,6 +10,7 @@ public class ShooterConstants {
   public static final int port_IR_IN = 1;
 
   public static final double pivotGoalDeadband = 1;
+  public static final double pivotGoalAutoShootDeadband = 5;
 
   public class tunning_values_pivot {
     public static final double KS = 0.63;
