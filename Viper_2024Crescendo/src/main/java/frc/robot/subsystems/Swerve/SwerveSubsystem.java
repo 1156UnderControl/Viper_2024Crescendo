@@ -138,7 +138,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
       poseEstimator,
       poseEstimator,
       new PidConfig(0.7, 0, 0)));
-    this.limelight = Limelight.getInstance();
+    // this.limelight = Limelight.getInstance();
     this.photonVision = new PhotonVision();
     this.updateLogs();
   }
