@@ -3,6 +3,7 @@
         "Holonomic",
         "Odometry",
         "Teleop",
+        "teleoperated",
         "YAGSL"
     ]
 }
