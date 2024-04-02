@@ -48,7 +48,7 @@ public abstract class OdometryEnabledSwerveSubsystem extends BaseSwerveSubsystem
     if(Robot.isInAutonomous) {
       this.updateOdometryWithPoseEstimator(this.autonomousPoseEstimator);
     } else {
-      this.updateOdometryWithPoseEstimator(this.autonomousPoseEstimator);
+      this.updateOdometryWithPoseEstimator(this.teleopPoseEstimator);
     }
   }
 
