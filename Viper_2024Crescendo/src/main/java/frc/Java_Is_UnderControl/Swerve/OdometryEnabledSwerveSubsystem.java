@@ -1,16 +1,25 @@
 package frc.Java_Is_UnderControl.Swerve;
 
 import java.io.File;
+import java.util.Optional;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomBooleanLogger;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomPose2dLogger;
+import frc.Java_Is_UnderControl.Vision.Odometry.PoseEstimation;
+import frc.Java_Is_UnderControl.Vision.Odometry.PoseEstimator;
+import frc.robot.Robot;
 
 public abstract class OdometryEnabledSwerveSubsystem extends BaseSwerveSubsystem {
+
+  private PoseEstimator autonomousPoseEstimator;
+
+  private PoseEstimator teleopPoseEstimator;
 
   private PIDController moveToPoseXAxisPid;
 
@@ -33,6 +42,24 @@ public abstract class OdometryEnabledSwerveSubsystem extends BaseSwerveSubsystem
     this.moveToPoseYAxisPid = new PIDController(config.moveToPosePidConfig.kP, config.moveToPosePidConfig.kI,
       config.moveToPosePidConfig.kD);
     this.targetPose = new Pose2d();
+  }
+
+  private void updateOdometry(){
+    if(Robot.isInAutonomous) {
+      this.updateOdometryWithPoseEstimator(this.autonomousPoseEstimator);
+    } else {
+      this.updateOdometryWithPoseEstimator(this.autonomousPoseEstimator);
+    }
+  }
+
+  private void updateOdometryWithPoseEstimator(PoseEstimator poseEstimator) {
+    Pose2d referencePose = this.swerveDrive.swerveDrivePoseEstimator.getEstimatedPosition();
+    Optional<PoseEstimation> possibleEstimatedPose = poseEstimator.getEstimatedPose(referencePose);
+    if(possibleEstimatedPose.isPresent()){
+      PoseEstimation estimatedPose = possibleEstimatedPose.get();
+      Pose2d estimatedPose2d = estimatedPose.estimatedPose.toPose2d();
+      this.swerveDrive.addVisionMeasurement(estimatedPose2d, estimatedPose.timestampSeconds);
+    }
   }
 
   protected double getDistanceToPosition(Translation2d targetPosition) {
@@ -85,6 +112,7 @@ public abstract class OdometryEnabledSwerveSubsystem extends BaseSwerveSubsystem
 
   @Override
   public void periodic() {
+    this.updateOdometry();
     super.periodic();
     this.updateOdometrySwerveLogs();
   }
