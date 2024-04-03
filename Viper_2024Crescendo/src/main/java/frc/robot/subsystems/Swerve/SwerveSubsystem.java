@@ -5,6 +5,9 @@
 package frc.robot.subsystems.Swerve;
 
 import java.io.File;
+import java.util.Optional;
+
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -44,6 +47,8 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   public boolean alignedWithAngle;
 
   private boolean notAbleToRotate = false;
+
+  private boolean overrideRotationAuto = false;
 
   private final int MAX_LOST_SPEAKER_FRAMES = 2;
 
@@ -132,7 +137,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
         poseEstimator,
         new PidConfig(0.7, 0, 0)));
     // this.limelight = Limelight.getInstance();
-    this.photonVision = new PhotonVision();
+    PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
     this.updateLogs();
   }
 
@@ -406,6 +411,20 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   public boolean isSwerveInVelocityToShoot() {
     double velocity = this.getAbsoluteRobotVelocity();
     return velocity < 2.5;
+  }
+
+  public Optional<Rotation2d> getRotationTargetOverride() {
+    if (overrideRotationAuto && photonVision.hasTarget()) {
+      return Optional.of(swerveDrive.getOdometryHeading()
+          .minus(new Rotation2d(Units.degreesToRadians(photonVision.targetPositionX()))));
+    } else {
+      return Optional.empty();
+    }
+  }
+
+  @Override
+  public void overrideRotationAuto(boolean Override) {
+    overrideRotationAuto = Override;
   }
 
   private void driveOmegaPidFieldOriented(ChassisSpeeds speeds, double setpoint, double measurement, PIDController pid,

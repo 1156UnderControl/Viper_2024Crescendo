@@ -15,6 +15,8 @@ public interface ISwerve {
 
   void setAngleToAmp();
 
+  void overrideRotationAuto(boolean override);
+
   double getDistanceToNearestAmp();
 
   boolean isSwerveAlignedWithSpeaker();
