@@ -20,9 +20,9 @@ public class CustomDoubleLogger extends DoubleLogEntry {
   @Override
   public void append(double value) {
     super.append(value);
-    if (CustomDoubleLogger.isFmsMatch) {
+    if (!CustomDoubleLogger.isFmsMatch) {
       SmartDashboard.putNumber(this.name, value);
     }
   }
-  
+
 }

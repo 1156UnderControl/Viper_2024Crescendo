@@ -20,9 +20,9 @@ public class CustomStringLogger extends StringLogEntry {
   @Override
   public void append(String value) {
     super.append(value);
-    if (CustomStringLogger.isFmsMatch) {
+    if (!CustomStringLogger.isFmsMatch) {
       SmartDashboard.putString(this.name, value);
     }
   }
-  
+
 }

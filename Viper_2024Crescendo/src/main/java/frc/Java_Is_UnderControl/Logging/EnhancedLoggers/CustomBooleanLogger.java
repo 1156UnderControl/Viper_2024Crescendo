@@ -20,9 +20,9 @@ public class CustomBooleanLogger extends BooleanLogEntry {
   @Override
   public void append(boolean value) {
     super.append(value);
-    if (CustomBooleanLogger.isFmsMatch) {
+    if (!CustomBooleanLogger.isFmsMatch) {
       SmartDashboard.putBoolean(this.name, value);
     }
   }
-  
+
 }

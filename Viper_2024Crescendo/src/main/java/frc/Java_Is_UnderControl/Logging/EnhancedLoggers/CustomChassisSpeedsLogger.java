@@ -21,7 +21,7 @@ public class CustomChassisSpeedsLogger extends ChassisSpeedsLogEntry {
   @Override
   public void append(ChassisSpeeds chassisSpeeds) {
     super.append(chassisSpeeds);
-    if (CustomChassisSpeedsLogger.isFmsMatch) {
+    if (!CustomChassisSpeedsLogger.isFmsMatch) {
       double[] data = new double[3];
       data[0] = chassisSpeeds.vxMetersPerSecond;
       data[1] = chassisSpeeds.vyMetersPerSecond;
@@ -29,5 +29,5 @@ public class CustomChassisSpeedsLogger extends ChassisSpeedsLogEntry {
       SmartDashboard.putNumberArray(this.name, data);
     }
   }
-  
+
 }

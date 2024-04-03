@@ -21,7 +21,7 @@ public class CustomPose2dLogger extends Pose2dLogEntry {
   @Override
   public void appendRadians(Pose2d pose) {
     super.appendRadians(pose);
-    if (CustomPose2dLogger.isFmsMatch) {
+    if (!CustomPose2dLogger.isFmsMatch) {
       double[] data = new double[3];
       data[0] = pose.getTranslation().getX();
       data[1] = pose.getTranslation().getY();
@@ -41,5 +41,5 @@ public class CustomPose2dLogger extends Pose2dLogEntry {
       SmartDashboard.putNumberArray(this.name, data);
     }
   }
-  
+
 }
