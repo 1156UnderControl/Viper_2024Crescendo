@@ -449,7 +449,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private double calculateGoalFlywheelSetpointSpeaker() {
     interpolationTreeFlywheelRPM();
-    double setpointInterpolation = pivotAngleMap.get(swerve.distanceFromSpeaker());
+    double setpointInterpolation = flywheelRPMmap.get(swerve.distanceFromSpeaker());
     if (setpointInterpolation > ShooterConstants.setpoints.LIMIT_MAX_INTERPOLATION_RPM) {
       return ShooterConstants.setpoints.LIMIT_MAX_INTERPOLATION_RPM;
     }
@@ -457,7 +457,6 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     if (setpointInterpolation < ShooterConstants.setpoints.LIMIT_MIN_INTERPOLATION_RPM) {
       return ShooterConstants.setpoints.LIMIT_MIN_INTERPOLATION_RPM;
     }
-
     return setpointInterpolation;
   }
 
