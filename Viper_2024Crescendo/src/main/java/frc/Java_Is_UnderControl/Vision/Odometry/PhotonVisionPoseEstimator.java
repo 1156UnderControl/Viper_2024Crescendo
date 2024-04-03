@@ -17,9 +17,19 @@ public class PhotonVisionPoseEstimator implements PoseEstimator {
 
   PhotonPoseEstimator photonPoseEstimator;
 
+  boolean only2TagsMeasurements = false;
+
   private AprilTagFieldLayout fieldAprilTagLayout;
 
   public PhotonVisionPoseEstimator(PhotonCamera camera, Transform3d cameraPosition) {
+    this.fieldAprilTagLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+    this.fieldAprilTagLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
+    this.photonPoseEstimator = new PhotonPoseEstimator(this.fieldAprilTagLayout,
+        PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, cameraPosition);
+    this.photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+  }
+
+  public PhotonVisionPoseEstimator(PhotonCamera camera, Transform3d cameraPosition, boolean only2TagsMeasurements) {
     this.fieldAprilTagLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
     this.fieldAprilTagLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
     this.photonPoseEstimator = new PhotonPoseEstimator(this.fieldAprilTagLayout,
@@ -34,6 +44,9 @@ public class PhotonVisionPoseEstimator implements PoseEstimator {
       return Optional.empty();
     }
     PoseEstimation poseEstimation = convertPhotonPoseEstimation(photonPoseEstimation.get());
+    if (only2TagsMeasurements && poseEstimation.numberOfTargetsUsed < 2) {
+      return Optional.empty();
+    }
     return Optional.of(poseEstimation);
   }
 

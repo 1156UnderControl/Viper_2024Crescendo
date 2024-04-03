@@ -106,11 +106,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
 
   public static SwerveSubsystem getInstance(File directory) {
     if (swerveInstance == null) {
-      // PhotonCamera odometryCamera = new PhotonCamera("limelight");
-      // Transform3d odometryCameraPosition = new Transform3d(
-      // new Translation3d(-0.6, 0.0, 0.26),
-      // new Rotation3d(0, Units.degreesToRadians(24), Math.PI));
-      PoseEstimator odometryPoseEstimator = new LimelightPoseEstimator("limelight-back");
+      PoseEstimator odometryPoseEstimator = new LimelightPoseEstimator("limelight-back", true);
       swerveInstance = new SwerveSubsystem(directory, odometryPoseEstimator);
     }
     return swerveInstance;

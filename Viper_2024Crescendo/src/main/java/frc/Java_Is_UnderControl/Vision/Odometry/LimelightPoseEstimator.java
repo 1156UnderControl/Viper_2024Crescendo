@@ -14,6 +14,8 @@ public class LimelightPoseEstimator implements PoseEstimator {
 
   String limelightName;
 
+  boolean only2TagsMeasurements = false;
+
   CustomBooleanLogger isDetectingLogger;
 
   CustomPose2dLogger detectedPoseLogger;
@@ -30,6 +32,17 @@ public class LimelightPoseEstimator implements PoseEstimator {
         "/Vision/LimelightPoseEstimator/" + limelightName + "/NumberOfDetectedTags");
   }
 
+  public LimelightPoseEstimator(String limelightName, boolean only2TagsMeasurements) {
+    this.limelightName = limelightName;
+    this.isDetectingLogger = new CustomBooleanLogger(
+        "/Vision/LimelightPoseEstimator/" + limelightName + "/IsDetectingTags");
+    this.detectedPoseLogger = new CustomPose2dLogger(
+        "/Vision/LimelightPoseEstimator/" + limelightName + "/DetectedPose");
+    this.numberOfDetectedTagsLogger = new CustomDoubleLogger(
+        "/Vision/LimelightPoseEstimator/" + limelightName + "/NumberOfDetectedTags");
+    this.only2TagsMeasurements = only2TagsMeasurements;
+  }
+
   public Optional<PoseEstimation> getEstimatedPose(Pose2d referencePose) {
     if (!LimelightHelpers.getTV(this.limelightName)) {
       this.isDetectingLogger.append(false);
@@ -41,6 +54,9 @@ public class LimelightPoseEstimator implements PoseEstimator {
     this.isDetectingLogger.append(true);
     this.detectedPoseLogger.appendRadians(poseEstimation.estimatedPose.toPose2d());
     this.numberOfDetectedTagsLogger.append(poseEstimation.numberOfTargetsUsed);
+    if (only2TagsMeasurements && poseEstimation.numberOfTargetsUsed < 2) {
+      return Optional.empty();
+    }
     return Optional.of(poseEstimation);
   }
 

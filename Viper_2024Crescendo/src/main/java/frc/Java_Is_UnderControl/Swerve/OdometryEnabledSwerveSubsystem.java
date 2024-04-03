@@ -3,6 +3,7 @@ package frc.Java_Is_UnderControl.Swerve;
 import java.io.File;
 import java.util.Optional;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -64,6 +65,9 @@ public abstract class OdometryEnabledSwerveSubsystem extends BaseSwerveSubsystem
     if (possibleEstimatedPose.isPresent()) {
       PoseEstimation estimatedPose = possibleEstimatedPose.get();
       this.poseVision = estimatedPose.estimatedPose.toPose2d();
+      if (!Robot.isInAutonomous) {
+        this.swerveDrive.swerveDrivePoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 99999));
+      }
       this.swerveDrive.addVisionMeasurement(this.poseVision, estimatedPose.timestampSeconds);
     }
   }
