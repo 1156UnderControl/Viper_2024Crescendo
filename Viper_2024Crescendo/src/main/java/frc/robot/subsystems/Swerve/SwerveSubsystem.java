@@ -5,27 +5,17 @@
 package frc.robot.subsystems.Swerve;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Optional;
-
-import org.photonvision.EstimatedRobotPose;
-import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.Java_Is_UnderControl.Control.PidConfig;
-import frc.Java_Is_UnderControl.Limelight.Limelight;
 import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
 import frc.Java_Is_UnderControl.Logging.Pose2dLogEntry;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomBooleanLogger;
@@ -37,9 +27,8 @@ import frc.Java_Is_UnderControl.Swerve.OdometryEnabledSwerveSubsystem;
 import frc.Java_Is_UnderControl.Swerve.SwervePathPlannerConfig;
 import frc.Java_Is_UnderControl.Util.StabilizeChecker;
 import frc.Java_Is_UnderControl.Util.Util;
-import frc.Java_Is_UnderControl.Vision.Odometry.PhotonVisionPoseEstimator;
+import frc.Java_Is_UnderControl.Vision.Odometry.LimelightPoseEstimator;
 import frc.Java_Is_UnderControl.Vision.Odometry.PoseEstimator;
-import frc.robot.Robot;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CommandsConstants;
 import frc.robot.Constants.FieldConstants;
@@ -80,17 +69,23 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   private Pose2dLogEntry poseVisionLogEntry = new Pose2dLogEntry(DataLogManager.getLog(),
       "/SwerveSubsystem/PoseVision");
 
-  private CustomBooleanLogger isAlignedWithSpeakerLogEntry = new CustomBooleanLogger("/SwerveSubsystem/SpeakerAlign/isAligned");
+  private CustomBooleanLogger isAlignedWithSpeakerLogEntry = new CustomBooleanLogger(
+      "/SwerveSubsystem/SpeakerAlign/isAligned");
 
-  private CustomBooleanLogger isSwerveInAutoShootZoneLogEntry = new CustomBooleanLogger("/SwerveSubsystem/SpeakerAlign/isInAutoShootZone");
+  private CustomBooleanLogger isSwerveInAutoShootZoneLogEntry = new CustomBooleanLogger(
+      "/SwerveSubsystem/SpeakerAlign/isInAutoShootZone");
 
-  private CustomBooleanLogger isSwerveInAutoShootVelocityLogEntry = new CustomBooleanLogger("/SwerveSubsystem/SpeakerAlign/isInAutoShootVelocity");
+  private CustomBooleanLogger isSwerveInAutoShootVelocityLogEntry = new CustomBooleanLogger(
+      "/SwerveSubsystem/SpeakerAlign/isInAutoShootVelocity");
 
-  private CustomBooleanLogger isSwerveInShootVelocityLogEntry = new CustomBooleanLogger("/SwerveSubsystem/SpeakerAlign/isInShootVelocity");
+  private CustomBooleanLogger isSwerveInShootVelocityLogEntry = new CustomBooleanLogger(
+      "/SwerveSubsystem/SpeakerAlign/isInShootVelocity");
 
-  private CustomDoubleLogger distanceToNearestAmpLogEntry = new CustomDoubleLogger("/SwerveSubsystem/AutoAmp/DistanceToNearestAmp");
+  private CustomDoubleLogger distanceToNearestAmpLogEntry = new CustomDoubleLogger(
+      "/SwerveSubsystem/AutoAmp/DistanceToNearestAmp");
 
-  private CustomBooleanLogger isAtAmpPositionLogEntry = new CustomBooleanLogger("/SwerveSubsystem/AutoAmp/isAtAmpPosition");
+  private CustomBooleanLogger isAtAmpPositionLogEntry = new CustomBooleanLogger(
+      "/SwerveSubsystem/AutoAmp/isAtAmpPosition");
 
   private String state = "DRIVE_ALIGN_ANGLE_BUTTON";
 
@@ -109,11 +104,11 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
 
   public static SwerveSubsystem getInstance(File directory) {
     if (swerveInstance == null) {
-      PhotonCamera odometryCamera = new PhotonCamera("limelight");
-      Transform3d odometryCameraPosition = new Transform3d(
-        new Translation3d(-0.6, 0.0, 0.26),
-        new Rotation3d(0, Units.degreesToRadians(24), Math.PI));
-      PoseEstimator odometryPoseEstimator = new PhotonVisionPoseEstimator(odometryCamera, odometryCameraPosition);
+      // PhotonCamera odometryCamera = new PhotonCamera("limelight");
+      // Transform3d odometryCameraPosition = new Transform3d(
+      // new Translation3d(-0.6, 0.0, 0.26),
+      // new Rotation3d(0, Units.degreesToRadians(24), Math.PI));
+      PoseEstimator odometryPoseEstimator = new LimelightPoseEstimator("limelight-back");
       swerveInstance = new SwerveSubsystem(directory, odometryPoseEstimator);
     }
     return swerveInstance;
@@ -128,16 +123,16 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
 
   private SwerveSubsystem(File directory, PoseEstimator poseEstimator) {
     super(directory, new OdometryEnabledSwerveConfig(
-      SwerveConstants.MAX_VEL,
-      SwerveConstants.MAX_ROTATION_VEL,
-      Alliance.Red,
-      new SwervePathPlannerConfig(
-        AutoConstants.TranslationPID,
-        AutoConstants.angleAutoPID,
-        4.5),
-      poseEstimator,
-      poseEstimator,
-      new PidConfig(0.7, 0, 0)));
+        SwerveConstants.MAX_VEL,
+        SwerveConstants.MAX_ROTATION_VEL,
+        Alliance.Red,
+        new SwervePathPlannerConfig(
+            AutoConstants.TranslationPID,
+            AutoConstants.angleAutoPID,
+            4.5),
+        poseEstimator,
+        poseEstimator,
+        new PidConfig(0.7, 0, 0)));
     // this.limelight = Limelight.getInstance();
     this.photonVision = new PhotonVision();
     this.updateLogs();
@@ -150,60 +145,68 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   }
 
   // private void updateOdometryWithVision() {
-  //   swerveDrive.updateOdometry();
-  //   Optional<EstimatedRobotPose> estimation = limelight
-  //       .getEstimatedGlobalPose(swerveDrive.swerveDrivePoseEstimator.getEstimatedPosition());
-  //   if (estimation.isPresent()) {
-  //     EstimatedRobotPose fakeRobotPoseIfNull = new EstimatedRobotPose(new Pose3d(),
-  //         0, new ArrayList<>(), PoseStrategy.LOWEST_AMBIGUITY);
-  //     limelight.setPipeline(0);
-  //     poseVision2D = estimation.orElse(fakeRobotPoseIfNull).estimatedPose.toPose2d();
-  //     poseVision3D = estimation.orElse(fakeRobotPoseIfNull).estimatedPose;
-  //     if (Robot.isInAutonomous) {
-  //       OdometryCorrectionInAuto(estimation, fakeRobotPoseIfNull);
-  //     } else {
-  //       OdometryCorrectionInTeleOp(estimation, fakeRobotPoseIfNull);
-  //     }
-  //   }
+  // swerveDrive.updateOdometry();
+  // Optional<EstimatedRobotPose> estimation = limelight
+  // .getEstimatedGlobalPose(swerveDrive.swerveDrivePoseEstimator.getEstimatedPosition());
+  // if (estimation.isPresent()) {
+  // EstimatedRobotPose fakeRobotPoseIfNull = new EstimatedRobotPose(new Pose3d(),
+  // 0, new ArrayList<>(), PoseStrategy.LOWEST_AMBIGUITY);
+  // limelight.setPipeline(0);
+  // poseVision2D =
+  // estimation.orElse(fakeRobotPoseIfNull).estimatedPose.toPose2d();
+  // poseVision3D = estimation.orElse(fakeRobotPoseIfNull).estimatedPose;
+  // if (Robot.isInAutonomous) {
+  // OdometryCorrectionInAuto(estimation, fakeRobotPoseIfNull);
+  // } else {
+  // OdometryCorrectionInTeleOp(estimation, fakeRobotPoseIfNull);
+  // }
+  // }
   // }
 
-  // private void OdometryCorrectionInTeleOp(Optional<EstimatedRobotPose> estimation,
-  //     EstimatedRobotPose fakeRobotPoseIfNull) {
-  //   if (estimation.get().targetsUsed.size() >= 2) {
-  //     swerveDrive.addVisionMeasurement(poseVision2D, estimation.orElse(fakeRobotPoseIfNull).timestampSeconds);
-  //     twoApriltagsDetected = true;
-  //   } else if (poseVision2D.getTranslation().getDistance(getPose().getTranslation()) < 0.7
-  //       && poseInTheField(poseVision2D)
-  //       && limelight.getTV() && limelight.getDistance() < 2) {
-  //     swerveDrive.addVisionMeasurement(poseVision2D, estimation.orElse(fakeRobotPoseIfNull).timestampSeconds);
-  //     twoApriltagsDetected = false;
-  //   } else {
-  //     twoApriltagsDetected = false;
-  //   }
+  // private void OdometryCorrectionInTeleOp(Optional<EstimatedRobotPose>
+  // estimation,
+  // EstimatedRobotPose fakeRobotPoseIfNull) {
+  // if (estimation.get().targetsUsed.size() >= 2) {
+  // swerveDrive.addVisionMeasurement(poseVision2D,
+  // estimation.orElse(fakeRobotPoseIfNull).timestampSeconds);
+  // twoApriltagsDetected = true;
+  // } else if
+  // (poseVision2D.getTranslation().getDistance(getPose().getTranslation()) < 0.7
+  // && poseInTheField(poseVision2D)
+  // && limelight.getTV() && limelight.getDistance() < 2) {
+  // swerveDrive.addVisionMeasurement(poseVision2D,
+  // estimation.orElse(fakeRobotPoseIfNull).timestampSeconds);
+  // twoApriltagsDetected = false;
+  // } else {
+  // twoApriltagsDetected = false;
+  // }
   // }
 
   // private boolean poseInTheField(Pose2d pose) {
-  //   boolean poseInXofField = pose.getX() > 0 && pose.getX() < 16.5;
-  //   boolean poseInYofField = pose.getY() > 0 && pose.getY() < 8;
-  //   return poseInXofField && poseInYofField;
+  // boolean poseInXofField = pose.getX() > 0 && pose.getX() < 16.5;
+  // boolean poseInYofField = pose.getY() > 0 && pose.getY() < 8;
+  // return poseInXofField && poseInYofField;
   // }
 
-  // private void OdometryCorrectionInAuto(Optional<EstimatedRobotPose> estimation,
-  //     EstimatedRobotPose fakeRobotPoseIfNull) {
-  //   if (estimation.get().targetsUsed.size() >= 2) {
-  //     swerveDrive.addVisionMeasurement(poseVision2D, estimation.orElse(fakeRobotPoseIfNull).timestampSeconds);
-  //     twoApriltagsDetected = true;
-  //   }
+  // private void OdometryCorrectionInAuto(Optional<EstimatedRobotPose>
+  // estimation,
+  // EstimatedRobotPose fakeRobotPoseIfNull) {
+  // if (estimation.get().targetsUsed.size() >= 2) {
+  // swerveDrive.addVisionMeasurement(poseVision2D,
+  // estimation.orElse(fakeRobotPoseIfNull).timestampSeconds);
+  // twoApriltagsDetected = true;
+  // }
   // }
 
   @Override
   public void driveAlignAngleButton() {
-    if(this.isControllerAskingForRotation()){
+    if (this.isControllerAskingForRotation()) {
       this.driveRotating();
       return;
     }
     if (controller.notUsingJoystick()) {
-      ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation(), controller.getXtranslation());
+      ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation(),
+          controller.getXtranslation());
       this.driveFieldOrientedLockedAngle(desiredSpeeds, angleAlign);
       this.state = "DRIVE_ALIGN_ANGLE_BUTTON";
     } else {
@@ -213,26 +216,30 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
 
   @Override
   public void driveAlignAngleJoy() {
-    ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation(), controller.getXtranslation());
+    ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation(),
+        controller.getXtranslation());
     double angleTarget = Math.atan2(controller.getCOS_Joystick(), controller.getSIN_Joystick());
     this.driveFieldOrientedLockedAngle(desiredSpeeds, Rotation2d.fromRadians(angleTarget));
     this.state = "DRIVE_ALIGN_ANGLE_JOY";
   }
 
-  public void driveRotating(){
-    ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation(), controller.getXtranslation());
+  public void driveRotating() {
+    ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation(),
+        controller.getXtranslation());
     ChassisSpeeds speedsRotate;
     if (this.controller.rotateLeft().getAsBoolean()) {
-      speedsRotate = new ChassisSpeeds(desiredSpeeds.vxMetersPerSecond, desiredSpeeds.vyMetersPerSecond, SwerveConstants.ROTATION_BUTTON_SPEED);
+      speedsRotate = new ChassisSpeeds(desiredSpeeds.vxMetersPerSecond, desiredSpeeds.vyMetersPerSecond,
+          SwerveConstants.ROTATION_BUTTON_SPEED);
     } else if (this.controller.rotateRight().getAsBoolean()) {
-      speedsRotate = new ChassisSpeeds(desiredSpeeds.vxMetersPerSecond, desiredSpeeds.vyMetersPerSecond, -SwerveConstants.ROTATION_BUTTON_SPEED);
+      speedsRotate = new ChassisSpeeds(desiredSpeeds.vxMetersPerSecond, desiredSpeeds.vyMetersPerSecond,
+          -SwerveConstants.ROTATION_BUTTON_SPEED);
     } else {
       speedsRotate = desiredSpeeds;
     }
     this.driveFieldOriented(speedsRotate);
   }
 
-  private boolean isControllerAskingForRotation(){
+  private boolean isControllerAskingForRotation() {
     return controller.rotateLeft().getAsBoolean() || controller.rotateRight().getAsBoolean();
   }
 
@@ -243,7 +250,8 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
       return;
     }
     Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Red;
-    ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation(), controller.getXtranslation());
+    ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation(),
+        controller.getXtranslation());
     if (alliance == Alliance.Red) {
       this.driveAimingAtPosition(desiredSpeeds, FieldConstants.redGoalPos, new Rotation2d(Math.PI));
     } else {
@@ -262,12 +270,14 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
     if (isDetectingNote) {
       this.lostNotesFrameCounter = 0;
       this.targetNotePositionX = photonVision.targetPositionX();
-      ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation(), controller.getXtranslation());
+      ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation(),
+          controller.getXtranslation());
       driveOmegaPidFieldOriented(desiredSpeeds, 0, this.targetNotePositionX, this.pidTrackNote, false);
     } else {
       this.lostNotesFrameCounter++;
       if (this.lostNotesFrameCounter <= this.MAX_LOST_SPEAKER_FRAMES) {
-        ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation(), controller.getXtranslation());
+        ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation(),
+            controller.getXtranslation());
         driveOmegaPidFieldOriented(desiredSpeeds, 0, this.lastTxMeasurement, this.pidTrackNote, false);
       } else {
         driveAlignAngleButton();
@@ -334,11 +344,10 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   @Override
   public boolean isSwerveAlignedWithSpeaker() {
     boolean isAlignedWithSpeaker = this.alignedToSpeakerStabilizeChecker.isStableInCondition(
-      () -> this.isAtTargetHeading(SwerveConstants.DEADBAND_ALIGNED_WITH_SPEAKER)
-    );
+        () -> this.isAtTargetHeading(SwerveConstants.DEADBAND_ALIGNED_WITH_SPEAKER));
     return isAlignedWithSpeaker;
   }
-  
+
   @Override
   public boolean isAtAmpAngle() {
     return this.isAtTargetHeading(5);
@@ -352,7 +361,8 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
 
   @Override
   public boolean isAtAmpPosition() {
-    return this.isAtTargetPose(SwerveConstants.DEADBAND_AT_AMP_POSITION_X, SwerveConstants.DEADBAND_AT_AMP_POSITION_Y, 5);
+    return this.isAtTargetPose(SwerveConstants.DEADBAND_AT_AMP_POSITION_X, SwerveConstants.DEADBAND_AT_AMP_POSITION_Y,
+        5);
   }
 
   @Override

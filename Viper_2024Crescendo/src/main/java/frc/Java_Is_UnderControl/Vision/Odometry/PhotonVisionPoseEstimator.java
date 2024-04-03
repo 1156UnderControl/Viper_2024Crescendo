@@ -9,25 +9,25 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform3d;
 
 public class PhotonVisionPoseEstimator implements PoseEstimator {
 
   PhotonPoseEstimator photonPoseEstimator;
 
-  private AprilTagFieldLayout fieldAprilTagLayout; 
+  private AprilTagFieldLayout fieldAprilTagLayout;
 
   public PhotonVisionPoseEstimator(PhotonCamera camera, Transform3d cameraPosition) {
     this.fieldAprilTagLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
     this.fieldAprilTagLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
-    this.photonPoseEstimator = new PhotonPoseEstimator(this.fieldAprilTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, cameraPosition);
+    this.photonPoseEstimator = new PhotonPoseEstimator(this.fieldAprilTagLayout,
+        PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, cameraPosition);
     this.photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
   }
 
-  @Override
-  public Optional<PoseEstimation> getEstimatedPose(Pose3d referencePose) {
+  public Optional<PoseEstimation> getEstimatedPose(Pose2d referencePose) {
     this.photonPoseEstimator.setReferencePose(referencePose);
     Optional<EstimatedRobotPose> photonPoseEstimation = this.photonPoseEstimator.update();
     if (!photonPoseEstimation.isPresent()) {
@@ -38,7 +38,8 @@ public class PhotonVisionPoseEstimator implements PoseEstimator {
   }
 
   private PoseEstimation convertPhotonPoseEstimation(EstimatedRobotPose photonPoseEstimation) {
-    return new PoseEstimation(photonPoseEstimation.estimatedPose, photonPoseEstimation.timestampSeconds, photonPoseEstimation.targetsUsed.size());
+    return new PoseEstimation(photonPoseEstimation.estimatedPose, photonPoseEstimation.timestampSeconds,
+        photonPoseEstimation.targetsUsed.size());
   }
-  
+
 }

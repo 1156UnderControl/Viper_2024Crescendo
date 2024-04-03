@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -27,6 +26,8 @@ public abstract class OdometryEnabledSwerveSubsystem extends BaseSwerveSubsystem
 
   private Pose2d targetPose;
 
+  private Pose2d poseVision;
+
   private CustomPose2dLogger targetPoseLogger = new CustomPose2dLogger("/SwerveSubsystem/TargetPose");
 
   private CustomBooleanLogger isAtTargetXAxisLogger = new CustomBooleanLogger("/SwerveSubsystem/IsAtTargetXAxis");
@@ -35,17 +36,22 @@ public abstract class OdometryEnabledSwerveSubsystem extends BaseSwerveSubsystem
 
   private CustomBooleanLogger isAtTargetPoseLogger = new CustomBooleanLogger("/SwerveSubsystem/IsAtTargetPose");
 
+  private CustomPose2dLogger poseVisionLogger = new CustomPose2dLogger("/SwerveSubsystem/PoseVision");
+
   public OdometryEnabledSwerveSubsystem(File directory, OdometryEnabledSwerveConfig config) {
     super(directory, config);
     this.moveToPoseXAxisPid = new PIDController(config.moveToPosePidConfig.kP, config.moveToPosePidConfig.kI,
-      config.moveToPosePidConfig.kD);
+        config.moveToPosePidConfig.kD);
     this.moveToPoseYAxisPid = new PIDController(config.moveToPosePidConfig.kP, config.moveToPosePidConfig.kI,
-      config.moveToPosePidConfig.kD);
+        config.moveToPosePidConfig.kD);
+    this.autonomousPoseEstimator = config.autonomousPoseEstimator;
+    this.teleopPoseEstimator = config.teleoperatedPoseEstimator;
     this.targetPose = new Pose2d();
+    this.poseVision = new Pose2d();
   }
 
-  private void updateOdometry(){
-    if(Robot.isInAutonomous) {
+  private void updateOdometry() {
+    if (Robot.isInAutonomous) {
       this.updateOdometryWithPoseEstimator(this.autonomousPoseEstimator);
     } else {
       this.updateOdometryWithPoseEstimator(this.teleopPoseEstimator);
@@ -55,10 +61,10 @@ public abstract class OdometryEnabledSwerveSubsystem extends BaseSwerveSubsystem
   private void updateOdometryWithPoseEstimator(PoseEstimator poseEstimator) {
     Pose2d referencePose = this.swerveDrive.swerveDrivePoseEstimator.getEstimatedPosition();
     Optional<PoseEstimation> possibleEstimatedPose = poseEstimator.getEstimatedPose(referencePose);
-    if(possibleEstimatedPose.isPresent()){
+    if (possibleEstimatedPose.isPresent()) {
       PoseEstimation estimatedPose = possibleEstimatedPose.get();
-      Pose2d estimatedPose2d = estimatedPose.estimatedPose.toPose2d();
-      this.swerveDrive.addVisionMeasurement(estimatedPose2d, estimatedPose.timestampSeconds);
+      this.poseVision = estimatedPose.estimatedPose.toPose2d();
+      this.swerveDrive.addVisionMeasurement(this.poseVision, estimatedPose.timestampSeconds);
     }
   }
 
@@ -70,7 +76,8 @@ public abstract class OdometryEnabledSwerveSubsystem extends BaseSwerveSubsystem
     this.driveAimingAtPosition(targetSpeeds, targetPosition, Rotation2d.fromDegrees(0));
   }
 
-  protected void driveAimingAtPosition(ChassisSpeeds targetSpeeds, Translation2d targetPosition, Rotation2d offsetAngle) {
+  protected void driveAimingAtPosition(ChassisSpeeds targetSpeeds, Translation2d targetPosition,
+      Rotation2d offsetAngle) {
     Translation2d positionDifference = this.getPose().getTranslation().minus(targetPosition);
     Rotation2d targetAngle = positionDifference.getAngle().plus(offsetAngle);
     this.driveFieldOrientedLockedAngle(targetSpeeds, targetAngle);
@@ -81,11 +88,12 @@ public abstract class OdometryEnabledSwerveSubsystem extends BaseSwerveSubsystem
     double targetXVelocity = this.moveToPoseXAxisPid.calculate(currentPose.getX(), targetPose.getX());
     double targetYVelocity = this.moveToPoseYAxisPid.calculate(currentPose.getY(), targetPose.getY());
     ChassisSpeeds desiredSpeeds = new ChassisSpeeds(targetXVelocity, targetYVelocity, 0);
-    this.driveFieldOrientedLockedAngle(desiredSpeeds, targetPose.getRotation());  
+    this.driveFieldOrientedLockedAngle(desiredSpeeds, targetPose.getRotation());
     this.targetPose = targetPose;
   }
 
-  protected boolean isAtTargetPose(double xAxisToleranceMeters, double yAxisToleranceMeters, double angleToleranceDegrees) {
+  protected boolean isAtTargetPose(double xAxisToleranceMeters, double yAxisToleranceMeters,
+      double angleToleranceDegrees) {
     double xAxisDistance = Math.abs(this.getPose().getX() - this.targetPose.getX());
     double yAxisDistance = Math.abs(this.getPose().getY() - this.targetPose.getY());
     boolean isAtXAxis = xAxisDistance <= xAxisToleranceMeters;
@@ -117,8 +125,9 @@ public abstract class OdometryEnabledSwerveSubsystem extends BaseSwerveSubsystem
     this.updateOdometrySwerveLogs();
   }
 
-  private void updateOdometrySwerveLogs(){
+  private void updateOdometrySwerveLogs() {
+    this.poseVisionLogger.appendRadians(this.poseVision);
     this.targetPoseLogger.appendRadians(this.targetPose);
   }
-   
+
 }
