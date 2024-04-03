@@ -63,7 +63,9 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private TrapezoidProfile.State pivotGoal = new TrapezoidProfile.State();
 
-  public static InterpolatingDoubleTreeMap shooterMap = new InterpolatingDoubleTreeMap();
+  public static InterpolatingDoubleTreeMap pivotAngleMap = new InterpolatingDoubleTreeMap();
+
+  public static InterpolatingDoubleTreeMap flywheelRPMmap = new InterpolatingDoubleTreeMap();
 
   private DoubleLogEntry pivotGoalLog = new DoubleLogEntry(DataLogManager.getLog(), "/ShooterSubsystem/PivotGoal");
 
@@ -279,14 +281,14 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   public void prepareSpeakerShot() {
     if (noteSensorOut.getBoolean() || noteSensorIn.getBoolean()) {
       this.feederMotor.set(0);
-      this.setVelocityFlywheel(verifyManualValue(ShooterConstants.setpoints.VELOCITY_SHOOT_SPEAKER,
+      this.setVelocityFlywheel(verifyManualValue(calculateGoalFlywheelSetpointSpeaker(),
           "Setpoint Vel Shooter"));
     } else {
       this.lowerFlywheelMotor.set(ShooterConstants.setpoints.VELOCITY_SHOOTER_CORRECT_PASSED_NOTE);
       this.upperFlywheelMotor.set(ShooterConstants.setpoints.VELOCITY_SHOOTER_CORRECT_PASSED_NOTE);
       this.feederMotor.set(ShooterConstants.setpoints.VELOCITY_FEED_CORRECT_PASSED_NOTE);
     }
-    goal = verifyManualValue(calculateGoalSpeaker(), "Setpoint Pos Shoot Pivot");
+    goal = verifyManualValue(calculateGoalPivotSetpointSpeaker(), "Setpoint Pos Shoot Pivot");
     this.state = "PREPARING_SPEAKER_SHOT";
   }
 
@@ -419,9 +421,9 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     return pivotFeedforward.calculate(pivotCurrentSetpoint.velocity / 12);
   }
 
-  private double calculateGoalSpeaker() {
-    interpolationTree();
-    double setpointInterpolation = shooterMap.get(swerve.distanceFromSpeaker());
+  private double calculateGoalPivotSetpointSpeaker() {
+    interpolationTreePivotAngle();
+    double setpointInterpolation = pivotAngleMap.get(swerve.distanceFromSpeaker());
     if (setpointInterpolation > ShooterConstants.setpoints.LIMIT_MAX_INTERPOLATION) {
       return ShooterConstants.setpoints.LIMIT_MAX_INTERPOLATION;
     }
@@ -433,17 +435,42 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     return setpointInterpolation;
   }
 
-  private static void interpolationTree() {
-    shooterMap.put(1.1, 47.0);
-    shooterMap.put(1.47, 54.0);
-    shooterMap.put(1.72, 58.0);
-    shooterMap.put(2.12, 62.5);
-    shooterMap.put(2.48, 65.0);
-    shooterMap.put(2.48, 65.0);
-    shooterMap.put(2.84, 67.5);
-    shooterMap.put(3.19, 71.5);
-    shooterMap.put(3.57, 72.75);
+  private static void interpolationTreePivotAngle() {
+    pivotAngleMap.put(1.1, 47.0);
+    pivotAngleMap.put(1.47, 54.0);
+    pivotAngleMap.put(1.72, 58.0);
+    pivotAngleMap.put(2.12, 62.5);
+    pivotAngleMap.put(2.48, 65.0);
+    pivotAngleMap.put(2.48, 65.0);
+    pivotAngleMap.put(2.84, 67.5);
+    pivotAngleMap.put(3.19, 71.5);
+    pivotAngleMap.put(3.57, 72.75);
+  }
 
+  private double calculateGoalFlywheelSetpointSpeaker() {
+    interpolationTreeFlywheelRPM();
+    double setpointInterpolation = pivotAngleMap.get(swerve.distanceFromSpeaker());
+    if (setpointInterpolation > ShooterConstants.setpoints.LIMIT_MAX_INTERPOLATION_RPM) {
+      return ShooterConstants.setpoints.LIMIT_MAX_INTERPOLATION_RPM;
+    }
+
+    if (setpointInterpolation < ShooterConstants.setpoints.LIMIT_MIN_INTERPOLATION_RPM) {
+      return ShooterConstants.setpoints.LIMIT_MIN_INTERPOLATION_RPM;
+    }
+
+    return setpointInterpolation;
+  }
+
+  private static void interpolationTreeFlywheelRPM() {
+    flywheelRPMmap.put(1.1, 5000.0);
+    flywheelRPMmap.put(1.47, 6000.0);
+    flywheelRPMmap.put(1.72, 7000.0);
+    flywheelRPMmap.put(2.12, 8000.0);
+    flywheelRPMmap.put(2.48, 8000.0);
+    flywheelRPMmap.put(2.48, 8000.0);
+    flywheelRPMmap.put(2.84, 8000.0);
+    flywheelRPMmap.put(3.19, 8500.0);
+    flywheelRPMmap.put(3.57, 8500.0);
   }
 
   private void setVelocityFlywheel(double velocity) {
