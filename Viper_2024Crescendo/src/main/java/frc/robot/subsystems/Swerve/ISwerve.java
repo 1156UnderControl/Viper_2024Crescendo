@@ -21,7 +21,7 @@ public interface ISwerve {
 
   boolean isSwerveAlignedWithSpeaker();
 
-  boolean isAlignedWithAngle();
+  boolean isAtAmpAngle();
 
   boolean isSwerveInAutoShootZone();
 

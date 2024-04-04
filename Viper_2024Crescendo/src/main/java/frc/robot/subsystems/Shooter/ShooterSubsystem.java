@@ -391,6 +391,15 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   }
 
   @Override
+  public boolean isPivotAtSetpointForAutoShoot() {
+    boolean atSetpoint = this.pivotStabilizeChecker.isStableInRange(
+        this.pivotMotor.getPosition(),
+        this.goal,
+        ShooterConstants.pivotGoalAutoShootDeadband);
+    return atSetpoint;
+  }
+
+  @Override
   public void setManualPivotPosition(double goal) {
     setVelocityFlywheel(ShooterConstants.setpoints.VELOCITY_SHOOT_SPEAKER);
     if (hasNote && !noteSensorOut.getBoolean() && !noteSensorIn.getBoolean()) {

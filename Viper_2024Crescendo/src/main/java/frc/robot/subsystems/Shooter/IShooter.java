@@ -41,6 +41,8 @@ public interface IShooter {
 
   boolean isPivotAtSetpoint();
 
+  boolean isPivotAtSetpointForAutoShoot();
+
   boolean isFlywheelAtSetpoint();
 
   void setManualPivotPosition(double goal);
