@@ -17,6 +17,10 @@ import frc.robot.Robot;
 
 public abstract class OdometryEnabledSwerveSubsystem extends BaseSwerveSubsystem {
 
+  public static double robotOrientation;
+
+  public static double robotAngularVelocity;
+
   private PoseEstimator autonomousPoseEstimator;
 
   private PoseEstimator teleopPoseEstimator;
@@ -127,6 +131,12 @@ public abstract class OdometryEnabledSwerveSubsystem extends BaseSwerveSubsystem
     this.updateOdometry();
     super.periodic();
     this.updateOdometrySwerveLogs();
+    this.updateLimelightRequiredValues();
+  }
+
+  private void updateLimelightRequiredValues() {
+    robotAngularVelocity = this.swerveDrive.getRobotVelocity().omegaRadiansPerSecond;
+    robotOrientation = this.swerveDrive.getOdometryHeading().getDegrees();
   }
 
   private void updateOdometrySwerveLogs() {
