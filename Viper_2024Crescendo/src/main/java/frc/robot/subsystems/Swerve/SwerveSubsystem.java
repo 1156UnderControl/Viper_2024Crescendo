@@ -5,6 +5,8 @@
 package frc.robot.subsystems.Swerve;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
@@ -13,6 +15,9 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -31,6 +36,7 @@ import frc.Java_Is_UnderControl.Swerve.SwervePathPlannerConfig;
 import frc.Java_Is_UnderControl.Util.StabilizeChecker;
 import frc.Java_Is_UnderControl.Util.Util;
 import frc.Java_Is_UnderControl.Vision.Odometry.LimelightPoseEstimator;
+import frc.Java_Is_UnderControl.Vision.Odometry.MultiCameraPoseEstimator;
 import frc.Java_Is_UnderControl.Vision.Odometry.PoseEstimator;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CommandsConstants;
@@ -108,9 +114,20 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   private PhotonVision intakeNoteDetecionCamera = new PhotonVision("Microsoft_LifeCam_HD-3000 (1)");
 
   public static SwerveSubsystem getInstance(File directory) {
+    Transform3d robotToCam = new Transform3d(new Translation3d(-0.6, 0.0, 0.26),
+        new Rotation3d(0, Units.degreesToRadians(24), Math.PI));
     if (swerveInstance == null) {
-      PoseEstimator odometryPoseEstimator = new LimelightPoseEstimator("limelight-back", true);
-      swerveInstance = new SwerveSubsystem(directory, odometryPoseEstimator);
+      List<PoseEstimator> listOfEstimators = new ArrayList<>();
+      PoseEstimator limelight3G = new LimelightPoseEstimator("limelight-back", true);
+      // PoseEstimator limelight2 = new LimelightPoseEstimator("limelight", false);
+      // PoseEstimator arducam = new PhotonVisionPoseEstimator(new
+      // PhotonCamera("arducam"),
+      // robotToCam, false);
+      listOfEstimators.add(limelight3G);
+      // listOfEstimators.add(limelight2);
+      // listOfEstimators.add(limelightarducam);
+      PoseEstimator estimatorMultiCamera = new MultiCameraPoseEstimator(listOfEstimators);
+      swerveInstance = new SwerveSubsystem(directory, estimatorMultiCamera);
     }
     return swerveInstance;
   }
