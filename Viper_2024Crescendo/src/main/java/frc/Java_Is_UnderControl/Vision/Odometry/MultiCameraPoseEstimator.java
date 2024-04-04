@@ -1,6 +1,6 @@
 package frc.Java_Is_UnderControl.Vision.Odometry;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,8 +17,6 @@ public class MultiCameraPoseEstimator implements PoseEstimator {
 
   PoseEstimation arrayPosesEstimations[];
 
-  Pose2d referencePose;
-
   CustomBooleanLogger isDetectingLogger;
 
   CustomPose2dLogger detectedPoseLogger;
@@ -31,21 +29,18 @@ public class MultiCameraPoseEstimator implements PoseEstimator {
   }
 
   public Optional<PoseEstimation> getEstimatedPose(Pose2d referencePose) {
-    this.referencePose = referencePose;
-    for (int i = 0; i < this.poseEstimatorsList.size(); i++) {
-      removeEmptyEstimators(i, poseEstimatorsList);
+    ArrayList<Pose2d> poseEstimations = new ArrayList<>();
+    for (PoseEstimator poseEstimator : this.poseEstimatorsList) {
+      Optional<PoseEstimation> possiblePoseEstimation = poseEstimator.getEstimatedPose(referencePose);
+      if (possiblePoseEstimation.isPresent()) {
+        PoseEstimation poseEstimation = possiblePoseEstimation.get();
+        for (int i = 0; i < poseEstimation.numberOfTargetsUsed; i++) {
+          poseEstimations.add(poseEstimation.estimatedPose.toPose2d());
+        }
+      }
     }
-    if (poseEstimatorsList.isEmpty()) {
-      return Optional.empty();
-    }
-    for (int i = 0; i < this.poseEstimatorsList.size(); i++) {
-      setArray(i, poseEstimatorsList.get(i));
-    }
+    poseEstimations.sort(new ComparatorPose());
     PoseEstimation poseEstimation;
-    if (arrayPosesEstimations.length < 1) {
-      return Optional.empty();
-    }
-    Arrays.sort(arrayPosesEstimations, new ComparatorPose());
     if (arrayPosesEstimations.length % 2 == 0) {
       poseEstimation = averageTwoPoseEstimations(arrayPosesEstimations[arrayPosesEstimations.length / 2],
           arrayPosesEstimations[arrayPosesEstimations.length / 2 - 1]);
@@ -54,22 +49,6 @@ public class MultiCameraPoseEstimator implements PoseEstimator {
     }
     detectedPoseLogger.appendRadians(poseEstimation.estimatedPose.toPose2d());
     return Optional.of(poseEstimation);
-  }
-
-  private void removeEmptyEstimators(int index, List<PoseEstimator> poseEstimator) {
-    Optional<PoseEstimation> pose = poseEstimator.get(index).getEstimatedPose(referencePose);
-    if (pose.isEmpty()) {
-      poseEstimator.remove(index);
-      return;
-    }
-  }
-
-  private void setArray(int index, PoseEstimator poseEstimator) {
-    Optional<PoseEstimation> pose = poseEstimator.getEstimatedPose(referencePose);
-    for (int i = 1; i < pose.get().numberOfTargetsUsed; i++) {
-      arrayPosesEstimations[arrayPosesEstimations.length + 1] = pose.get();
-    }
-    arrayPosesEstimations[index] = pose.get();
   }
 
   private PoseEstimation averageTwoPoseEstimations(PoseEstimation pose1, PoseEstimation pose2) {
