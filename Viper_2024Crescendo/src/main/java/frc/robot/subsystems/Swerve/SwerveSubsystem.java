@@ -419,7 +419,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   public Optional<Rotation2d> getRotationTargetOverride() {
     if (overrideRotationAuto && intakeNoteTrackingCamera.hasTarget()) {
       return Optional.of(swerveDrive.getOdometryHeading()
-          .minus(new Rotation2d(Units.degreesToRadians(intakeNoteTrackingCamera.targetPositionX()))));
+          .minus(new Rotation2d(-pidTrackNoteAuto.calculate(intakeNoteTrackingCamera.targetPositionX(), 0))));
     } else {
       return Optional.empty();
     }

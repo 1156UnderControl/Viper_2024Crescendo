@@ -8,5 +8,7 @@ public class CommandsConstants {
   public static final double P_TrackNote = 5;
   public static final double I_TrackNote = 0.07;
   public static final double D_TrackNote = 0;
-
+  public static final double P_TrackNote_Auto = 1;
+  public static final double I_TrackNote_Auto = 0;
+  public static final double D_TrackNote_Auto = 0;
 }
