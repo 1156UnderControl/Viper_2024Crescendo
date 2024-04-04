@@ -98,16 +98,14 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
 
   private CustomStringLogger stateLogEntry = new CustomStringLogger("/SwerveSubsystem/State");
 
-  private PhotonVision photonVision;
-
-  // private Limelight limelight;
-
   private double targetNotePositionX;
 
   private PIDController xVelToAprilTag = new PIDController(0.01, 0, 0);
   private PIDController yVelToAprilTag = new PIDController(0.01, 0, 0);
 
   private PhotonVision shooterTopCamera = new PhotonVision("Microsoft_LifeCam_HD-3000");
+
+  private PhotonVision intakeNoteDetecionCamera = new PhotonVision("Microsoft_LifeCam_HD-3000 (1)");
 
   public static SwerveSubsystem getInstance(File directory) {
     if (swerveInstance == null) {
@@ -271,10 +269,10 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
       driveAlignAngleButton();
       return;
     }
-    boolean isDetectingNote = photonVision.hasTarget();
+    boolean isDetectingNote = intakeNoteDetecionCamera.hasTarget();
     if (isDetectingNote) {
       this.lostNotesFrameCounter = 0;
-      this.targetNotePositionX = photonVision.targetPositionX();
+      this.targetNotePositionX = intakeNoteDetecionCamera.targetPositionX();
       ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation(),
           controller.getXtranslation());
       driveOmegaPidFieldOriented(desiredSpeeds, 0, this.targetNotePositionX, this.pidTrackNote, false);
@@ -414,9 +412,9 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   }
 
   public Optional<Rotation2d> getRotationTargetOverride() {
-    if (overrideRotationAuto && photonVision.hasTarget()) {
+    if (overrideRotationAuto && intakeNoteDetecionCamera.hasTarget()) {
       return Optional.of(swerveDrive.getOdometryHeading()
-          .minus(new Rotation2d(Units.degreesToRadians(photonVision.targetPositionX()))));
+          .minus(new Rotation2d(Units.degreesToRadians(intakeNoteDetecionCamera.targetPositionX()))));
     } else {
       return Optional.empty();
     }
