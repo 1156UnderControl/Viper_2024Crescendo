@@ -12,6 +12,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomPose2dLogger;
 
 public class PhotonVisionPoseEstimator implements PoseEstimator {
 
@@ -21,12 +22,15 @@ public class PhotonVisionPoseEstimator implements PoseEstimator {
 
   private AprilTagFieldLayout fieldAprilTagLayout;
 
+  private CustomPose2dLogger detectedPoseLogger;
+
   public PhotonVisionPoseEstimator(PhotonCamera camera, Transform3d cameraPosition) {
     this.fieldAprilTagLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
     this.fieldAprilTagLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
     this.photonPoseEstimator = new PhotonPoseEstimator(this.fieldAprilTagLayout,
         PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, cameraPosition);
     this.photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+    this.detectedPoseLogger = new CustomPose2dLogger("/Vision/MultiCameraEstimator/DetectedPose");
   }
 
   public PhotonVisionPoseEstimator(PhotonCamera camera, Transform3d cameraPosition, boolean only2TagsMeasurements) {
@@ -47,6 +51,8 @@ public class PhotonVisionPoseEstimator implements PoseEstimator {
     if (only2TagsMeasurements && poseEstimation.numberOfTargetsUsed < 2) {
       return Optional.empty();
     }
+
+    detectedPoseLogger.appendRadians(poseEstimation.estimatedPose.toPose2d());
     return Optional.of(poseEstimation);
   }
 
