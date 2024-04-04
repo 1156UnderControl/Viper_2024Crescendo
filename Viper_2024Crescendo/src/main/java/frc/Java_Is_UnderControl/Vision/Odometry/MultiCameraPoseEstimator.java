@@ -27,6 +27,7 @@ public class MultiCameraPoseEstimator implements PoseEstimator {
 
   public MultiCameraPoseEstimator(List<PoseEstimator> poseEstimators) {
     this.poseEstimatorsList = poseEstimators;
+    this.detectedPoseLogger = new CustomPose2dLogger("/Vision/MultiCameraEstimator/DetectedPose");
   }
 
   public Optional<PoseEstimation> getEstimatedPose(Pose2d referencePose) {
@@ -34,10 +35,16 @@ public class MultiCameraPoseEstimator implements PoseEstimator {
     for (int i = 0; i < this.poseEstimatorsList.size(); i++) {
       removeEmptyEstimators(i, poseEstimatorsList);
     }
+    if (poseEstimatorsList.isEmpty()) {
+      return Optional.empty();
+    }
     for (int i = 0; i < this.poseEstimatorsList.size(); i++) {
       setArray(i, poseEstimatorsList.get(i));
     }
     PoseEstimation poseEstimation;
+    if (arrayPosesEstimations.length < 1) {
+      return Optional.empty();
+    }
     Arrays.sort(arrayPosesEstimations, new ComparatorPose());
     if (arrayPosesEstimations.length % 2 == 0) {
       poseEstimation = averageTwoPoseEstimations(arrayPosesEstimations[arrayPosesEstimations.length / 2],
@@ -45,6 +52,7 @@ public class MultiCameraPoseEstimator implements PoseEstimator {
     } else {
       poseEstimation = arrayPosesEstimations[arrayPosesEstimations.length / 2];
     }
+    detectedPoseLogger.appendRadians(poseEstimation.estimatedPose.toPose2d());
     return Optional.of(poseEstimation);
   }
 
