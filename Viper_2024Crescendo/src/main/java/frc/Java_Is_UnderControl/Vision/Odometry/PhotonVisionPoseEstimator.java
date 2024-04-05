@@ -36,19 +36,27 @@ public class PhotonVisionPoseEstimator implements PoseEstimator {
     this.photonPoseEstimator = new PhotonPoseEstimator(this.fieldAprilTagLayout,
         PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, cameraPosition);
     this.photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-    this.detectedPoseLogger = new CustomPose2dLogger("/Vision/PhotonVisionPoseEstimator/" + camera + "/DetectedPose");
+    this.detectedPoseLogger = new CustomPose2dLogger(
+        "/Vision/PhotonVisionPoseEstimator/" + camera.getName() + "/DetectedPose");
     this.numberOfDetectedTagsLogger = new CustomDoubleLogger(
-        "/Vision/PhotonVisionPoseEstimator/" + camera + "/NumberOfDetectedTags");
+        "/Vision/PhotonVisionPoseEstimator/" + camera.getName() + "/NumberOfDetectedTags");
     this.isDetectingLogger = new CustomBooleanLogger(
-        "/Vision/PhotonVisionPoseEstimator/" + camera + "/IsDetecting");
+        "/Vision/PhotonVisionPoseEstimator/" + camera.getName() + "/IsDetecting");
   }
 
   public PhotonVisionPoseEstimator(PhotonCamera camera, Transform3d cameraPosition, boolean only2TagsMeasurements) {
+    this.only2TagsMeasurements = only2TagsMeasurements;
     this.fieldAprilTagLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
     this.fieldAprilTagLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
     this.photonPoseEstimator = new PhotonPoseEstimator(this.fieldAprilTagLayout,
         PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, cameraPosition);
     this.photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+    this.detectedPoseLogger = new CustomPose2dLogger(
+        "/Vision/PhotonVisionPoseEstimator/" + camera.getName() + "/DetectedPose");
+    this.numberOfDetectedTagsLogger = new CustomDoubleLogger(
+        "/Vision/PhotonVisionPoseEstimator/" + camera.getName() + "/NumberOfDetectedTags");
+    this.isDetectingLogger = new CustomBooleanLogger(
+        "/Vision/PhotonVisionPoseEstimator/" + camera.getName() + "/IsDetecting");
   }
 
   public Optional<PoseEstimation> getEstimatedPose(Pose2d referencePose) {
