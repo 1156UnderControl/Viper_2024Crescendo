@@ -43,7 +43,6 @@ public class MultiCameraPoseEstimator implements PoseEstimator {
     }
     pose2Ds.sort(new ComparatorPose2D());
     poseEstimations.sort(new ComparatorPoseEstimation());
-    Pose2d pose2D = frc.Java_Is_UnderControl.Util.Util.medianPose2Dlist(pose2Ds);
     PoseEstimation poseEstimation = frc.Java_Is_UnderControl.Util.Util.medianPoseEstimationsList(poseEstimations);
     poseEstimation.numberOfTargetsUsed = numberOfTargetsUsed;
     detectedPoseLogger.appendRadians(poseEstimation.estimatedPose.toPose2d());
