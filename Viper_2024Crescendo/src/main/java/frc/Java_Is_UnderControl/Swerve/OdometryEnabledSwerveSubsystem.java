@@ -70,7 +70,7 @@ public abstract class OdometryEnabledSwerveSubsystem extends BaseSwerveSubsystem
       PoseEstimation estimatedPose = possibleEstimatedPose.get();
       this.poseVision = estimatedPose.estimatedPose.toPose2d();
       if (!Robot.isInAutonomous) {
-        this.swerveDrive.swerveDrivePoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 99999));
+        this.swerveDrive.swerveDrivePoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 99999));
       }
       this.swerveDrive.addVisionMeasurement(this.poseVision, estimatedPose.timestampSeconds);
     }
