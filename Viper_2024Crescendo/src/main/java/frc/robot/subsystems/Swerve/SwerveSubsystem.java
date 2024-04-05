@@ -126,7 +126,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
       List<PoseEstimator> listOfEstimators = new ArrayList<>();
       PoseEstimator limelight3G = new LimelightPoseEstimator("limelight-back", false);
       PoseEstimator limelight2 = new LimelightPoseEstimator("limelight-left", false);
-      PoseEstimator arducam = new PhotonVisionPoseEstimator(new PhotonCamera("Arducam"), robotToCam, true);
+      PoseEstimator arducam = new PhotonVisionPoseEstimator(new PhotonCamera("Arducam"), robotToCam, false);
       listOfEstimators.add(limelight3G);
       listOfEstimators.add(limelight2);
       listOfEstimators.add(arducam);
@@ -284,6 +284,24 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   }
 
   @Override
+  public void driveAlignShootOverStage() {
+    notAbleToRotate = true;
+    if (this.controller.isForcingDriverControl()) {
+      this.driveAlignAngleButton();
+      return;
+    }
+    Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Red;
+    ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation(),
+        controller.getXtranslation());
+    if (alliance == Alliance.Red) {
+      this.driveAimingAtPosition(desiredSpeeds, FieldConstants.redFeedPos, new Rotation2d(Math.PI));
+    } else {
+      this.driveAimingAtPosition(desiredSpeeds, FieldConstants.blueFeedPos);
+    }
+    this.state = "DRIVE_ALIGN_SHOOT_OVER_STAGE";
+  }
+
+  @Override
   public void driveAlignNote() {
     notAbleToRotate = true;
     if (this.controller.isForcingDriverControl()) {
@@ -416,7 +434,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   @Override
   public boolean isSwerveInAutoShootZone() {
     boolean isInFrontOfSpeaker = this.getPose().getY() > 2.9;
-    boolean isNearSpeaker = distanceFromSpeaker() < 3.5;
+    boolean isNearSpeaker = distanceFromSpeaker() < 4.5;
     return isNearSpeaker && isInFrontOfSpeaker;
   }
 
@@ -459,6 +477,15 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
       return getPose().getTranslation().getDistance(FieldConstants.redGoalPos);
     } else {
       return getPose().getTranslation().getDistance(FieldConstants.blueGoalPos);
+    }
+  }
+
+  public double distanceFromFeedPos() {
+    Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Red;
+    if (alliance == Alliance.Red) {
+      return getPose().getTranslation().getDistance(FieldConstants.redFeedPos);
+    } else {
+      return getPose().getTranslation().getDistance(FieldConstants.blueFeedPos);
     }
   }
 
