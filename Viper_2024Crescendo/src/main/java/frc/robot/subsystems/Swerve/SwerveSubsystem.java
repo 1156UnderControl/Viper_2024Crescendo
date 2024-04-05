@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.photonvision.PhotonCamera;
+
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -37,6 +39,7 @@ import frc.Java_Is_UnderControl.Util.StabilizeChecker;
 import frc.Java_Is_UnderControl.Util.Util;
 import frc.Java_Is_UnderControl.Vision.Odometry.LimelightPoseEstimator;
 import frc.Java_Is_UnderControl.Vision.Odometry.MultiCameraPoseEstimator;
+import frc.Java_Is_UnderControl.Vision.Odometry.PhotonVisionPoseEstimator;
 import frc.Java_Is_UnderControl.Vision.Odometry.PoseEstimator;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CommandsConstants;
@@ -114,18 +117,16 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   private PhotonVision intakeNoteDetecionCamera = new PhotonVision("Microsoft_LifeCam_HD-3000 (1)");
 
   public static SwerveSubsystem getInstance(File directory) {
-    Transform3d robotToCam = new Transform3d(new Translation3d(-0.6, 0.0, 0.26),
-        new Rotation3d(0, Units.degreesToRadians(24), Math.PI));
+    Transform3d robotToCam = new Transform3d(new Translation3d(-0.185, -0.272, 0.27),
+        new Rotation3d(0, Units.degreesToRadians(37.5), Units.degreesToRadians(-20)));
     if (swerveInstance == null) {
       List<PoseEstimator> listOfEstimators = new ArrayList<>();
-      PoseEstimator limelight3G = new LimelightPoseEstimator("limelight-back", true);
-      // PoseEstimator limelight2 = new LimelightPoseEstimator("limelight", false);
-      // PoseEstimator arducam = new PhotonVisionPoseEstimator(new
-      // PhotonCamera("arducam"),
-      // robotToCam, false);
+      PoseEstimator limelight3G = new LimelightPoseEstimator("limelight-back", false);
+      PoseEstimator limelight2 = new LimelightPoseEstimator("limelight-left", false);
+      PoseEstimator arducam = new PhotonVisionPoseEstimator(new PhotonCamera("Arducam"), robotToCam, false);
       listOfEstimators.add(limelight3G);
-      // listOfEstimators.add(limelight2);
-      // listOfEstimators.add(limelightarducam);
+      listOfEstimators.add(limelight2);
+      listOfEstimators.add(arducam);
       PoseEstimator estimatorMultiCamera = new MultiCameraPoseEstimator(listOfEstimators);
       swerveInstance = new SwerveSubsystem(directory, estimatorMultiCamera);
     }
