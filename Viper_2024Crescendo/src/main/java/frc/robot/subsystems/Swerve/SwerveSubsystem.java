@@ -100,6 +100,9 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   private CustomDoubleLogger distanceToNearestAmpLogEntry = new CustomDoubleLogger(
       "/SwerveSubsystem/AutoAmp/DistanceToNearestAmp");
 
+  private CustomDoubleLogger distanceToSpeakerAllianceLogEntry = new CustomDoubleLogger(
+      "/SwerveSubsystem/DistanceToSpeakerAlliance");
+
   private CustomBooleanLogger isAtAmpPositionLogEntry = new CustomBooleanLogger(
       "/SwerveSubsystem/AutoAmp/isAtAmpPosition");
 
@@ -118,12 +121,12 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
 
   public static SwerveSubsystem getInstance(File directory) {
     Transform3d robotToCam = new Transform3d(new Translation3d(-0.185, -0.272, 0.27),
-        new Rotation3d(0, Units.degreesToRadians(37.5), Units.degreesToRadians(-20)));
+        new Rotation3d(0, Units.degreesToRadians(-37.5), Units.degreesToRadians(-70)));
     if (swerveInstance == null) {
       List<PoseEstimator> listOfEstimators = new ArrayList<>();
       PoseEstimator limelight3G = new LimelightPoseEstimator("limelight-back", false);
       PoseEstimator limelight2 = new LimelightPoseEstimator("limelight-left", false);
-      PoseEstimator arducam = new PhotonVisionPoseEstimator(new PhotonCamera("Arducam"), robotToCam, false);
+      PoseEstimator arducam = new PhotonVisionPoseEstimator(new PhotonCamera("Arducam"), robotToCam, true);
       listOfEstimators.add(limelight3G);
       listOfEstimators.add(limelight2);
       listOfEstimators.add(arducam);
@@ -490,6 +493,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   protected void updateLogs() {
     this.poseVisionLogEntry.appendRadians(this.poseVision2D);
     this.isAlignedWithSpeakerLogEntry.append(isSwerveAlignedWithSpeaker());
+    this.distanceToSpeakerAllianceLogEntry.append(distanceFromSpeaker());
     this.isSwerveInAutoShootZoneLogEntry.append(isSwerveInAutoShootZone());
     this.isSwerveInShootVelocityLogEntry.append(isSwerveInVelocityToShoot());
     this.isSwerveInAutoShootVelocityLogEntry.append(isSwerveInVelocityToAutoShoot());
