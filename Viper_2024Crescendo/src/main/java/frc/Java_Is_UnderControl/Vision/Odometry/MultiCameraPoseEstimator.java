@@ -12,6 +12,8 @@ public class MultiCameraPoseEstimator implements PoseEstimator {
 
   List<PoseEstimator> poseEstimatorsList;
 
+  int numberOfTargetsUsed = 0;
+
   CustomPose2dLogger detectedPoseLogger;
 
   CustomDoubleLogger numberOfDetectedTagsLogger;
@@ -35,13 +37,15 @@ public class MultiCameraPoseEstimator implements PoseEstimator {
         }
       }
     }
-    if (poseEstimations.isEmpty()) {
+    int numberOfTargetsUsed = poseEstimations.size();
+    if (numberOfTargetsUsed < 2) {
       return Optional.empty();
     }
     pose2Ds.sort(new ComparatorPose2D());
     poseEstimations.sort(new ComparatorPoseEstimation());
     Pose2d pose2D = frc.Java_Is_UnderControl.Util.Util.medianPose2Dlist(pose2Ds);
     PoseEstimation poseEstimation = frc.Java_Is_UnderControl.Util.Util.medianPoseEstimationsList(poseEstimations);
+    poseEstimation.numberOfTargetsUsed = numberOfTargetsUsed;
     detectedPoseLogger.appendRadians(poseEstimation.estimatedPose.toPose2d());
     numberOfDetectedTagsLogger.append(poseEstimation.numberOfTargetsUsed);
     return Optional.of(poseEstimation);
