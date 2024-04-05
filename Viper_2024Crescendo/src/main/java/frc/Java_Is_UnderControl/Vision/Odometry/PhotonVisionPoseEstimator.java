@@ -12,6 +12,8 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomBooleanLogger;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomDoubleLogger;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomPose2dLogger;
 
 public class PhotonVisionPoseEstimator implements PoseEstimator {
@@ -22,7 +24,11 @@ public class PhotonVisionPoseEstimator implements PoseEstimator {
 
   private AprilTagFieldLayout fieldAprilTagLayout;
 
-  private CustomPose2dLogger detectedPoseLogger;
+  CustomBooleanLogger isDetectingLogger;
+
+  CustomPose2dLogger detectedPoseLogger;
+
+  CustomDoubleLogger numberOfDetectedTagsLogger;
 
   public PhotonVisionPoseEstimator(PhotonCamera camera, Transform3d cameraPosition) {
     this.fieldAprilTagLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
@@ -30,7 +36,11 @@ public class PhotonVisionPoseEstimator implements PoseEstimator {
     this.photonPoseEstimator = new PhotonPoseEstimator(this.fieldAprilTagLayout,
         PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, cameraPosition);
     this.photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-    this.detectedPoseLogger = new CustomPose2dLogger("/Vision/MultiCameraEstimator/DetectedPose");
+    this.detectedPoseLogger = new CustomPose2dLogger("/Vision/PhotonVisionPoseEstimator/" + camera + "/DetectedPose");
+    this.numberOfDetectedTagsLogger = new CustomDoubleLogger(
+        "/Vision/PhotonVisionPoseEstimator/" + camera + "/NumberOfDetectedTags");
+    this.isDetectingLogger = new CustomBooleanLogger(
+        "/Vision/PhotonVisionPoseEstimator/" + camera + "/IsDetecting");
   }
 
   public PhotonVisionPoseEstimator(PhotonCamera camera, Transform3d cameraPosition, boolean only2TagsMeasurements) {
@@ -45,13 +55,15 @@ public class PhotonVisionPoseEstimator implements PoseEstimator {
     this.photonPoseEstimator.setReferencePose(referencePose);
     Optional<EstimatedRobotPose> photonPoseEstimation = this.photonPoseEstimator.update();
     if (!photonPoseEstimation.isPresent()) {
+      isDetectingLogger.append(false);
       return Optional.empty();
     }
+    isDetectingLogger.append(true);
     PoseEstimation poseEstimation = convertPhotonPoseEstimation(photonPoseEstimation.get());
     if (only2TagsMeasurements && poseEstimation.numberOfTargetsUsed < 2) {
       return Optional.empty();
     }
-
+    numberOfDetectedTagsLogger.append(poseEstimation.numberOfTargetsUsed);
     detectedPoseLogger.appendRadians(poseEstimation.estimatedPose.toPose2d());
     return Optional.of(poseEstimation);
   }

@@ -5,15 +5,12 @@ import java.util.List;
 import java.util.Optional;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomBooleanLogger;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomDoubleLogger;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomPose2dLogger;
 
 public class MultiCameraPoseEstimator implements PoseEstimator {
 
   List<PoseEstimator> poseEstimatorsList;
-
-  CustomBooleanLogger isDetectingLogger;
 
   CustomPose2dLogger detectedPoseLogger;
 
@@ -22,6 +19,7 @@ public class MultiCameraPoseEstimator implements PoseEstimator {
   public MultiCameraPoseEstimator(List<PoseEstimator> poseEstimators) {
     this.poseEstimatorsList = poseEstimators;
     this.detectedPoseLogger = new CustomPose2dLogger("/Vision/MultiCameraEstimator/DetectedPose");
+    this.numberOfDetectedTagsLogger = new CustomDoubleLogger("/Vision/MultiCameraEstimator/NumberOfDetectedTags");
   }
 
   public Optional<PoseEstimation> getEstimatedPose(Pose2d referencePose) {
@@ -45,6 +43,7 @@ public class MultiCameraPoseEstimator implements PoseEstimator {
     Pose2d pose2D = frc.Java_Is_UnderControl.Util.Util.medianPose2Dlist(pose2Ds);
     PoseEstimation poseEstimation = frc.Java_Is_UnderControl.Util.Util.medianPoseEstimationsList(poseEstimations);
     detectedPoseLogger.appendRadians(poseEstimation.estimatedPose.toPose2d());
+    numberOfDetectedTagsLogger.append(poseEstimation.numberOfTargetsUsed);
     return Optional.of(poseEstimation);
   }
 
