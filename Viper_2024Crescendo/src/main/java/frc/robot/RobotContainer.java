@@ -20,6 +20,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Joysticks.ControlBoard;
 import frc.robot.commands.Autonomous.AutonomousAim;
 import frc.robot.commands.Autonomous.AutonomousAimSteal;
+import frc.robot.commands.Autonomous.AutonomousAimSteal1;
+import frc.robot.commands.Autonomous.AutonomousAimSteal2;
 import frc.robot.commands.Autonomous.AutonomousAimSubwoofer;
 import frc.robot.commands.Autonomous.AutonomousCollect;
 import frc.robot.commands.Autonomous.AutonomousCollectAligning;
@@ -71,6 +73,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("Aim Shoot 3", new AutonomousAim(robot, 2));
     NamedCommands.registerCommand("Aim Shoot 4", new AutonomousAim(robot, 3));
     NamedCommands.registerCommand("Aim Shoot Steal", new AutonomousAimSteal(robot));
+    NamedCommands.registerCommand("Aim Shoot Steal 1", new AutonomousAimSteal1(robot));
+    NamedCommands.registerCommand("Aim Shoot Steal 2", new AutonomousAimSteal2(robot));
     NamedCommands.registerCommand("Deploy Intake", new AutonomousDeployOnlyIntake(robot));
     NamedCommands.registerCommand("Secured", new AutonomousSecured(robot));
 

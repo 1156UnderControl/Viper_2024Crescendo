@@ -106,6 +106,12 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     Robot.isInAutonomous = false;
+    this.disabledTimer.reset();
+    this.disabledTimer.start();
+  }
+
+  @Override
+  public void disabledPeriodic() {
     if (switchBrake.get()) {
       this.robotContainer.setRobotToCoast();
       this.robotContainer.robot.led.setSolidColor(LedColor.RED);
@@ -113,13 +119,6 @@ public class Robot extends TimedRobot {
       this.robotContainer.setRobotToBrake();
       this.robotContainer.robot.led.setRainbow();
     }
-
-    this.disabledTimer.reset();
-    this.disabledTimer.start();
-  }
-
-  @Override
-  public void disabledPeriodic() {
   }
 
   /**

@@ -6,7 +6,7 @@ import frc.robot.RobotSubsystems;
 
 public class AutonomousAimSteal extends Command {
   private RobotSubsystems robot;
-  private double shotPosition = 65;
+  private double shotPosition = 74;
 
   public AutonomousAimSteal(RobotSubsystems robot) {
     this.robot = robot;
@@ -15,7 +15,7 @@ public class AutonomousAimSteal extends Command {
 
   @Override
   public void initialize() {
-    Robot.autonomousState = "Aim Shoot Steal";
+    Robot.autonomousState = "Aim Shoot Steal 0";
     this.robot.intake.goToIntakePosition();
     this.robot.intake.stopIntaking();
     this.robot.shooter.setManualPivotPosition(shotPosition);

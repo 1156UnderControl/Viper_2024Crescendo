@@ -128,14 +128,22 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
         new Rotation3d(0, Units.degreesToRadians(-37.5), Units.degreesToRadians(-70)));
     if (swerveInstance == null) {
       List<PoseEstimator> listOfEstimators = new ArrayList<>();
+      List<PoseEstimator> listOfEstimatorsForAuto = new ArrayList<>();
+      PoseEstimator limelight3G_Two_TagsOnly = new LimelightPoseEstimator("limelight-back", true);
+      PoseEstimator limelight2_Two_TagsOnly = new LimelightPoseEstimator("limelight-left", true);
+      PoseEstimator arducam_Two_TagsOnly = new PhotonVisionPoseEstimator(new PhotonCamera("Arducam"), robotToCam, true);
       PoseEstimator limelight3G = new LimelightPoseEstimator("limelight-back", false);
       PoseEstimator limelight2 = new LimelightPoseEstimator("limelight-left", false);
-      PoseEstimator arducam = new PhotonVisionPoseEstimator(new PhotonCamera("Arducam"), robotToCam, false);
+      PoseEstimator arducam = new PhotonVisionPoseEstimator(new PhotonCamera("Arducam"), robotToCam, true);
+      listOfEstimatorsForAuto.add(limelight3G_Two_TagsOnly);
+      listOfEstimatorsForAuto.add(limelight2_Two_TagsOnly);
+      listOfEstimatorsForAuto.add(arducam_Two_TagsOnly);
       listOfEstimators.add(limelight3G);
       listOfEstimators.add(limelight2);
       listOfEstimators.add(arducam);
+      PoseEstimator estimatorMultiCamera_Auto = new MultiCameraPoseEstimator(listOfEstimatorsForAuto);
       PoseEstimator estimatorMultiCamera = new MultiCameraPoseEstimator(listOfEstimators);
-      swerveInstance = new SwerveSubsystem(directory, estimatorMultiCamera);
+      swerveInstance = new SwerveSubsystem(directory, estimatorMultiCamera, estimatorMultiCamera_Auto);
     }
     return swerveInstance;
   }
@@ -147,7 +155,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
     return swerveInstance;
   }
 
-  private SwerveSubsystem(File directory, PoseEstimator poseEstimator) {
+  private SwerveSubsystem(File directory, PoseEstimator poseEstimatorTeleOp, PoseEstimator poseEstimatorAuto) {
     super(directory, new OdometryEnabledSwerveConfig(
         SwerveConstants.MAX_VEL,
         SwerveConstants.MAX_ROTATION_VEL,
@@ -156,8 +164,8 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
             AutoConstants.TranslationPID,
             AutoConstants.angleAutoPID,
             4.5),
-        poseEstimator,
-        poseEstimator,
+        poseEstimatorAuto,
+        poseEstimatorTeleOp,
         new PidConfig(0.7, 0, 0)));
     PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
     this.updateLogs();

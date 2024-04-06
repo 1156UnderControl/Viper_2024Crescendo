@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 6.125579960866886,
-        "y": 0.5039565383425201
+        "x": 6.2794143277302235,
+        "y": 1.0773969622118975
       },
       "prevControl": {
-        "x": 5.4320195250824845,
-        "y": 0.39239258119394893
+        "x": 5.585853891945822,
+        "y": 0.9658330050633264
       },
       "nextControl": {
-        "x": 6.667247532688872,
-        "y": 0.5910874856307304
+        "x": 6.82108189955221,
+        "y": 1.1645279095001078
       },
       "isLocked": false,
       "linkedName": null
@@ -48,28 +48,28 @@
     },
     {
       "anchor": {
-        "x": 1.1617787572237042,
-        "y": 1.8151796645961344
+        "x": 1.5833688728718385,
+        "y": 1.756625481867227
       },
       "prevControl": {
-        "x": 1.6562088270548294,
-        "y": 1.1069419970001984
+        "x": 2.181080608768199,
+        "y": 1.756625481867227
       },
       "nextControl": {
-        "x": 0.7284778050297884,
-        "y": 2.435854001522554
+        "x": 1.3842846515935527,
+        "y": 1.756625481867227
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.787125015036219,
-        "y": 3.2999000290743905
+        "x": 2.2977299021664708,
+        "y": 3.1619258673622865
       },
       "prevControl": {
-        "x": 2.1898723512038356,
-        "y": 2.351322268861746
+        "x": 1.641923055597512,
+        "y": 2.271902289879895
       },
       "nextControl": null,
       "isLocked": false,
@@ -84,16 +84,33 @@
     },
     {
       "waypointRelativePos": 2.0,
-      "rotationDegrees": -42.02844012867091,
+      "rotationDegrees": -42.62272714813512,
       "rotateFast": false
     },
     {
-      "waypointRelativePos": 2.75,
-      "rotationDegrees": -120.5838570601316,
-      "rotateFast": true
+      "waypointRelativePos": 2.95,
+      "rotationDegrees": -120.56719287679861,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 2.3,
+      "rotationDegrees": -132.97383866801172,
+      "rotateFast": false
     }
   ],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "New Constraints Zone",
+      "minWaypointRelativePos": 1.85,
+      "maxWaypointRelativePos": 2.15,
+      "constraints": {
+        "maxVelocity": 1.0,
+        "maxAcceleration": 3.5,
+        "maxAngularVelocity": 100.0,
+        "maxAngularAcceleration": 300.0
+      }
+    }
+  ],
   "eventMarkers": [
     {
       "name": "New Event Marker",
@@ -111,7 +128,7 @@
             {
               "type": "named",
               "data": {
-                "name": "Aim Shoot Steal"
+                "name": "Aim Shoot Steal 1"
               }
             }
           ]
@@ -156,7 +173,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -40.58999117925842,
+    "rotation": -51.34019174626608,
     "rotateFast": false
   },
   "reversed": false,
