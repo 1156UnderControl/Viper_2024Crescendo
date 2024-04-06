@@ -144,6 +144,16 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     this.pivotMotor.setPosition(0);
   }
 
+  @Override
+  public void setBrakePivot() {
+    this.pivotMotor.setMotorBrake(true);
+  }
+
+  @Override
+  public void setCoastPivot() {
+    this.pivotMotor.setMotorBrake(false);
+  }
+
   private void initializeSmartDashboardVariables() {
     SmartDashboard.putNumber("P Shooter", ShooterConstants.tunning_values_shooter.PID.P);
     SmartDashboard.putNumber("I Shooter", ShooterConstants.tunning_values_shooter.PID.I);

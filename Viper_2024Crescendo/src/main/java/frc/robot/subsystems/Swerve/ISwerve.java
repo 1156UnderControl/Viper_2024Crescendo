@@ -1,6 +1,10 @@
 package frc.robot.subsystems.Swerve;
 
 public interface ISwerve {
+  void setModulesToCoast();
+
+  void setModulesToBrake();
+
   void driveAlignAngleButton();
 
   void driveAlignAngleJoy();

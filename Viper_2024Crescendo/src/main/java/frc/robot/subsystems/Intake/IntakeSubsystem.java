@@ -72,6 +72,16 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
     this.pivotMotor.setPosition(IntakeConstants.setpoints.ANGLE_SECURED);
   }
 
+  @Override
+  public void setBrakePivot() {
+    this.pivotMotor.setMotorBrake(true);
+  }
+
+  @Override
+  public void setCoastPivot() {
+    this.pivotMotor.setMotorBrake(false);
+  }
+
   private void configureRollerMotor() {
     this.rollerMotor.setInverted(true);
     this.rollerMotor.setMotorBrake(false);

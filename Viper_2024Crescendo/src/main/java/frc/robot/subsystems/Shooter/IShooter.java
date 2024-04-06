@@ -1,6 +1,10 @@
 package frc.robot.subsystems.Shooter;
 
 public interface IShooter {
+  void setCoastPivot();
+
+  void setBrakePivot();
+
   void intake();
 
   void intakeFromHP();

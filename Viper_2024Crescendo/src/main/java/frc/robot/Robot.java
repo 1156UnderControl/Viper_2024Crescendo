@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -18,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.Autonomous.AutonomousCollect;
 import frc.robot.commands.States.SecuredPosition;
+import frc.robot.subsystems.LEDs.LedColor;
 import swervelib.parser.SwerveParser;
 
 /**
@@ -41,6 +43,8 @@ public class Robot extends TimedRobot {
   public static boolean isDisabled = true;
 
   public static String autonomousState = "NONE";
+
+  DigitalInput switchBrake = new DigitalInput(2);
 
   public Robot() {
     instance = this;
@@ -102,8 +106,14 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     Robot.isInAutonomous = false;
-    this.robotContainer.setMotorBrake(false);
-    this.robotContainer.robot.led.setRainbow();
+    if (switchBrake.get()) {
+      this.robotContainer.setRobotToCoast();
+      this.robotContainer.robot.led.setSolidColor(LedColor.RED);
+    } else {
+      this.robotContainer.setRobotToBrake();
+      this.robotContainer.robot.led.setRainbow();
+    }
+
     this.disabledTimer.reset();
     this.disabledTimer.start();
   }
@@ -122,7 +132,7 @@ public class Robot extends TimedRobot {
     this.robotContainer.robot.setDefaultCommand(new AutonomousCollect(robotContainer.robot));
     Robot.isInAutonomous = true;
     this.robotContainer.setHeadingCorrection(true);
-    this.robotContainer.setMotorBrake(true);
+    this.robotContainer.setRobotToBrake();
     this.autonomousCommand = robotContainer.getAutonomousCommand();
     this.robotContainer.robot.led.turnOff();
 
@@ -142,6 +152,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    this.robotContainer.setRobotToBrake();
     SwerveConstants.ACELL_CORREC = true;
     this.robotContainer.robot.setDefaultCommand(new SecuredPosition(robotContainer.robot));
     Robot.isInAutonomous = false;
@@ -150,7 +161,6 @@ public class Robot extends TimedRobot {
       autonomousCommand.cancel();
     }
     ;
-    this.robotContainer.setMotorBrake(true);
     this.robotContainer.robot.led.turnOff();
   }
 

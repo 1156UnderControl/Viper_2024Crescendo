@@ -1,6 +1,10 @@
 package frc.robot.subsystems.Intake;
 
 public interface IIntake {
+  void setCoastPivot();
+
+  void setBrakePivot();
+
   void intake();
 
   void intakeFromHPposition();

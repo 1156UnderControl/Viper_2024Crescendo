@@ -117,8 +117,12 @@ public class RobotContainer {
     return autoChooser.getSelected();
   }
 
-  public void setMotorBrake(boolean brake) {
-    swerve.setMotorBrake(brake);
+  public void setRobotToBrake() {
+    this.robot.setBrakeToRobot();
+  }
+
+  public void setRobotToCoast() {
+    this.robot.setCoastToRobot();
   }
 
   public void setHeadingCorrection(boolean active) {

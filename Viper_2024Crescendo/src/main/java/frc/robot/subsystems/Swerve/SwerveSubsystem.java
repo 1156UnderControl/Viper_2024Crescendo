@@ -170,6 +170,16 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   }
 
   @Override
+  public void setModulesToBrake() {
+    swerveDrive.setMotorIdleMode(true);
+  }
+
+  @Override
+  public void setModulesToCoast() {
+    swerveDrive.setMotorIdleMode(false);
+  }
+
+  @Override
   public void driveAlignAngleButton() {
     if (this.isControllerAskingForRotation()) {
       this.driveRotating();

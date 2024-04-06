@@ -74,6 +74,18 @@ public class RobotSubsystems extends SubsystemBase {
     return this.shooter.hasNote();
   }
 
+  public void setCoastToRobot() {
+    this.intake.setCoastPivot();
+    this.shooter.setCoastPivot();
+    this.swerve.setModulesToCoast();
+  }
+
+  public void setBrakeToRobot() {
+    this.intake.setBrakePivot();
+    this.shooter.setBrakePivot();
+    this.swerve.setModulesToBrake();
+  }
+
   public boolean isRobotAbleToShoot() {
     if (this.controlBoard.getDoNotShoot().getAsBoolean()) {
       return false;
