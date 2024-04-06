@@ -15,14 +15,15 @@ public class AutonomousPassThrough extends Command {
   @Override
   public void initialize() {
     Robot.autonomousState = "Collect";
-    this.robot.shooter.passThrough();
     this.robot.intake.goToIntakePosition();
     this.robot.intake.intake();
   }
 
   @Override
   public void execute() {
-    this.robot.shooter.passThrough();
+    if (this.robot.intake.isSecureForShooter()) {
+      this.robot.shooter.passThrough();
+    }
     this.robot.intake.intake();
   }
 
@@ -32,6 +33,6 @@ public class AutonomousPassThrough extends Command {
 
   @Override
   public boolean isFinished() {
-    return this.robot.shooter.hasNote();
+    return false;
   }
 }
