@@ -9,6 +9,7 @@ import frc.Java_Is_UnderControl.Limelight.LimelightHelpers.PoseEstimate;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomBooleanLogger;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomDoubleLogger;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomPose2dLogger;
+import frc.Java_Is_UnderControl.Swerve.OdometryEnabledSwerveSubsystem;
 
 public class LimelightPoseEstimator implements PoseEstimator {
 
@@ -44,12 +45,14 @@ public class LimelightPoseEstimator implements PoseEstimator {
   }
 
   public Optional<PoseEstimation> getEstimatedPose(Pose2d referencePose) {
-    if (!LimelightHelpers.getTV(this.limelightName)) {
+    LimelightHelpers.SetRobotOrientation(this.limelightName, OdometryEnabledSwerveSubsystem.robotOrientation, 0, 0, 0,
+        0, 0);
+    if (!LimelightHelpers.getTV(this.limelightName) || OdometryEnabledSwerveSubsystem.robotAngularVelocity > 5) {
       this.isDetectingLogger.append(false);
       this.numberOfDetectedTagsLogger.append(0);
       return Optional.empty();
     }
-    PoseEstimate limelightPoseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(this.limelightName);
+    PoseEstimate limelightPoseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(this.limelightName);
     PoseEstimation poseEstimation = convertPoseEstimate(limelightPoseEstimate);
     this.isDetectingLogger.append(true);
     this.detectedPoseLogger.appendRadians(poseEstimation.estimatedPose.toPose2d());

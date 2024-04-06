@@ -7,6 +7,8 @@ public interface ISwerve {
 
   void driveAlignSpeaker();
 
+  void driveAlignShootOverStage();
+
   void driveAlignNote();
 
   void driveToAmp();

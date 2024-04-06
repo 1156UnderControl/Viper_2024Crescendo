@@ -779,7 +779,7 @@ public class LimelightHelpers {
    * Gets the Pose2d and timestamp for use with WPILib pose estimator
    * (addVisionMeasurement) when you are on the RED
    * alliance
-   *
+   * 
    * @param limelightName
    * @return
    */
@@ -791,7 +791,7 @@ public class LimelightHelpers {
    * Gets the Pose2d and timestamp for use with WPILib pose estimator
    * (addVisionMeasurement) when you are on the RED
    * alliance
-   *
+   * 
    * @param limelightName
    * @return
    */

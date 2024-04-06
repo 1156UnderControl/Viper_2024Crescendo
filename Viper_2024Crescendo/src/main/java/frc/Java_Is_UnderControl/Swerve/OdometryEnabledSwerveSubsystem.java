@@ -17,6 +17,10 @@ import frc.robot.Robot;
 
 public abstract class OdometryEnabledSwerveSubsystem extends BaseSwerveSubsystem {
 
+  public static double robotOrientation;
+
+  public static double robotAngularVelocity;
+
   private PoseEstimator autonomousPoseEstimator;
 
   private PoseEstimator teleopPoseEstimator;
@@ -27,9 +31,13 @@ public abstract class OdometryEnabledSwerveSubsystem extends BaseSwerveSubsystem
 
   private Pose2d targetPose;
 
+  private Pose2d targetAimPose;
+
   private Pose2d poseVision;
 
   private CustomPose2dLogger targetPoseLogger = new CustomPose2dLogger("/SwerveSubsystem/TargetPose");
+
+  private CustomPose2dLogger targetAimPositionLogger = new CustomPose2dLogger("/SwerveSubsystem/TargetAimPosition");
 
   private CustomBooleanLogger isAtTargetXAxisLogger = new CustomBooleanLogger("/SwerveSubsystem/IsAtTargetXAxis");
 
@@ -48,6 +56,7 @@ public abstract class OdometryEnabledSwerveSubsystem extends BaseSwerveSubsystem
     this.autonomousPoseEstimator = config.autonomousPoseEstimator;
     this.teleopPoseEstimator = config.teleoperatedPoseEstimator;
     this.targetPose = new Pose2d();
+    this.targetAimPose = new Pose2d();
     this.poseVision = new Pose2d();
   }
 
@@ -65,7 +74,7 @@ public abstract class OdometryEnabledSwerveSubsystem extends BaseSwerveSubsystem
     if (possibleEstimatedPose.isPresent()) {
       PoseEstimation estimatedPose = possibleEstimatedPose.get();
       this.poseVision = estimatedPose.estimatedPose.toPose2d();
-      this.swerveDrive.swerveDrivePoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 99999));
+      this.swerveDrive.swerveDrivePoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.8, .8, 99999));
       this.swerveDrive.addVisionMeasurement(this.poseVision, estimatedPose.timestampSeconds);
     }
   }
@@ -80,6 +89,7 @@ public abstract class OdometryEnabledSwerveSubsystem extends BaseSwerveSubsystem
 
   protected void driveAimingAtPosition(ChassisSpeeds targetSpeeds, Translation2d targetPosition,
       Rotation2d offsetAngle) {
+    this.targetAimPose = new Pose2d(targetPosition, new Rotation2d());
     Translation2d positionDifference = this.getPose().getTranslation().minus(targetPosition);
     Rotation2d targetAngle = positionDifference.getAngle().plus(offsetAngle);
     this.driveFieldOrientedLockedAngle(targetSpeeds, targetAngle);
@@ -125,9 +135,16 @@ public abstract class OdometryEnabledSwerveSubsystem extends BaseSwerveSubsystem
     this.updateOdometry();
     super.periodic();
     this.updateOdometrySwerveLogs();
+    this.updateLimelightRequiredValues();
+  }
+
+  private void updateLimelightRequiredValues() {
+    robotAngularVelocity = this.swerveDrive.getRobotVelocity().omegaRadiansPerSecond;
+    robotOrientation = this.swerveDrive.getOdometryHeading().getDegrees();
   }
 
   private void updateOdometrySwerveLogs() {
+    this.targetAimPositionLogger.appendRadians(targetAimPose);
     this.poseVisionLogger.appendRadians(this.poseVision);
     this.targetPoseLogger.appendRadians(this.targetPose);
   }

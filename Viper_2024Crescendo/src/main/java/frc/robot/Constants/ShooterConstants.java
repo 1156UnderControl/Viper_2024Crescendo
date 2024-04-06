@@ -10,7 +10,7 @@ public class ShooterConstants {
   public static final int port_IR_IN = 1;
 
   public static final double pivotGoalDeadband = 1;
-  public static final double pivotGoalAutoShootDeadband = 5;
+  public static final double pivotGoalAutoShootDeadband = 1;
 
   public class tunning_values_pivot {
     public static final double KS = 0.63;
@@ -37,8 +37,12 @@ public class ShooterConstants {
   public class setpoints {
     public static final double LIMIT_MAX = 230;
     public static final double LIMIT_MIN = 0;
-    public static final double LIMIT_MAX_INTERPOLATION = 130;
+    public static final double LIMIT_MAX_INTERPOLATION = 160;
     public static final double LIMIT_MIN_INTERPOLATION = 47;
+    public static final double LIMIT_MAX_INTERPOLATION_RPM = 8500;
+    public static final double LIMIT_MIN_INTERPOLATION_RPM = 5000;
+    public static final double LIMIT_MAX_INTERPOLATION_SHOOT_OVER_STAGE = 160;
+    public static final double LIMIT_MIN_INTERPOLATION_SHOOT_OVER_STAGE = 47;
 
     public static final double ANGLE_SECURED = 0.5;
     public static final double ANGLE_INTAKE = 41;

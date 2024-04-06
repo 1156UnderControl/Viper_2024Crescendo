@@ -63,7 +63,11 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private TrapezoidProfile.State pivotGoal = new TrapezoidProfile.State();
 
-  public static InterpolatingDoubleTreeMap shooterMap = new InterpolatingDoubleTreeMap();
+  public static InterpolatingDoubleTreeMap pivotAngleMap = new InterpolatingDoubleTreeMap();
+
+  public static InterpolatingDoubleTreeMap flywheelRPMmap = new InterpolatingDoubleTreeMap();
+
+  public static InterpolatingDoubleTreeMap pivotAngleShootOverStageMap = new InterpolatingDoubleTreeMap();
 
   private DoubleLogEntry pivotGoalLog = new DoubleLogEntry(DataLogManager.getLog(), "/ShooterSubsystem/PivotGoal");
 
@@ -279,14 +283,14 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   public void prepareSpeakerShot() {
     if (noteSensorOut.getBoolean() || noteSensorIn.getBoolean()) {
       this.feederMotor.set(0);
-      this.setVelocityFlywheel(verifyManualValue(ShooterConstants.setpoints.VELOCITY_SHOOT_SPEAKER,
+      this.setVelocityFlywheel(verifyManualValue(calculateGoalFlywheelSetpointSpeaker(),
           "Setpoint Vel Shooter"));
     } else {
       this.lowerFlywheelMotor.set(ShooterConstants.setpoints.VELOCITY_SHOOTER_CORRECT_PASSED_NOTE);
       this.upperFlywheelMotor.set(ShooterConstants.setpoints.VELOCITY_SHOOTER_CORRECT_PASSED_NOTE);
       this.feederMotor.set(ShooterConstants.setpoints.VELOCITY_FEED_CORRECT_PASSED_NOTE);
     }
-    goal = verifyManualValue(calculateGoalSpeaker(), "Setpoint Pos Shoot Pivot");
+    goal = verifyManualValue(calculateGoalPivotSetpointSpeaker(), "Setpoint Pos Shoot Pivot");
     this.state = "PREPARING_SPEAKER_SHOT";
   }
 
@@ -301,7 +305,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
       this.upperFlywheelMotor.set(ShooterConstants.setpoints.VELOCITY_SHOOTER_CORRECT_PASSED_NOTE);
       this.feederMotor.set(-0.05);
     }
-    this.goal = ShooterConstants.setpoints.ANGLE_SHOOT_OVER_STAGE;
+    this.goal = verifyManualValue(ShooterConstants.setpoints.ANGLE_SHOOT_OVER_STAGE,
+        "Setpoint Pos Shoot Pivot");
     this.state = "PREPARING_SHOT_OVER_STAGE";
   }
 
@@ -427,9 +432,9 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     return pivotFeedforward.calculate(pivotCurrentSetpoint.velocity / 12);
   }
 
-  private double calculateGoalSpeaker() {
-    interpolationTree();
-    double setpointInterpolation = shooterMap.get(swerve.distanceFromSpeaker());
+  private double calculateGoalPivotSetpointSpeaker() {
+    interpolationTreePivotAngle();
+    double setpointInterpolation = pivotAngleMap.get(swerve.distanceFromSpeaker());
     if (setpointInterpolation > ShooterConstants.setpoints.LIMIT_MAX_INTERPOLATION) {
       return ShooterConstants.setpoints.LIMIT_MAX_INTERPOLATION;
     }
@@ -441,17 +446,69 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     return setpointInterpolation;
   }
 
-  private static void interpolationTree() {
-    shooterMap.put(1.1, 47.0);
-    shooterMap.put(1.47, 54.0);
-    shooterMap.put(1.72, 58.0);
-    shooterMap.put(2.12, 62.5);
-    shooterMap.put(2.48, 65.0);
-    shooterMap.put(2.48, 65.0);
-    shooterMap.put(2.84, 67.5);
-    shooterMap.put(3.19, 71.5);
-    shooterMap.put(3.57, 72.75);
+  private static void interpolationTreePivotAngle() {
+    pivotAngleMap.put(1.2, 47.0);
+    pivotAngleMap.put(1.42, 51.0);
+    pivotAngleMap.put(1.78, 56.0);
+    pivotAngleMap.put(2.07, 63.0);
+    pivotAngleMap.put(2.32, 65.0);
+    pivotAngleMap.put(2.52, 67.0);
+    pivotAngleMap.put(2.75, 70.0);
+    pivotAngleMap.put(2.97, 71.5);
+    pivotAngleMap.put(3.14, 72.5);
+    pivotAngleMap.put(3.28, 73.0);
+    pivotAngleMap.put(3.55, 74.0);
+    pivotAngleMap.put(3.79, 74.5);
+    pivotAngleMap.put(4.05, 74.5);
+    pivotAngleMap.put(4.4, 74.5);
+  }
 
+  private double calculateGoalFlywheelSetpointSpeaker() {
+    interpolationTreeFlywheelRPM();
+    double setpointInterpolation = flywheelRPMmap.get(swerve.distanceFromSpeaker());
+    if (setpointInterpolation > ShooterConstants.setpoints.LIMIT_MAX_INTERPOLATION_RPM) {
+      return ShooterConstants.setpoints.LIMIT_MAX_INTERPOLATION_RPM;
+    }
+
+    if (setpointInterpolation < ShooterConstants.setpoints.LIMIT_MIN_INTERPOLATION_RPM) {
+      return ShooterConstants.setpoints.LIMIT_MIN_INTERPOLATION_RPM;
+    }
+    return setpointInterpolation;
+  }
+
+  private static void interpolationTreeFlywheelRPM() {
+    flywheelRPMmap.put(1.2, 6000.0);
+    flywheelRPMmap.put(1.42, 6000.0);
+    flywheelRPMmap.put(1.78, 6500.0);
+    flywheelRPMmap.put(2.07, 7000.0);
+    flywheelRPMmap.put(2.32, 7000.0);
+    flywheelRPMmap.put(2.52, 8000.0);
+    flywheelRPMmap.put(2.75, 8000.0);
+    flywheelRPMmap.put(2.97, 8000.0);
+    flywheelRPMmap.put(3.14, 8000.0);
+    flywheelRPMmap.put(3.28, 8000.0);
+    flywheelRPMmap.put(3.55, 8000.0);
+    flywheelRPMmap.put(3.79, 8000.0);
+    flywheelRPMmap.put(4.05, 8000.0);
+  }
+
+  private double calculateGoalPivotSetpointShootOverStage() {
+    interpolationTreeShootOverStageAngle();
+    double setpointInterpolation = pivotAngleMap.get(swerve.distanceFromFeedPos());
+    if (setpointInterpolation > ShooterConstants.setpoints.LIMIT_MAX_INTERPOLATION_SHOOT_OVER_STAGE) {
+      return ShooterConstants.setpoints.LIMIT_MAX_INTERPOLATION_SHOOT_OVER_STAGE;
+    }
+
+    if (setpointInterpolation < ShooterConstants.setpoints.LIMIT_MIN_INTERPOLATION_SHOOT_OVER_STAGE) {
+      return ShooterConstants.setpoints.LIMIT_MIN_INTERPOLATION_SHOOT_OVER_STAGE;
+    }
+
+    return setpointInterpolation;
+  }
+
+  private static void interpolationTreeShootOverStageAngle() {
+    pivotAngleShootOverStageMap.put(1.1, 47.0);
+    pivotAngleShootOverStageMap.put(1.47, 47.0);
   }
 
   private void setVelocityFlywheel(double velocity) {
@@ -463,10 +520,10 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   public boolean isFlywheelAtSetpoint() {
     return lowerFlywheelStability.isStableInRange(this.lowerFlywheelMotor.getVelocity(),
         setpointVelocityShooter,
-        50)
+        100)
         && upperFlywheelStability.isStableInRange(this.upperFlywheelMotor.getVelocity(),
             setpointVelocityShooter,
-            50);
+            100);
   }
 
   private double verifyManualValue(double value, String nameSmartDashboard) {

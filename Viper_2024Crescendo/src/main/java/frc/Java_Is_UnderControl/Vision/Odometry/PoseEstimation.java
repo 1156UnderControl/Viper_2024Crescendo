@@ -11,19 +11,18 @@ public class PoseEstimation {
   public final double timestampSeconds;
 
   /** A list of the targets used to compute this pose */
-  public final int numberOfTargetsUsed;
+  public int numberOfTargetsUsed;
 
   /**
    * Constructs an EstimatedRobotPose
    *
-   * @param estimatedPose estimated pose
+   * @param estimatedPose    estimated pose
    * @param timestampSeconds timestamp of the estimate
    */
   public PoseEstimation(
       Pose3d estimatedPose,
       double timestampSeconds,
-      int numberOfTargetsUsed
-      ) {
+      int numberOfTargetsUsed) {
     this.estimatedPose = estimatedPose;
     this.timestampSeconds = timestampSeconds;
     this.numberOfTargetsUsed = numberOfTargetsUsed;

@@ -5,7 +5,11 @@
 package frc.robot.subsystems.Swerve;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+
+import org.photonvision.PhotonCamera;
 
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
@@ -13,6 +17,9 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -31,6 +38,8 @@ import frc.Java_Is_UnderControl.Swerve.SwervePathPlannerConfig;
 import frc.Java_Is_UnderControl.Util.StabilizeChecker;
 import frc.Java_Is_UnderControl.Util.Util;
 import frc.Java_Is_UnderControl.Vision.Odometry.LimelightPoseEstimator;
+import frc.Java_Is_UnderControl.Vision.Odometry.MultiCameraPoseEstimator;
+import frc.Java_Is_UnderControl.Vision.Odometry.PhotonVisionPoseEstimator;
 import frc.Java_Is_UnderControl.Vision.Odometry.PoseEstimator;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CommandsConstants;
@@ -95,6 +104,9 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   private CustomDoubleLogger distanceToNearestAmpLogEntry = new CustomDoubleLogger(
       "/SwerveSubsystem/AutoAmp/DistanceToNearestAmp");
 
+  private CustomDoubleLogger distanceToSpeakerAllianceLogEntry = new CustomDoubleLogger(
+      "/SwerveSubsystem/DistanceToSpeakerAlliance");
+
   private CustomBooleanLogger isAtAmpPositionLogEntry = new CustomBooleanLogger(
       "/SwerveSubsystem/AutoAmp/isAtAmpPosition");
 
@@ -104,8 +116,6 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
 
   private PhotonVision intakeNoteTrackingCamera = new PhotonVision("Microsoft_LifeCam_HD-3000 (1)");
 
-  // private Limelight limelight;
-
   private double targetNotePositionX;
 
   private PIDController xVelToAprilTag = new PIDController(0.01, 0, 0);
@@ -113,10 +123,21 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
 
   private PhotonVision shooterTopCamera = new PhotonVision("Microsoft_LifeCam_HD-3000");
 
+  private PhotonVision intakeNoteDetecionCamera = new PhotonVision("Microsoft_LifeCam_HD-3000 (1)");
+
   public static SwerveSubsystem getInstance(File directory) {
+    Transform3d robotToCam = new Transform3d(new Translation3d(-0.185, -0.272, 0.27),
+        new Rotation3d(0, Units.degreesToRadians(-37.5), Units.degreesToRadians(-70)));
     if (swerveInstance == null) {
-      PoseEstimator odometryPoseEstimator = new LimelightPoseEstimator("limelight-back", true);
-      swerveInstance = new SwerveSubsystem(directory, odometryPoseEstimator);
+      List<PoseEstimator> listOfEstimators = new ArrayList<>();
+      PoseEstimator limelight3G = new LimelightPoseEstimator("limelight-back", false);
+      PoseEstimator limelight2 = new LimelightPoseEstimator("limelight-left", false);
+      PoseEstimator arducam = new PhotonVisionPoseEstimator(new PhotonCamera("Arducam"), robotToCam, false);
+      listOfEstimators.add(limelight3G);
+      listOfEstimators.add(limelight2);
+      listOfEstimators.add(arducam);
+      PoseEstimator estimatorMultiCamera = new MultiCameraPoseEstimator(listOfEstimators);
+      swerveInstance = new SwerveSubsystem(directory, estimatorMultiCamera);
     }
     return swerveInstance;
   }
@@ -268,16 +289,34 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   }
 
   @Override
+  public void driveAlignShootOverStage() {
+    notAbleToRotate = true;
+    if (this.controller.isForcingDriverControl()) {
+      this.driveAlignAngleButton();
+      return;
+    }
+    Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Red;
+    ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation(),
+        controller.getXtranslation());
+    if (alliance == Alliance.Red) {
+      this.driveAimingAtPosition(desiredSpeeds, FieldConstants.redFeedPos, new Rotation2d(Math.PI));
+    } else {
+      this.driveAimingAtPosition(desiredSpeeds, FieldConstants.blueFeedPos);
+    }
+    this.state = "DRIVE_ALIGN_SHOOT_OVER_STAGE";
+  }
+
+  @Override
   public void driveAlignNote() {
     notAbleToRotate = true;
     if (this.controller.isForcingDriverControl()) {
       driveAlignAngleButton();
       return;
     }
-    boolean isDetectingNote = intakeNoteTrackingCamera.hasTarget();
+    boolean isDetectingNote = intakeNoteDetecionCamera.hasTarget();
     if (isDetectingNote) {
       this.lostNotesFrameCounter = 0;
-      this.targetNotePositionX = intakeNoteTrackingCamera.targetPositionX();
+      this.targetNotePositionX = intakeNoteDetecionCamera.targetPositionX();
       ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation(),
           controller.getXtranslation());
       driveOmegaPidFieldOriented(desiredSpeeds, 0, this.targetNotePositionX, this.pidTrackNote, false);
@@ -400,7 +439,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   @Override
   public boolean isSwerveInAutoShootZone() {
     boolean isInFrontOfSpeaker = this.getPose().getY() > 2.9;
-    boolean isNearSpeaker = distanceFromSpeaker() < 3.5;
+    boolean isNearSpeaker = distanceFromSpeaker() < 4.5;
     return isNearSpeaker && isInFrontOfSpeaker;
   }
 
@@ -417,9 +456,9 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   }
 
   public Optional<Rotation2d> getRotationTargetOverride() {
-    if (overrideRotationAuto && intakeNoteTrackingCamera.hasTarget()) {
+    if (overrideRotationAuto && intakeNoteDetecionCamera.hasTarget()) {
       return Optional.of(swerveDrive.getOdometryHeading()
-          .minus(new Rotation2d(-pidTrackNoteAuto.calculate(intakeNoteTrackingCamera.targetPositionX(), 0))));
+          .minus(new Rotation2d(Units.degreesToRadians(intakeNoteDetecionCamera.targetPositionX()))));
     } else {
       return Optional.empty();
     }
@@ -443,6 +482,15 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
       return getPose().getTranslation().getDistance(FieldConstants.redGoalPos);
     } else {
       return getPose().getTranslation().getDistance(FieldConstants.blueGoalPos);
+    }
+  }
+
+  public double distanceFromFeedPos() {
+    Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Red;
+    if (alliance == Alliance.Red) {
+      return getPose().getTranslation().getDistance(FieldConstants.redFeedPos);
+    } else {
+      return getPose().getTranslation().getDistance(FieldConstants.blueFeedPos);
     }
   }
 
@@ -477,6 +525,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   protected void updateLogs() {
     this.poseVisionLogEntry.appendRadians(this.poseVision2D);
     this.isAlignedWithSpeakerLogEntry.append(isSwerveAlignedWithSpeaker());
+    this.distanceToSpeakerAllianceLogEntry.append(distanceFromSpeaker());
     this.isSwerveInAutoShootZoneLogEntry.append(isSwerveInAutoShootZone());
     this.isSwerveInShootVelocityLogEntry.append(isSwerveInVelocityToShoot());
     this.isSwerveInAutoShootVelocityLogEntry.append(isSwerveInVelocityToAutoShoot());
