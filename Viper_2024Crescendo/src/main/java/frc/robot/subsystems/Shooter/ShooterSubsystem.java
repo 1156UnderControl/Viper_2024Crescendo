@@ -283,8 +283,14 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public void prepareAmpShot() {
-    this.feederMotor.set(0);
-    setVelocityFlywheel(ShooterConstants.setpoints.VELOCITY_SHOOT_AMP);
+    if (noteSensorOut.getBoolean() || noteSensorIn.getBoolean()) {
+      this.feederMotor.set(0);
+      this.setVelocityFlywheel(ShooterConstants.setpoints.VELOCITY_SHOOT_AMP);
+    } else {
+      this.lowerFlywheelMotor.set(ShooterConstants.setpoints.VELOCITY_SHOOTER_CORRECT_PASSED_NOTE);
+      this.upperFlywheelMotor.set(ShooterConstants.setpoints.VELOCITY_SHOOTER_CORRECT_PASSED_NOTE);
+      this.feederMotor.set(ShooterConstants.setpoints.VELOCITY_FEED_CORRECT_PASSED_NOTE);
+    }
     this.goal = ShooterConstants.setpoints.ANGLE_SHOOT_AMP;
     this.state = "PREPARING_AMP_SHOT";
   }
@@ -341,7 +347,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public void passThrough() {
-    this.setVelocityFlywheel(500);
+    this.setVelocityFlywheel(1500);
     this.goToIntakePosition();
     this.feederMotor.set(1);
     this.state = "PASSING_THROUGH";
@@ -349,7 +355,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public void passThroughWithoutPosition() {
-    this.setVelocityFlywheel(1500);
+    this.setVelocityFlywheel(2000);
     this.feederMotor.set(ShooterConstants.setpoints.VELOCITY_FEED_COLLECT);
     this.state = "PASSING_THROUGH";
   }
