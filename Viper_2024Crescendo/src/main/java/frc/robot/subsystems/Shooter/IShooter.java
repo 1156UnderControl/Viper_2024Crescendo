@@ -9,6 +9,8 @@ public interface IShooter {
 
   void passThrough();
 
+  void passThroughWithoutPosition();
+
   void stopIntaking();
 
   void stopFeeder();
