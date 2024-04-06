@@ -32,44 +32,44 @@
     },
     {
       "anchor": {
-        "x": 1.8672922543243673,
-        "y": 4.34399460081996
+        "x": 2.787125015036219,
+        "y": 3.2999000290743905
       },
       "prevControl": {
-        "x": 2.490299803213864,
-        "y": 3.844807992484736
+        "x": 3.410132563925716,
+        "y": 2.800713420739166
       },
       "nextControl": {
-        "x": 1.3452977111576496,
-        "y": 4.762244244885038
+        "x": 2.2651304718695013,
+        "y": 3.7181496731394703
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.3258883960232297,
-        "y": 3.1529588552616272
+        "x": 1.1617787572237042,
+        "y": 1.8151796645961344
       },
       "prevControl": {
-        "x": 1.3296629710416998,
-        "y": 3.9434720061126085
+        "x": 1.6562088270548294,
+        "y": 1.1069419970001984
       },
       "nextControl": {
-        "x": 1.3167111654977162,
-        "y": 1.2309619726165464
+        "x": 0.7284778050297884,
+        "y": 2.435854001522554
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.3258883960232297,
-        "y": 4.5216320284632365
+        "x": 2.787125015036219,
+        "y": 3.2999000290743905
       },
       "prevControl": {
-        "x": 0.04513731067237483,
-        "y": 1.7429881446952062
+        "x": 2.1898723512038356,
+        "y": 2.351322268861746
       },
       "nextControl": null,
       "isLocked": false,
@@ -83,13 +83,13 @@
       "rotateFast": false
     },
     {
-      "waypointRelativePos": 2.05,
-      "rotationDegrees": -27.933185354675928,
-      "rotateFast": true
+      "waypointRelativePos": 2.0,
+      "rotationDegrees": -42.02844012867091,
+      "rotateFast": false
     },
     {
-      "waypointRelativePos": 3.4,
-      "rotationDegrees": -93.44601520457313,
+      "waypointRelativePos": 2.75,
+      "rotationDegrees": -120.5838570601316,
       "rotateFast": true
     }
   ],
@@ -99,13 +99,48 @@
       "name": "New Event Marker",
       "waypointRelativePos": 0.35,
       "command": {
-        "type": "parallel",
+        "type": "sequential",
         "data": {
           "commands": [
             {
               "type": "named",
               "data": {
                 "name": "Intake Aligning"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Aim Shoot Steal"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 1.95,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Shoot"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake Aligning"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Aim Shoot Steal"
               }
             }
           ]
@@ -121,7 +156,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -41.44627107617441,
+    "rotation": -40.58999117925842,
     "rotateFast": false
   },
   "reversed": false,

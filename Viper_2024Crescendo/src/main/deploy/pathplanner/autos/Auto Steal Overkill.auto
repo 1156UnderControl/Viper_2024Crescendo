@@ -18,9 +18,21 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "auto steal ovk path 2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         }
       ]
