@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.Java_Is_UnderControl.Limelight.Limelight;
 import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
 import frc.robot.Joysticks.ControlBoard;
 import frc.robot.subsystems.Climber.ClimberSubsystem;
@@ -31,7 +30,6 @@ public class RobotSubsystems extends SubsystemBase {
   private SubsystemBase climberSubsystem;
   private SubsystemBase ledSubsystem;
 
-  private Limelight limelight = Limelight.getInstance();
   private ControlBoard controlBoard = ControlBoard.getInstance();
 
   public static boolean shootFinished = true;

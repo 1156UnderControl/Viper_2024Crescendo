@@ -114,8 +114,6 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
 
   private CustomStringLogger stateLogEntry = new CustomStringLogger("/SwerveSubsystem/State");
 
-  private PhotonVision intakeNoteTrackingCamera = new PhotonVision("Microsoft_LifeCam_HD-3000 (1)");
-
   private double targetNotePositionX;
 
   private PIDController xVelToAprilTag = new PIDController(0.01, 0, 0);
@@ -170,60 +168,6 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
     super.periodic();
     this.updateLogs();
   }
-
-  // private void updateOdometryWithVision() {
-  // swerveDrive.updateOdometry();
-  // Optional<EstimatedRobotPose> estimation = limelight
-  // .getEstimatedGlobalPose(swerveDrive.swerveDrivePoseEstimator.getEstimatedPosition());
-  // if (estimation.isPresent()) {
-  // EstimatedRobotPose fakeRobotPoseIfNull = new EstimatedRobotPose(new Pose3d(),
-  // 0, new ArrayList<>(), PoseStrategy.LOWEST_AMBIGUITY);
-  // limelight.setPipeline(0);
-  // poseVision2D =
-  // estimation.orElse(fakeRobotPoseIfNull).estimatedPose.toPose2d();
-  // poseVision3D = estimation.orElse(fakeRobotPoseIfNull).estimatedPose;
-  // if (Robot.isInAutonomous) {
-  // OdometryCorrectionInAuto(estimation, fakeRobotPoseIfNull);
-  // } else {
-  // OdometryCorrectionInTeleOp(estimation, fakeRobotPoseIfNull);
-  // }
-  // }
-  // }
-
-  // private void OdometryCorrectionInTeleOp(Optional<EstimatedRobotPose>
-  // estimation,
-  // EstimatedRobotPose fakeRobotPoseIfNull) {
-  // if (estimation.get().targetsUsed.size() >= 2) {
-  // swerveDrive.addVisionMeasurement(poseVision2D,
-  // estimation.orElse(fakeRobotPoseIfNull).timestampSeconds);
-  // twoApriltagsDetected = true;
-  // } else if
-  // (poseVision2D.getTranslation().getDistance(getPose().getTranslation()) < 0.7
-  // && poseInTheField(poseVision2D)
-  // && limelight.getTV() && limelight.getDistance() < 2) {
-  // swerveDrive.addVisionMeasurement(poseVision2D,
-  // estimation.orElse(fakeRobotPoseIfNull).timestampSeconds);
-  // twoApriltagsDetected = false;
-  // } else {
-  // twoApriltagsDetected = false;
-  // }
-  // }
-
-  // private boolean poseInTheField(Pose2d pose) {
-  // boolean poseInXofField = pose.getX() > 0 && pose.getX() < 16.5;
-  // boolean poseInYofField = pose.getY() > 0 && pose.getY() < 8;
-  // return poseInXofField && poseInYofField;
-  // }
-
-  // private void OdometryCorrectionInAuto(Optional<EstimatedRobotPose>
-  // estimation,
-  // EstimatedRobotPose fakeRobotPoseIfNull) {
-  // if (estimation.get().targetsUsed.size() >= 2) {
-  // swerveDrive.addVisionMeasurement(poseVision2D,
-  // estimation.orElse(fakeRobotPoseIfNull).timestampSeconds);
-  // twoApriltagsDetected = true;
-  // }
-  // }
 
   @Override
   public void driveAlignAngleButton() {
