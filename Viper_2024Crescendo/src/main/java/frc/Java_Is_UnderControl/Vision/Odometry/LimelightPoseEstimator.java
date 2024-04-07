@@ -47,7 +47,8 @@ public class LimelightPoseEstimator implements PoseEstimator {
   public Optional<PoseEstimation> getEstimatedPose(Pose2d referencePose) {
     LimelightHelpers.SetRobotOrientation(this.limelightName, OdometryEnabledSwerveSubsystem.robotOrientation, 0, 0, 0,
         0, 0);
-    if (!LimelightHelpers.getTV(this.limelightName) || OdometryEnabledSwerveSubsystem.robotAngularVelocity > 5) {
+    if (!LimelightHelpers.getTV(this.limelightName)
+        || Math.abs(OdometryEnabledSwerveSubsystem.robotAngularVelocity) > 3) {
       this.isDetectingLogger.append(false);
       this.numberOfDetectedTagsLogger.append(0);
       return Optional.empty();
