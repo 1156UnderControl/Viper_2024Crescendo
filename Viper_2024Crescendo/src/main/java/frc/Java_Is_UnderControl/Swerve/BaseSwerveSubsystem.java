@@ -8,6 +8,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -24,7 +25,7 @@ import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 public abstract class BaseSwerveSubsystem extends SubsystemBase {
-  
+
   protected SwerveDrive swerveDrive;
 
   protected double maxTranslationSpeed;
@@ -41,9 +42,11 @@ public abstract class BaseSwerveSubsystem extends SubsystemBase {
 
   private CustomDoubleLogger absoluteTargetSpeedLogger = new CustomDoubleLogger("/SwerveSubsystem/AbsoluteTargetSpeed");
 
-  private CustomChassisSpeedsLogger measuredSpeedsLogger = new CustomChassisSpeedsLogger("/SwerveSubsystem/MeasuredSpeeds");
+  private CustomChassisSpeedsLogger measuredSpeedsLogger = new CustomChassisSpeedsLogger(
+      "/SwerveSubsystem/MeasuredSpeeds");
 
-  private CustomDoubleLogger absoluteMeasuredSpeedLogger = new CustomDoubleLogger("/SwerveSubsystem/AbsoluteMeasuredSpeed");
+  private CustomDoubleLogger absoluteMeasuredSpeedLogger = new CustomDoubleLogger(
+      "/SwerveSubsystem/AbsoluteMeasuredSpeed");
 
   private CustomPose2dLogger poseLogger = new CustomPose2dLogger("/SwerveSubsystem/Pose");
 
@@ -67,10 +70,10 @@ public abstract class BaseSwerveSubsystem extends SubsystemBase {
   private void createSwerveDriveFromYagsl(File directory) {
     try {
       this.swerveDrive = new SwerveParser(directory)
-        .createSwerveDrive(
-          SwerveConstants.MAX_VEL,
-          SwerveConstants.SteeringConversionFactor,
-          SwerveConstants.DriveConversionFactor);
+          .createSwerveDrive(
+              SwerveConstants.MAX_VEL,
+              SwerveConstants.SteeringConversionFactor,
+              SwerveConstants.DriveConversionFactor);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -78,23 +81,21 @@ public abstract class BaseSwerveSubsystem extends SubsystemBase {
 
   private void setupPathPlanner(SwervePathPlannerConfig config) {
     AutoBuilder.configureHolonomic(
-      this::getPose,
-      this::resetOdometry,
-      this::getRobotVelocity,
-      this::setChassisSpeeds,
-      new HolonomicPathFollowerConfig(
-        config.translationPid,
-        config.anglePid,
-        config.maxModuleSpeed,
-        swerveDrive.swerveDriveConfiguration.getDriveBaseRadiusMeters(),
-        new ReplanningConfig()
-      ),
-      () -> {
-        var alliance = DriverStation.getAlliance();
-        return alliance.isPresent() ? alliance.get() == DriverStation.Alliance.Red : false;
-      },
-      this
-    );
+        this::getPose,
+        this::resetOdometry,
+        this::getRobotVelocity,
+        this::setChassisSpeeds,
+        new HolonomicPathFollowerConfig(
+            config.translationPid,
+            config.anglePid,
+            config.maxModuleSpeed,
+            swerveDrive.swerveDriveConfiguration.getDriveBaseRadiusMeters(),
+            new ReplanningConfig()),
+        () -> {
+          var alliance = DriverStation.getAlliance();
+          return alliance.isPresent() ? alliance.get() == DriverStation.Alliance.Red : false;
+        },
+        this);
   }
 
   public void resetOdometry(Pose2d initialHolonomicPose) {
@@ -115,6 +116,24 @@ public abstract class BaseSwerveSubsystem extends SubsystemBase {
 
   protected Pose2d getPose() {
     return this.swerveDrive.getPose();
+  }
+
+  protected Pose2d getEarlyPoseMoving(double dt) {
+    Pose2d actualPose = getPose();
+    Translation2d earlyTranslation = new Translation2d(actualPose.getX() + getRobotVelocity().vxMetersPerSecond * dt,
+        actualPose.getY() + getRobotVelocity().vyMetersPerSecond * dt);
+    Pose2d earlyPoseMoving = new Pose2d(earlyTranslation, actualPose.getRotation());
+    return earlyPoseMoving;
+  }
+
+  protected Pose2d getEarlyPoseMovingWithOmega(double dt) {
+    Pose2d actualPose = getPose();
+    Translation2d earlyTranslation = new Translation2d(actualPose.getX() + getRobotVelocity().vxMetersPerSecond * dt,
+        actualPose.getY() + getRobotVelocity().vyMetersPerSecond * dt);
+    Rotation2d earlyRotation = new Rotation2d(
+        actualPose.getRotation().getRadians() + getRobotVelocity().omegaRadiansPerSecond * dt);
+    Pose2d earlyPoseMoving = new Pose2d(earlyTranslation, earlyRotation);
+    return earlyPoseMoving;
   }
 
   protected void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
@@ -156,22 +175,20 @@ public abstract class BaseSwerveSubsystem extends SubsystemBase {
 
   protected void driveFieldOrientedLockedAngle(ChassisSpeeds speeds, Rotation2d targetHeading) {
     ChassisSpeeds speedsWithAngleAlignment = this.swerveDrive.swerveController.getRawTargetSpeeds(
-      speeds.vxMetersPerSecond,
-      speeds.vyMetersPerSecond,
-      targetHeading.getRadians(),
-      this.getHeading().getRadians());
+        speeds.vxMetersPerSecond,
+        speeds.vyMetersPerSecond,
+        targetHeading.getRadians(),
+        this.getHeading().getRadians());
     if (speedsWithAngleAlignment.omegaRadiansPerSecond > this.swerveDrive.getMaximumAngularVelocity()) {
       speedsWithAngleAlignment = new ChassisSpeeds(
-        speedsWithAngleAlignment.vxMetersPerSecond,
-        speedsWithAngleAlignment.vyMetersPerSecond,
-        this.swerveDrive.getMaximumAngularVelocity()
-      );
+          speedsWithAngleAlignment.vxMetersPerSecond,
+          speedsWithAngleAlignment.vyMetersPerSecond,
+          this.swerveDrive.getMaximumAngularVelocity());
     } else if (speedsWithAngleAlignment.omegaRadiansPerSecond < (-1 * this.swerveDrive.getMaximumAngularVelocity())) {
       speedsWithAngleAlignment = new ChassisSpeeds(
-        speedsWithAngleAlignment.vxMetersPerSecond,
-        speedsWithAngleAlignment.vyMetersPerSecond,
-        -1 * this.swerveDrive.getMaximumAngularVelocity()
-      );
+          speedsWithAngleAlignment.vxMetersPerSecond,
+          speedsWithAngleAlignment.vyMetersPerSecond,
+          -1 * this.swerveDrive.getMaximumAngularVelocity());
     }
     this.driveFieldOriented(speedsWithAngleAlignment);
     this.targetHeadingDegrees = targetHeading.getDegrees();
@@ -186,22 +203,20 @@ public abstract class BaseSwerveSubsystem extends SubsystemBase {
 
   protected void driveRobotOrientedLockedAngle(ChassisSpeeds speeds, Rotation2d targetHeading) {
     ChassisSpeeds speedsWithAngleAlignment = this.swerveDrive.swerveController.getRawTargetSpeeds(
-      speeds.vxMetersPerSecond,
-      speeds.vyMetersPerSecond,
-      targetHeading.getRadians(),
-      this.getHeading().getRadians());
+        speeds.vxMetersPerSecond,
+        speeds.vyMetersPerSecond,
+        targetHeading.getRadians(),
+        this.getHeading().getRadians());
     if (speedsWithAngleAlignment.omegaRadiansPerSecond > this.swerveDrive.getMaximumAngularVelocity()) {
       speedsWithAngleAlignment = new ChassisSpeeds(
-        speedsWithAngleAlignment.vxMetersPerSecond,
-        speedsWithAngleAlignment.vyMetersPerSecond,
-        this.swerveDrive.getMaximumAngularVelocity()
-      );
+          speedsWithAngleAlignment.vxMetersPerSecond,
+          speedsWithAngleAlignment.vyMetersPerSecond,
+          this.swerveDrive.getMaximumAngularVelocity());
     } else if (speedsWithAngleAlignment.omegaRadiansPerSecond < (-1 * this.swerveDrive.getMaximumAngularVelocity())) {
       speedsWithAngleAlignment = new ChassisSpeeds(
-        speedsWithAngleAlignment.vxMetersPerSecond,
-        speedsWithAngleAlignment.vyMetersPerSecond,
-        -1 * this.swerveDrive.getMaximumAngularVelocity()
-      );
+          speedsWithAngleAlignment.vxMetersPerSecond,
+          speedsWithAngleAlignment.vyMetersPerSecond,
+          -1 * this.swerveDrive.getMaximumAngularVelocity());
     }
     this.driveRobotOriented(speedsWithAngleAlignment);
     this.targetHeadingDegrees = targetHeading.getDegrees();
@@ -213,10 +228,12 @@ public abstract class BaseSwerveSubsystem extends SubsystemBase {
     this.targetHeadingDegrees = Double.NaN;
   }
 
-  private ChassisSpeeds performAllianceSpeedDirectionCorrection(ChassisSpeeds targetSpeeds){
-    Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : this.defaultAlliance;
+  private ChassisSpeeds performAllianceSpeedDirectionCorrection(ChassisSpeeds targetSpeeds) {
+    Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get()
+        : this.defaultAlliance;
     if (alliance == Alliance.Red) {
-      targetSpeeds = new ChassisSpeeds(-targetSpeeds.vxMetersPerSecond, -targetSpeeds.vyMetersPerSecond, targetSpeeds.omegaRadiansPerSecond);
+      targetSpeeds = new ChassisSpeeds(-targetSpeeds.vxMetersPerSecond, -targetSpeeds.vyMetersPerSecond,
+          targetSpeeds.omegaRadiansPerSecond);
     }
     return targetSpeeds;
   }

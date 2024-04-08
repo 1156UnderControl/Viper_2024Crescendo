@@ -95,6 +95,14 @@ public abstract class OdometryEnabledSwerveSubsystem extends BaseSwerveSubsystem
     this.driveFieldOrientedLockedAngle(targetSpeeds, targetAngle);
   }
 
+  protected void driveAimingAtPositionMoving(double dt, ChassisSpeeds targetSpeeds, Translation2d targetPosition,
+      Rotation2d offsetAngle) {
+    this.targetAimPose = new Pose2d(targetPosition, new Rotation2d());
+    Translation2d positionDifference = this.getEarlyPoseMoving(dt).getTranslation().minus(targetPosition);
+    Rotation2d targetAngle = positionDifference.getAngle().plus(offsetAngle);
+    this.driveFieldOrientedLockedAngle(targetSpeeds, targetAngle);
+  }
+
   protected void driveToPose(Pose2d targetPose) {
     Pose2d currentPose = this.getPose();
     double targetXVelocity = this.moveToPoseXAxisPid.calculate(currentPose.getX(), targetPose.getX());
