@@ -351,6 +351,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     this.goToIntakePosition();
     this.feederMotor.set(1);
     this.state = "PASSING_THROUGH";
+
   }
 
   @Override
