@@ -153,6 +153,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
       DriverStation.reportError("YAGSL Configuration not provided", true);
     }
     return swerveInstance;
+
   }
 
   private SwerveSubsystem(File directory, PoseEstimator poseEstimatorTeleOp, PoseEstimator poseEstimatorAuto) {
