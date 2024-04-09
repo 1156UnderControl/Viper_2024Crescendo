@@ -129,7 +129,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
     if (swerveInstance == null) {
       List<PoseEstimator> listOfEstimators = new ArrayList<>();
       List<PoseEstimator> listOfEstimatorsForAuto = new ArrayList<>();
-      PoseEstimator limelight3G_Two_TagsOnly = new LimelightPoseEstimator("limelight-back", true);
+      PoseEstimator limelight3G_Two_TagsOnly = new LimelightPoseEstimator("limelight-back", true, true);
       PoseEstimator limelight2_Two_TagsOnly = new LimelightPoseEstimator("limelight-left", true);
       PoseEstimator arducam_Two_TagsOnly = new PhotonVisionPoseEstimator(new PhotonCamera("Arducam"), robotToCam, true);
       PoseEstimator limelight3G = new LimelightPoseEstimator("limelight-back", false);
@@ -143,7 +143,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
       listOfEstimators.add(arducam);
       PoseEstimator estimatorMultiCamera_Auto = new MultiCameraPoseEstimator(listOfEstimatorsForAuto);
       PoseEstimator estimatorMultiCamera = new MultiCameraPoseEstimator(listOfEstimators);
-      swerveInstance = new SwerveSubsystem(directory, estimatorMultiCamera, estimatorMultiCamera_Auto);
+      swerveInstance = new SwerveSubsystem(directory, estimatorMultiCamera, limelight3G_Two_TagsOnly);
     }
     return swerveInstance;
   }

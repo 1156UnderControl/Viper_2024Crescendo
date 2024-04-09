@@ -140,15 +140,15 @@ public abstract class OdometryEnabledSwerveSubsystem extends BaseSwerveSubsystem
 
   @Override
   public void periodic() {
+    this.updateLimelightRequiredValues();
     this.updateOdometry();
     super.periodic();
     this.updateOdometrySwerveLogs();
-    this.updateLimelightRequiredValues();
   }
 
   private void updateLimelightRequiredValues() {
-    robotAngularVelocity = this.swerveDrive.getRobotVelocity().omegaRadiansPerSecond;
-    robotOrientation = this.swerveDrive.getOdometryHeading().getDegrees();
+    OdometryEnabledSwerveSubsystem.robotAngularVelocity = this.swerveDrive.getRobotVelocity().omegaRadiansPerSecond;
+    OdometryEnabledSwerveSubsystem.robotOrientation = this.swerveDrive.getOdometryHeading().getDegrees();
   }
 
   private void updateOdometrySwerveLogs() {
