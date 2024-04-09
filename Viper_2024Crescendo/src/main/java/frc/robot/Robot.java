@@ -130,7 +130,7 @@ public class Robot extends TimedRobot {
     SwerveConstants.ACELL_CORREC = false;
     this.robotContainer.robot.setDefaultCommand(new AutonomousCollect(robotContainer.robot));
     Robot.isInAutonomous = true;
-    this.robotContainer.setHeadingCorrection(true);
+    this.robotContainer.setHeadingCorrection(false);
     this.robotContainer.setRobotToBrake();
     this.autonomousCommand = robotContainer.getAutonomousCommand();
     this.robotContainer.robot.led.turnOff();
