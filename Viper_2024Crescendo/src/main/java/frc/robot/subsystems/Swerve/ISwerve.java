@@ -11,6 +11,8 @@ public interface ISwerve {
 
   void driveAlignSpeaker();
 
+  void driveAlignSpeakerSlow();
+
   void driveAlignShootOverStage();
 
   void driveAlignNote();
@@ -24,6 +26,8 @@ public interface ISwerve {
   void overrideRotationAuto(boolean override);
 
   double getDistanceToNearestAmp();
+
+  double distanceFromSpeakerMoving();
 
   boolean isSwerveAlignedWithSpeaker();
 

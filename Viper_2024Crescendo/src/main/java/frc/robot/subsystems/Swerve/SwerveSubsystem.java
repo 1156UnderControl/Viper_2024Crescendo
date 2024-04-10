@@ -244,9 +244,29 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
     ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation(),
         controller.getXtranslation());
     if (alliance == Alliance.Red) {
-      this.driveAimingAtPosition(desiredSpeeds, FieldConstants.redGoalPos, new Rotation2d(Math.PI));
+      this.driveAimingAtPositionMoving(CommandsConstants.dtShootWhileMoving, desiredSpeeds, FieldConstants.redGoalPos,
+          new Rotation2d(Math.PI));
     } else {
-      this.driveAimingAtPosition(desiredSpeeds, FieldConstants.blueGoalPos);
+      this.driveAimingAtPositionMoving(CommandsConstants.dtShootWhileMoving, desiredSpeeds, FieldConstants.blueGoalPos);
+    }
+    this.state = "DRIVE_ALIGN_SPEAKER";
+  }
+
+  @Override
+  public void driveAlignSpeakerSlow() {
+    notAbleToRotate = true;
+    if (this.controller.isForcingDriverControl()) {
+      this.driveAlignAngleButton();
+      return;
+    }
+    Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Red;
+    ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation() * 0.4,
+        controller.getXtranslation() * 0.4);
+    if (alliance == Alliance.Red) {
+      this.driveAimingAtPositionMoving(CommandsConstants.dtShootWhileMoving, desiredSpeeds, FieldConstants.redGoalPos,
+          new Rotation2d(Math.PI));
+    } else {
+      this.driveAimingAtPositionMoving(CommandsConstants.dtShootWhileMoving, desiredSpeeds, FieldConstants.blueGoalPos);
     }
     this.state = "DRIVE_ALIGN_SPEAKER";
   }
@@ -409,7 +429,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   @Override
   public boolean isSwerveInVelocityToAutoShoot() {
     double velocity = this.getAbsoluteRobotVelocity();
-    return velocity < 1;
+    return velocity < 2;
   }
 
   @Override
@@ -454,6 +474,28 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
       return getPose().getTranslation().getDistance(FieldConstants.redFeedPos);
     } else {
       return getPose().getTranslation().getDistance(FieldConstants.blueFeedPos);
+    }
+  }
+
+  public double distanceFromSpeakerMoving() {
+    Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Red;
+    if (alliance == Alliance.Red) {
+      return getEarlyPoseMoving(CommandsConstants.dtShootWhileMoving).getTranslation()
+          .getDistance(FieldConstants.redGoalPos);
+    } else {
+      return getEarlyPoseMoving(CommandsConstants.dtShootWhileMoving).getTranslation()
+          .getDistance(FieldConstants.blueGoalPos);
+    }
+  }
+
+  public double distanceFromFeedPosMoving() {
+    Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Red;
+    if (alliance == Alliance.Red) {
+      return getEarlyPoseMoving(CommandsConstants.dtShootWhileMoving).getTranslation()
+          .getDistance(FieldConstants.redFeedPos);
+    } else {
+      return getEarlyPoseMoving(CommandsConstants.dtShootWhileMoving).getTranslation()
+          .getDistance(FieldConstants.blueFeedPos);
     }
   }
 
