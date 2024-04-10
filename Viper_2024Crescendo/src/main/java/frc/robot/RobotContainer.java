@@ -97,7 +97,7 @@ public class RobotContainer {
     this.controlBoard.setHeadingLeft().onTrue(new InstantCommand(swerve::setAngle90));
     this.controlBoard.setHeadingRight().onTrue(new InstantCommand(swerve::setAngleNeg90));
     this.controlBoard.getSecured().onTrue(new SwerveTeleopControl(swerve));
-    this.controlBoard.getPrepareSpeaker().and(() -> robot.shooter.hasNote() && robot.shooter.getNoteSensor())
+    this.controlBoard.getPrepareSpeaker().and(() -> robot.shooter.hasNote())
         .onTrue(new SwerveAlignSpeaker(swerve));
   }
 
