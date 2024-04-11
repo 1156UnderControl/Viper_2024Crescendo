@@ -9,7 +9,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomBooleanLogger;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomPose2dLogger;
 import frc.Java_Is_UnderControl.Vision.Odometry.PoseEstimation;
@@ -154,8 +153,6 @@ public abstract class OdometryEnabledSwerveSubsystem extends BaseSwerveSubsystem
   private void updateLimelightRequiredValues() {
     OdometryEnabledSwerveSubsystem.robotAngularVelocity = this.swerveDrive.getRobotVelocity().omegaRadiansPerSecond;
     OdometryEnabledSwerveSubsystem.robotOrientation = this.swerveDrive.getOdometryHeading().getDegrees();
-    LimelightHelpers.SetRobotOrientation("limelight-back", this.swerveDrive.getOdometryHeading().getDegrees(), 0, 0, 0,
-        0, 0);
   }
 
   private void updateOdometrySwerveLogs() {

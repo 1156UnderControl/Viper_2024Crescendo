@@ -129,19 +129,15 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
     if (swerveInstance == null) {
       List<PoseEstimator> listOfEstimators = new ArrayList<>();
       List<PoseEstimator> listOfEstimatorsForAuto = new ArrayList<>();
-      PoseEstimator limelight3G_Two_TagsOnly = new LimelightPoseEstimator("limelight-back", true, true);
-      PoseEstimator limelight2_Two_TagsOnly = new LimelightPoseEstimator("limelight-left", true);
-      PoseEstimator arducam_Two_TagsOnly = new PhotonVisionPoseEstimator(new PhotonCamera("Arducam"), robotToCam, true);
+      PoseEstimator limelight3G_Two_TagsOnly = new LimelightPoseEstimator("limelight-back", true,
+          false, 0.05);
       PoseEstimator limelight3G = new LimelightPoseEstimator("limelight-back", false);
       PoseEstimator limelight2 = new LimelightPoseEstimator("limelight-left", false);
       PoseEstimator arducam = new PhotonVisionPoseEstimator(new PhotonCamera("Arducam"), robotToCam, true);
       listOfEstimatorsForAuto.add(limelight3G_Two_TagsOnly);
-      listOfEstimatorsForAuto.add(limelight2_Two_TagsOnly);
-      listOfEstimatorsForAuto.add(arducam_Two_TagsOnly);
       listOfEstimators.add(limelight3G);
       listOfEstimators.add(limelight2);
       listOfEstimators.add(arducam);
-      PoseEstimator estimatorMultiCamera_Auto = new MultiCameraPoseEstimator(listOfEstimatorsForAuto);
       PoseEstimator estimatorMultiCamera = new MultiCameraPoseEstimator(listOfEstimators);
       swerveInstance = new SwerveSubsystem(directory, estimatorMultiCamera, limelight3G_Two_TagsOnly);
     }
@@ -176,6 +172,10 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   public void periodic() {
     super.periodic();
     this.updateLogs();
+    LimelightHelpers.SetRobotOrientation("limelight-back", this.swerveDrive.getOdometryHeading().getDegrees(), 0, 0, 0,
+        0, 0);
+    LimelightHelpers.SetRobotOrientation("limelight-left", this.swerveDrive.getOdometryHeading().getDegrees(), 0, 0, 0,
+        0, 0);
   }
 
   @Override
@@ -282,9 +282,10 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
     ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation(),
         controller.getXtranslation());
     if (alliance == Alliance.Red) {
-      this.driveAimingAtPosition(desiredSpeeds, FieldConstants.redFeedPos, new Rotation2d(Math.PI));
+      this.driveAimingAtPositionMoving(CommandsConstants.dtShootWhileMoving, desiredSpeeds, FieldConstants.redFeedPos,
+          new Rotation2d(Math.PI));
     } else {
-      this.driveAimingAtPosition(desiredSpeeds, FieldConstants.blueFeedPos);
+      this.driveAimingAtPositionMoving(CommandsConstants.dtShootWhileMoving, desiredSpeeds, FieldConstants.blueFeedPos);
     }
     this.state = "DRIVE_ALIGN_SHOOT_OVER_STAGE";
   }
@@ -440,8 +441,9 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
 
   public Optional<Rotation2d> getRotationTargetOverride() {
     if (overrideRotationAuto && intakeNoteDetecionCamera.hasTarget()) {
+      double angleToAimNote = pidTrackNoteAuto.calculate(intakeNoteDetecionCamera.targetPositionX(), 0);
       return Optional.of(swerveDrive.getOdometryHeading()
-          .minus(new Rotation2d(Units.degreesToRadians(intakeNoteDetecionCamera.targetPositionX()))));
+          .plus(new Rotation2d(Units.degreesToRadians(angleToAimNote))));
     } else {
       return Optional.empty();
     }
