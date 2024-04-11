@@ -18,12 +18,12 @@ public class AutonomousAimSubwoofer extends Command {
     Robot.autonomousState = "Aim Shoot Subwoofer";
     this.robot.intake.goToIntakePosition();
     this.robot.intake.stopIntaking();
-    this.robot.shooter.setManualPivotPosition(shotPosition);
+    this.robot.shooter.setManualPivotPosition(shotPosition, 6500);
   }
 
   @Override
   public void execute() {
-    this.robot.shooter.setManualPivotPosition(shotPosition);
+    this.robot.shooter.setManualPivotPosition(shotPosition, 6500);
   }
 
   @Override

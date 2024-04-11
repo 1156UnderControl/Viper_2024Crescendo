@@ -19,7 +19,7 @@ public class TuneShooter extends Command {
 
   @Override
   public void execute() {
-    this.shooter.setManualPivotPosition(SmartDashboard.getNumber("Position Manual Setpoint Shooter", 0));
+    this.shooter.setManualPivotPosition(SmartDashboard.getNumber("Position Manual Setpoint Shooter", 0), 8000);
   }
 
   @Override

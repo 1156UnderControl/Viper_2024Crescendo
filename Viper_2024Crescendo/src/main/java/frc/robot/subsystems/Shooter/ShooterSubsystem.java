@@ -347,7 +347,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public void passThrough() {
-    this.setVelocityFlywheel(1500);
+    this.setVelocityFlywheel(1400);
     this.goToIntakePosition();
     this.feederMotor.set(1);
     this.state = "PASSING_THROUGH";
@@ -429,8 +429,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   }
 
   @Override
-  public void setManualPivotPosition(double goal) {
-    setVelocityFlywheel(ShooterConstants.setpoints.VELOCITY_SHOOT_SPEAKER);
+  public void setManualPivotPosition(double goal, double rpm) {
+    setVelocityFlywheel(rpm);
     if (hasNote && !noteSensorOut.getBoolean() && !noteSensorIn.getBoolean()) {
       this.feederMotor.set(ShooterConstants.setpoints.VELOCITY_FEED_CORRECT_PASSED_NOTE);
     } else {

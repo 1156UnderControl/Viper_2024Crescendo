@@ -16,6 +16,7 @@ public class AutonomousShoot extends Command {
   @Override
   public void initialize() {
     Robot.autonomousState = "Shoot";
+    this.robot.shooter.shoot();
     this.robot.intake.intake();
     this.robot.intake.goToIntakePosition();
     timer.start();

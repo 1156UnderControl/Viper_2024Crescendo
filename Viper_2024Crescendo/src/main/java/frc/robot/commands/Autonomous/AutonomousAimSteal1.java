@@ -3,10 +3,11 @@ package frc.robot.commands.Autonomous;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.RobotSubsystems;
+import frc.robot.Constants.ShooterConstants;
 
 public class AutonomousAimSteal1 extends Command {
   private RobotSubsystems robot;
-  private double shotPosition = 73;
+  private double shotPosition = 72;
 
   public AutonomousAimSteal1(RobotSubsystems robot) {
     this.robot = robot;
@@ -18,12 +19,12 @@ public class AutonomousAimSteal1 extends Command {
     Robot.autonomousState = "Aim Shoot Steal 1";
     this.robot.intake.goToIntakePosition();
     this.robot.intake.stopIntaking();
-    this.robot.shooter.setManualPivotPosition(shotPosition);
+    this.robot.shooter.setManualPivotPosition(shotPosition, ShooterConstants.setpoints.VELOCITY_SHOOT_SPEAKER);
   }
 
   @Override
   public void execute() {
-    this.robot.shooter.setManualPivotPosition(shotPosition);
+    this.robot.shooter.setManualPivotPosition(shotPosition, ShooterConstants.setpoints.VELOCITY_SHOOT_SPEAKER);
   }
 
   @Override

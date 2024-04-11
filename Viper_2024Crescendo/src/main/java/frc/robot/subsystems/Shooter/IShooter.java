@@ -51,7 +51,7 @@ public interface IShooter {
 
   boolean isFlywheelAtSetpoint();
 
-  void setManualPivotPosition(double goal);
+  void setManualPivotPosition(double goal, double rpm);
 
   void setHasNoteFalse();
 
