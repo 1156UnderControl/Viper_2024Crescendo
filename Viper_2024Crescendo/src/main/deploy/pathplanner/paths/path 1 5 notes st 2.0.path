@@ -1,0 +1,115 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.2437546130441748,
+        "y": 5.691466561249813
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.6536338921465275,
+        "y": 6.089635003806385
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.883798934502291,
+        "y": 7.37782702384235
+      },
+      "prevControl": {
+        "x": 6.530659112790704,
+        "y": 7.0286296504974235
+      },
+      "nextControl": {
+        "x": 8.24683486742151,
+        "y": 7.4715137162086025
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.2040432097982583,
+        "y": 6.230165042355762
+      },
+      "prevControl": {
+        "x": 6.9235103377482075,
+        "y": 6.604911811820771
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "end path 1 5nst 2.0"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.1,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.6,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Aim Shoot 1"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.0,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Secured"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 100.0,
+    "maxAngularAcceleration": 300.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 25.76932762433866,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Auto 5 Notes steal",
+  "previewStartingState": {
+    "rotation": 0.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}
