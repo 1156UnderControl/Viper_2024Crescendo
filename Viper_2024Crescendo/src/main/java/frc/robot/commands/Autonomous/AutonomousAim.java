@@ -8,6 +8,7 @@ import frc.robot.Constants.ShooterConstants;
 public class AutonomousAim extends Command {
   private RobotSubsystems robot;
   private int shootNumber;
+  // private double[] shotPositions = { 72, 60, 65, 60 }; V1
   private double[] shotPositions = { 69, 60, 67, 70 };
 
   public AutonomousAim(RobotSubsystems robot, int shootNumber) {
