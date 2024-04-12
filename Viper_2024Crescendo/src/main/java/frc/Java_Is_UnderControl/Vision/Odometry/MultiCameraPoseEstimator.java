@@ -37,14 +37,29 @@ public class MultiCameraPoseEstimator implements PoseEstimator {
         }
       }
     }
-    int numberOfTargetsUsed = poseEstimations.size();
-    if (numberOfTargetsUsed < 2) {
+    if (poseEstimations.size() < 1) {
       return Optional.empty();
     }
+    PoseEstimation poseEstimation;
     pose2Ds.sort(new ComparatorPose2D());
-    poseEstimations.sort(new ComparatorPoseEstimation());
-    PoseEstimation poseEstimation = frc.Java_Is_UnderControl.Util.Util.medianPoseEstimationsList(poseEstimations);
-    poseEstimation.numberOfTargetsUsed = numberOfTargetsUsed;
+    poseEstimations.sort(new ComparatorPoseEstimationTagCount());
+    if (poseEstimations.size() > 1) {
+      double TagCount1 = poseEstimations.get(poseEstimations.size() - 1).numberOfTargetsUsed;
+      double TagCount2 = poseEstimations.get(poseEstimations.size() - 2).numberOfTargetsUsed;
+      if (TagCount1 != TagCount2) {
+        double biggerDistance = Math.max(poseEstimations.get(poseEstimations.size() - 1).distanceToTag,
+            poseEstimations.get(poseEstimations.size() - 2).distanceToTag);
+        if (biggerDistance == poseEstimations.get(poseEstimations.size() - 1).distanceToTag) {
+          poseEstimation = poseEstimations.get(poseEstimations.size() - 2);
+        } else {
+          poseEstimation = poseEstimations.get(poseEstimations.size() - 1);
+        }
+      } else {
+        poseEstimation = poseEstimations.get(poseEstimations.size() - 1);
+      }
+    } else {
+      poseEstimation = poseEstimations.get(poseEstimations.size() - 1);
+    }
     detectedPoseLogger.appendRadians(poseEstimation.estimatedPose.toPose2d());
     numberOfDetectedTagsLogger.append(poseEstimation.numberOfTargetsUsed);
     return Optional.of(poseEstimation);

@@ -20,6 +20,8 @@ public class PhotonVisionPoseEstimator implements PoseEstimator {
 
   PhotonPoseEstimator photonPoseEstimator;
 
+  PhotonCamera camera;
+
   boolean only2TagsMeasurements = false;
 
   private AprilTagFieldLayout fieldAprilTagLayout;
@@ -30,7 +32,10 @@ public class PhotonVisionPoseEstimator implements PoseEstimator {
 
   CustomDoubleLogger numberOfDetectedTagsLogger;
 
+  CustomDoubleLogger distToTag;
+
   public PhotonVisionPoseEstimator(PhotonCamera camera, Transform3d cameraPosition) {
+    this.camera = camera;
     this.fieldAprilTagLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
     this.fieldAprilTagLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
     this.photonPoseEstimator = new PhotonPoseEstimator(this.fieldAprilTagLayout,
@@ -40,12 +45,15 @@ public class PhotonVisionPoseEstimator implements PoseEstimator {
         "/Vision/PhotonVisionPoseEstimator/" + camera.getName() + "/DetectedPose");
     this.numberOfDetectedTagsLogger = new CustomDoubleLogger(
         "/Vision/PhotonVisionPoseEstimator/" + camera.getName() + "/NumberOfDetectedTags");
+    this.distToTag = new CustomDoubleLogger(
+        "/Vision/PhotonVisionPoseEstimator/" + camera.getName() + "/DistanceToTag");
     this.isDetectingLogger = new CustomBooleanLogger(
         "/Vision/PhotonVisionPoseEstimator/" + camera.getName() + "/IsDetecting");
   }
 
   public PhotonVisionPoseEstimator(PhotonCamera camera, Transform3d cameraPosition, boolean only2TagsMeasurements) {
     this.only2TagsMeasurements = only2TagsMeasurements;
+    this.camera = camera;
     this.fieldAprilTagLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
     this.fieldAprilTagLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
     this.photonPoseEstimator = new PhotonPoseEstimator(this.fieldAprilTagLayout,
@@ -55,6 +63,8 @@ public class PhotonVisionPoseEstimator implements PoseEstimator {
         "/Vision/PhotonVisionPoseEstimator/" + camera.getName() + "/DetectedPose");
     this.numberOfDetectedTagsLogger = new CustomDoubleLogger(
         "/Vision/PhotonVisionPoseEstimator/" + camera.getName() + "/NumberOfDetectedTags");
+    this.distToTag = new CustomDoubleLogger(
+        "/Vision/PhotonVisionPoseEstimator/" + camera.getName() + "/DistanceToTag");
     this.isDetectingLogger = new CustomBooleanLogger(
         "/Vision/PhotonVisionPoseEstimator/" + camera.getName() + "/IsDetecting");
   }
@@ -71,14 +81,18 @@ public class PhotonVisionPoseEstimator implements PoseEstimator {
     if (only2TagsMeasurements && poseEstimation.numberOfTargetsUsed < 2) {
       return Optional.empty();
     }
+    distToTag.append(poseEstimation.distanceToTag);
     numberOfDetectedTagsLogger.append(poseEstimation.numberOfTargetsUsed);
     detectedPoseLogger.appendRadians(poseEstimation.estimatedPose.toPose2d());
     return Optional.of(poseEstimation);
   }
 
   private PoseEstimation convertPhotonPoseEstimation(EstimatedRobotPose photonPoseEstimation) {
+
     return new PoseEstimation(photonPoseEstimation.estimatedPose, photonPoseEstimation.timestampSeconds,
-        photonPoseEstimation.targetsUsed.size());
+        photonPoseEstimation.targetsUsed.size(),
+        photonPoseEstimation.targetsUsed.get(photonPoseEstimation.targetsUsed.size() - 1).getBestCameraToTarget()
+            .getX());
   }
 
 }

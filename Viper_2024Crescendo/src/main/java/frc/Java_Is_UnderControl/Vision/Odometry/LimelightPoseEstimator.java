@@ -35,6 +35,8 @@ public class LimelightPoseEstimator implements PoseEstimator {
 
   CustomDoubleLogger numberOfDetectedTagsLogger;
 
+  CustomDoubleLogger distToTag;
+
   CustomDoubleLogger headingMegaTag2;
 
   public LimelightPoseEstimator(String limelightName, boolean only2TagsMeasurements, boolean useMegaTag1,
@@ -51,6 +53,8 @@ public class LimelightPoseEstimator implements PoseEstimator {
         "/Vision/LimelightPoseEstimator/" + limelightName + "/NumberOfDetectedTags");
     this.headingMegaTag2 = new CustomDoubleLogger(
         "/Vision/LimelightPoseEstimator/" + limelightName + "/Heading MegaTag2");
+    this.distToTag = new CustomDoubleLogger(
+        "/Vision/LimelightPoseEstimator/" + limelightName + "/DistanceToTag");
     this.stateOfPoseUpdate = new CustomStringLogger(
         "/Vision/LimelightPoseEstimator/" + limelightName + "/StateOfPoseUpdate");
   }
@@ -83,6 +87,7 @@ public class LimelightPoseEstimator implements PoseEstimator {
     this.isDetectingLogger.append(true);
     this.detectedPoseLogger.appendRadians(poseEstimation.estimatedPose.toPose2d());
     this.numberOfDetectedTagsLogger.append(poseEstimation.numberOfTargetsUsed);
+    this.distToTag.append(poseEstimation.distanceToTag);
     if (poseOutOfField(poseEstimation)) {
       this.stateOfPoseUpdate.append("REJECTED_BY_OUT_OF_THE_FIELD_ESTIMATION");
       return Optional.empty();
@@ -91,6 +96,7 @@ public class LimelightPoseEstimator implements PoseEstimator {
       this.stateOfPoseUpdate.append("REJECTED_BY_ONLY_2_TAGS_MEASUREMENTS");
       return Optional.empty();
     }
+
     return Optional.of(poseEstimation);
   }
 
@@ -102,7 +108,7 @@ public class LimelightPoseEstimator implements PoseEstimator {
 
   private PoseEstimation convertPoseEstimate(PoseEstimate limelightPoseEstimate) {
     return new PoseEstimation(new Pose3d(limelightPoseEstimate.pose), limelightPoseEstimate.timestampSeconds,
-        limelightPoseEstimate.tagCount);
+        limelightPoseEstimate.tagCount, limelightPoseEstimate.avgTagDist);
   }
 
 }

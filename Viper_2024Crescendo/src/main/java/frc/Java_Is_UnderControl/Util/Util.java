@@ -42,7 +42,9 @@ public class Util {
     double rot = (pose1.estimatedPose.getRotation().getAngle() + pose2.estimatedPose.getRotation().getAngle()) / 2;
     int numberOfTargets = (pose1.numberOfTargetsUsed + pose2.numberOfTargetsUsed) / 2;
     double timestamp = (pose1.timestampSeconds + pose1.timestampSeconds) / 2;
-    return new PoseEstimation(new Pose3d(new Pose2d(x, y, new Rotation2d(rot))), timestamp, numberOfTargets);
+    double distanceToTag = (pose1.distanceToTag + pose1.distanceToTag) / 2;
+    return new PoseEstimation(new Pose3d(new Pose2d(x, y, new Rotation2d(rot))), timestamp, numberOfTargets,
+        distanceToTag);
   }
 
   private static Pose2d averageTwoPose2Ds(Pose2d pose1, Pose2d pose2) {
