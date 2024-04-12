@@ -3,45 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.4948760201796716,
-        "y": 1.419253426500274
+        "x": 2.787125015036219,
+        "y": 3.2999000290743905
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.346018563231482,
-        "y": 1.419253426500274
+        "x": 3.835702716638713,
+        "y": 2.6406689696621193
       },
       "isLocked": false,
-      "linkedName": "start auto steal overkill"
+      "linkedName": "end path1 steal ovk"
     },
     {
       "anchor": {
-        "x": 7.930642280685416,
-        "y": 0.5504093176517308
+        "x": 6.2794143277302235,
+        "y": 1.0773969622118975
       },
       "prevControl": {
-        "x": 6.431655202825382,
-        "y": 0.4215901156481322
+        "x": 5.951510904448343,
+        "y": 0.8666019043878308
       },
       "nextControl": {
-        "x": 8.490698161725703,
-        "y": 0.5985391199286318
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 8.106304828872139,
-        "y": 2.2250589436984876
-      },
-      "prevControl": {
-        "x": 7.90073137968361,
-        "y": 1.3869518046970515
-      },
-      "nextControl": {
-        "x": 8.258545703968181,
-        "y": 2.8457332806300264
+        "x": 6.522713699762695,
+        "y": 1.23380370137563
       },
       "isLocked": false,
       "linkedName": null
@@ -52,76 +36,64 @@
         "y": 3.2999000290743905
       },
       "prevControl": {
-        "x": 5.635318317712241,
-        "y": 0.21079505782406668
+        "x": 3.878692835845013,
+        "y": 1.9791313762370728
+      },
+      "nextControl": {
+        "x": 2.361007144673722,
+        "y": 3.8154915616019567
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.3679949214366918,
+        "y": 1.4638545682226887
+      },
+      "prevControl": {
+        "x": 0.4076256625789936,
+        "y": 0.09118923549594671
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "end path1 steal ovk"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.35,
-      "rotationDegrees": 0.23538996586649272,
+      "waypointRelativePos": 2.0,
+      "rotationDegrees": -27.355499524418153,
       "rotateFast": false
     },
     {
-      "waypointRelativePos": 1.7,
-      "rotationDegrees": 81.39746727805965,
+      "waypointRelativePos": 1.15,
+      "rotationDegrees": -1.5619574609955496,
       "rotateFast": false
     },
     {
-      "waypointRelativePos": 2.45,
-      "rotationDegrees": 0,
+      "waypointRelativePos": 2.6,
+      "rotationDegrees": -95.92605036712456,
       "rotateFast": false
     }
   ],
   "constraintZones": [
     {
       "name": "New Constraints Zone",
-      "minWaypointRelativePos": 1.1500000000000001,
-      "maxWaypointRelativePos": 1.4,
+      "minWaypointRelativePos": 2.55,
+      "maxWaypointRelativePos": 2.8,
       "constraints": {
-        "maxVelocity": 0.5,
+        "maxVelocity": 1.5,
         "maxAcceleration": 3.5,
-        "maxAngularVelocity": 100.0,
-        "maxAngularAcceleration": 200.0
-      }
-    },
-    {
-      "name": "New Constraints Zone",
-      "minWaypointRelativePos": 0,
-      "maxWaypointRelativePos": 0.8,
-      "constraints": {
-        "maxVelocity": 4.0,
-        "maxAcceleration": 4.0,
         "maxAngularVelocity": 50.0,
-        "maxAngularAcceleration": 100.0
+        "maxAngularAcceleration": 300.0
       }
     }
   ],
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.30000000000000004,
-      "command": {
-        "type": "sequential",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Pass Through"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "New Event Marker",
-      "waypointRelativePos": 1.75,
+      "waypointRelativePos": 0.35,
       "command": {
         "type": "sequential",
         "data": {
@@ -130,6 +102,35 @@
               "type": "named",
               "data": {
                 "name": "Intake Aligning"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Aim Shoot Steal 1"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 2.0,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Shoot"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
               }
             },
             {
@@ -146,18 +147,18 @@
   "globalConstraints": {
     "maxVelocity": 3.5,
     "maxAcceleration": 3.5,
-    "maxAngularVelocity": 50.0,
-    "maxAngularAcceleration": 100.0
+    "maxAngularVelocity": 100.0,
+    "maxAngularAcceleration": 300.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -36.0,
+    "rotation": -54.46232220830251,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "auto steal overkill",
   "previewStartingState": {
-    "rotation": 0.027469448026011357,
+    "rotation": -25.893995216570097,
     "velocity": 0
   },
   "useDefaultConstraints": false

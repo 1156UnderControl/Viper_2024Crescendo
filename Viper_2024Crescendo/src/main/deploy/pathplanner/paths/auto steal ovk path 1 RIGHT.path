@@ -1,0 +1,164 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.4948760201796716,
+        "y": 1.419253426500274
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.346018563231482,
+        "y": 1.419253426500274
+      },
+      "isLocked": false,
+      "linkedName": "start auto steal overkill"
+    },
+    {
+      "anchor": {
+        "x": 8.153148175055266,
+        "y": 2.295323962973175
+      },
+      "prevControl": {
+        "x": 6.6541610971952325,
+        "y": 2.166504760969577
+      },
+      "nextControl": {
+        "x": 8.713204056095543,
+        "y": 2.343453765250076
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.036039809594428,
+        "y": 1.0656861256593717
+      },
+      "prevControl": {
+        "x": 8.332847689637978,
+        "y": 1.6778523782491965
+      },
+      "nextControl": {
+        "x": 7.6612930401294195,
+        "y": 0.2927709136377904
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.787125015036219,
+        "y": 3.2999000290743905
+      },
+      "prevControl": {
+        "x": 5.846113375533286,
+        "y": 1.6160954433111023
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "end path1 steal ovk"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.95,
+      "rotationDegrees": 26.040250423329013,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 1.6500000000000001,
+      "rotationDegrees": -91.43949536685876,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 1.0499999999999998,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "New Constraints Zone",
+      "minWaypointRelativePos": 1.0,
+      "maxWaypointRelativePos": 1.35,
+      "constraints": {
+        "maxVelocity": 0.5,
+        "maxAcceleration": 3.5,
+        "maxAngularVelocity": 100.0,
+        "maxAngularAcceleration": 200.0
+      }
+    },
+    {
+      "name": "New Constraints Zone",
+      "minWaypointRelativePos": 0,
+      "maxWaypointRelativePos": 0.7,
+      "constraints": {
+        "maxVelocity": 4.0,
+        "maxAcceleration": 4.0,
+        "maxAngularVelocity": 50.0,
+        "maxAngularAcceleration": 100.0
+      }
+    }
+  ],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.30000000000000004,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Pass Through"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 1.75,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake Aligning"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Aim Shoot Steal"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 50.0,
+    "maxAngularAcceleration": 100.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -36.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "auto steal overkill",
+  "previewStartingState": {
+    "rotation": 0.027469448026011357,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

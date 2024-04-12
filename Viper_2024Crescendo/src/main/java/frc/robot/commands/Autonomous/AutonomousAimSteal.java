@@ -7,7 +7,7 @@ import frc.robot.Constants.ShooterConstants;
 
 public class AutonomousAimSteal extends Command {
   private RobotSubsystems robot;
-  private double shotPosition = 73;
+  private double shotPosition = 74;
 
   public AutonomousAimSteal(RobotSubsystems robot) {
     this.robot = robot;
