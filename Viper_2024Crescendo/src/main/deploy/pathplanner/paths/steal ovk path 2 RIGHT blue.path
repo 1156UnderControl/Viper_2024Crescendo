@@ -52,12 +52,12 @@
         "y": 1.4638545682226887
       },
       "prevControl": {
-        "x": 0.4076256625789936,
-        "y": 0.09118923549594671
+        "x": -0.042451411600122224,
+        "y": 0.38712411191090723
       },
       "nextControl": {
-        "x": 2.449910125865591,
-        "y": 1.5212122118577933
+        "x": 2.4592997067789955,
+        "y": 1.5046398127799532
       },
       "isLocked": false,
       "linkedName": "end shoot ovk blue"
@@ -88,7 +88,7 @@
       "rotateFast": false
     },
     {
-      "waypointRelativePos": 2.6,
+      "waypointRelativePos": 2.5,
       "rotationDegrees": -95.92605036712456,
       "rotateFast": false
     }

@@ -1,0 +1,186 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.787125015036219,
+        "y": 3.2999000290743905
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.721873067141283,
+        "y": 0.8314693947504864
+      },
+      "isLocked": false,
+      "linkedName": "shoot 1 blue overkill"
+    },
+    {
+      "anchor": {
+        "x": 6.87666699156508,
+        "y": 2.3538781457020823
+      },
+      "prevControl": {
+        "x": 6.431655202825382,
+        "y": 2.295323962973176
+      },
+      "nextControl": {
+        "x": 7.432651441828431,
+        "y": 2.4270339944209427
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.787125015036219,
+        "y": 3.2999000290743905
+      },
+      "prevControl": {
+        "x": 4.265150441855804,
+        "y": 0.7143610292926715
+      },
+      "nextControl": {
+        "x": 2.594430453123296,
+        "y": 3.6369844227737493
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.3679949214366918,
+        "y": 1.4638545682226887
+      },
+      "prevControl": {
+        "x": -0.04443740699179138,
+        "y": 0.38645760601079004
+      },
+      "nextControl": {
+        "x": 2.45930281611533,
+        "y": 1.5046328512830938
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.6559660811629335,
+        "y": 1.6773802778374796
+      },
+      "prevControl": {
+        "x": 2.5653500601408044,
+        "y": 1.6350868181289493
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 2.0,
+      "rotationDegrees": -32.30000000000001,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 0.75,
+      "rotationDegrees": 35.35964396170272,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 2.5,
+      "rotationDegrees": -95.92605036712456,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": -11.876114006227276,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "New Constraints Zone",
+      "minWaypointRelativePos": 2.55,
+      "maxWaypointRelativePos": 2.8,
+      "constraints": {
+        "maxVelocity": 1.5,
+        "maxAcceleration": 3.5,
+        "maxAngularVelocity": 50.0,
+        "maxAngularAcceleration": 300.0
+      }
+    }
+  ],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.25,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake Aligning"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Aim Shoot Steal 1"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 2.0,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Shoot"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Aim Shoot Steal"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 100.0,
+    "maxAngularAcceleration": 300.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -54.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "auto steal overkill",
+  "previewStartingState": {
+    "rotation": -32.30000000000001,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}
