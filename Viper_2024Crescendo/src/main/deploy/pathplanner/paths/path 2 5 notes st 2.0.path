@@ -191,13 +191,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -22.61986494804027,
+    "rotation": -22.620000000000005,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "Auto 5 Notes steal",
   "previewStartingState": {
-    "rotation": 17.35,
+    "rotation": 24.0,
     "velocity": 0
   },
   "useDefaultConstraints": true
