@@ -1,0 +1,185 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.4948760201796716,
+        "y": 1.419253426500274
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.346018563231482,
+        "y": 1.419253426500274
+      },
+      "isLocked": false,
+      "linkedName": "start auto steal overkill"
+    },
+    {
+      "anchor": {
+        "x": 7.883798934502291,
+        "y": 2.3538781457020823
+      },
+      "prevControl": {
+        "x": 6.525341895191635,
+        "y": 1.7800471549587873
+      },
+      "nextControl": {
+        "x": 8.401616326267675,
+        "y": 2.572611354292633
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.64958220358666,
+        "y": 0.8314693947504864
+      },
+      "prevControl": {
+        "x": 7.928300113377978,
+        "y": 1.0797391295210546
+      },
+      "nextControl": {
+        "x": 7.317961807034551,
+        "y": 0.5360764364790042
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.787125015036219,
+        "y": 3.2999000290743905
+      },
+      "prevControl": {
+        "x": 3.7967169800245437,
+        "y": 1.0071319429372099
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "shoot 1 blue overkill"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.8999999999999999,
+      "rotationDegrees": 21.42755543032955,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 1.5,
+      "rotationDegrees": -51.86432960660627,
+      "rotateFast": true
+    },
+    {
+      "waypointRelativePos": 2.0999999999999996,
+      "rotationDegrees": -24.658132513237724,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 1.3,
+      "rotationDegrees": -2.9901056584445453,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "New Constraints Zone",
+      "minWaypointRelativePos": 1.1500000000000001,
+      "maxWaypointRelativePos": 1.3,
+      "constraints": {
+        "maxVelocity": 0.5,
+        "maxAcceleration": 3.5,
+        "maxAngularVelocity": 100.0,
+        "maxAngularAcceleration": 200.0
+      }
+    },
+    {
+      "name": "New Constraints Zone",
+      "minWaypointRelativePos": 0,
+      "maxWaypointRelativePos": 0.8,
+      "constraints": {
+        "maxVelocity": 4.0,
+        "maxAcceleration": 4.0,
+        "maxAngularVelocity": 50.0,
+        "maxAngularAcceleration": 100.0
+      }
+    },
+    {
+      "name": "New Constraints Zone",
+      "minWaypointRelativePos": 1.7,
+      "maxWaypointRelativePos": 2.9,
+      "constraints": {
+        "maxVelocity": 4.0,
+        "maxAcceleration": 4.0,
+        "maxAngularVelocity": 50.0,
+        "maxAngularAcceleration": 100.0
+      }
+    }
+  ],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.30000000000000004,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Pass Through"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 1.6,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake Aligning"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Aim Shoot Steal"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 100.0,
+    "maxAngularAcceleration": 100.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -43.43000000000001,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "auto steal overkill",
+  "previewStartingState": {
+    "rotation": 0.027469448026011357,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

@@ -2,19 +2,19 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.2437546130441748,
-      "y": 5.691466561249813
+      "x": 1.4948760201796716,
+      "y": 1.419253426500274
     },
-    "rotation": 0.0
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Aim Shoot Subwoofer"
+            "pathName": "steal ovk path 1 LEFT blue"
           }
         },
         {
@@ -26,25 +26,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "path 1 5 notes st"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Aim Shoot 1"
+            "pathName": "steal ovk path 2 LEFT blue"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "Shoot"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "path 2 5 notes st"
           }
         }
       ]

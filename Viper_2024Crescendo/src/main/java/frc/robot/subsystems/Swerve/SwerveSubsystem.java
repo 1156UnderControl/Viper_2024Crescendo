@@ -243,11 +243,13 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
     Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Red;
     ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation(),
         controller.getXtranslation());
+    Rotation2d spinCompensationAngle = Rotation2d.fromDegrees(-3);
     if (alliance == Alliance.Red) {
       this.driveAimingAtPositionMoving(CommandsConstants.dtShootWhileMoving, desiredSpeeds, FieldConstants.redGoalPos,
-          new Rotation2d(Math.PI));
+          new Rotation2d(Math.PI).plus(spinCompensationAngle));
     } else {
-      this.driveAimingAtPositionMoving(CommandsConstants.dtShootWhileMoving, desiredSpeeds, FieldConstants.blueGoalPos);
+      this.driveAimingAtPositionMoving(CommandsConstants.dtShootWhileMoving, desiredSpeeds, FieldConstants.blueGoalPos,
+          spinCompensationAngle);
     }
     this.state = "DRIVE_ALIGN_SPEAKER";
   }
@@ -264,9 +266,10 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
         controller.getXtranslation() * 0.4);
     if (alliance == Alliance.Red) {
       this.driveAimingAtPositionMoving(CommandsConstants.dtShootWhileMoving, desiredSpeeds, FieldConstants.redGoalPos,
-          new Rotation2d(Math.PI));
+          new Rotation2d(Math.PI).plus(Rotation2d.fromDegrees(-3)));
     } else {
-      this.driveAimingAtPositionMoving(CommandsConstants.dtShootWhileMoving, desiredSpeeds, FieldConstants.blueGoalPos);
+      this.driveAimingAtPositionMoving(CommandsConstants.dtShootWhileMoving, desiredSpeeds, FieldConstants.blueGoalPos,
+          Rotation2d.fromDegrees(-3));
     }
     this.state = "DRIVE_ALIGN_SPEAKER";
   }
@@ -283,9 +286,12 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
         controller.getXtranslation());
     if (alliance == Alliance.Red) {
       this.driveAimingAtPositionMoving(CommandsConstants.dtShootWhileMoving, desiredSpeeds, FieldConstants.redFeedPos,
-          new Rotation2d(Math.PI));
+          new Rotation2d(Math.PI).plus(Rotation2d.fromDegrees(-13)));
     } else {
-      this.driveAimingAtPositionMoving(CommandsConstants.dtShootWhileMoving, desiredSpeeds, FieldConstants.blueFeedPos);
+      this.driveAimingAtPositionMoving(CommandsConstants.dtShootWhileMoving, desiredSpeeds, FieldConstants.blueFeedPos,
+          Rotation2d.fromDegrees(-13));
+      this.driveAimingAtPositionMoving(CommandsConstants.dtShootWhileMoving, desiredSpeeds, FieldConstants.blueFeedPos,
+          Rotation2d.fromDegrees(-13));
     }
     this.state = "DRIVE_ALIGN_SHOOT_OVER_STAGE";
   }
@@ -430,7 +436,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   @Override
   public boolean isSwerveInVelocityToAutoShoot() {
     double velocity = this.getAbsoluteRobotVelocity();
-    return velocity < 2;
+    return velocity < 1.5;
   }
 
   @Override

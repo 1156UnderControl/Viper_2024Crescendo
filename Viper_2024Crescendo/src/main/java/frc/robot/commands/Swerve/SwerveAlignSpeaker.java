@@ -24,7 +24,7 @@ public class SwerveAlignSpeaker extends Command {
 
   @Override
   public void execute() {
-    if (swerve.distanceFromSpeakerMoving() < 3) {
+    if (swerve.distanceFromSpeakerMoving() < 4) {
       swerve.driveAlignSpeakerSlow();
     } else {
       swerve.driveAlignSpeaker();

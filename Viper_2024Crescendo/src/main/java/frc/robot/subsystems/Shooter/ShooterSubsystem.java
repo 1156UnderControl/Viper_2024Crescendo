@@ -347,7 +347,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public void passThrough() {
-    this.setVelocityFlywheel(1400);
+    this.lowerFlywheelMotor.setVelocityReference(1400, 0);
+    this.upperFlywheelMotor.setVelocityReference(1000, 0);
     this.goToIntakePosition();
     this.feederMotor.set(1);
     this.state = "PASSING_THROUGH";
@@ -475,15 +476,15 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     pivotAngleMap.put(1.42, 51.0);
     pivotAngleMap.put(1.78, 56.0);
     pivotAngleMap.put(2.07, 63.0);
-    pivotAngleMap.put(2.32, 65.0);
-    pivotAngleMap.put(2.52, 67.0);
-    pivotAngleMap.put(2.75, 70.0);
-    pivotAngleMap.put(2.97, 71.5);
-    pivotAngleMap.put(3.14, 72.5);
-    pivotAngleMap.put(3.28, 73.0);
-    pivotAngleMap.put(3.55, 74.0);
-    pivotAngleMap.put(3.79, 74.5);
-    pivotAngleMap.put(4.05, 74.5);
+    pivotAngleMap.put(2.32, 64.0);
+    pivotAngleMap.put(2.52, 66.0);
+    pivotAngleMap.put(2.75, 69.0);
+    pivotAngleMap.put(2.97, 70.5);
+    pivotAngleMap.put(3.14, 71.5);
+    pivotAngleMap.put(3.28, 72.0);
+    pivotAngleMap.put(3.55, 73.0);
+    pivotAngleMap.put(3.79, 73.5);
+    pivotAngleMap.put(4.05, 73.5);
     pivotAngleMap.put(4.4, 74.5);
   }
 

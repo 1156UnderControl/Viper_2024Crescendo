@@ -12,5 +12,5 @@ public class CommandsConstants {
   public static final double I_TrackNote_Auto = 0;
   public static final double D_TrackNote_Auto = 0;
 
-  public static final double dtShootWhileMoving = -0.3;
+  public static final double dtShootWhileMoving = 0.4;
 }

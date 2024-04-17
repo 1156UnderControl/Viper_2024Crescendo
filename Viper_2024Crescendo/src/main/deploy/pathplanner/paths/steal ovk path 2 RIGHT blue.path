@@ -1,0 +1,181 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.787125015036219,
+        "y": 3.2999000290743905
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.835702716638713,
+        "y": 2.6406689696621193
+      },
+      "isLocked": false,
+      "linkedName": "shoot 1 blue overkill"
+    },
+    {
+      "anchor": {
+        "x": 6.4350051777026644,
+        "y": 0.9570934526484439
+      },
+      "prevControl": {
+        "x": 6.107101754420784,
+        "y": 0.7462983948243772
+      },
+      "nextControl": {
+        "x": 6.678304549735136,
+        "y": 1.1135001918121765
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.787125015036219,
+        "y": 3.2999000290743905
+      },
+      "prevControl": {
+        "x": 4.11627361716262,
+        "y": 2.308864617729237
+      },
+      "nextControl": {
+        "x": 2.475851735149799,
+        "y": 3.531990588760099
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.3679949214366918,
+        "y": 1.4638545682226887
+      },
+      "prevControl": {
+        "x": 0.4076256625789936,
+        "y": 0.09118923549594671
+      },
+      "nextControl": {
+        "x": 2.449910125865591,
+        "y": 1.5212122118577933
+      },
+      "isLocked": false,
+      "linkedName": "end shoot ovk blue"
+    },
+    {
+      "anchor": {
+        "x": 2.6559660811629335,
+        "y": 1.6773802778374796
+      },
+      "prevControl": {
+        "x": 2.5653500601408044,
+        "y": 1.6350868181289493
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 2.0,
+      "rotationDegrees": -43.43000000000001,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 1.15,
+      "rotationDegrees": -1.5619574609955496,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 2.6,
+      "rotationDegrees": -95.92605036712456,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "New Constraints Zone",
+      "minWaypointRelativePos": 2.55,
+      "maxWaypointRelativePos": 2.8,
+      "constraints": {
+        "maxVelocity": 1.5,
+        "maxAcceleration": 3.5,
+        "maxAngularVelocity": 50.0,
+        "maxAngularAcceleration": 300.0
+      }
+    }
+  ],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.35,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake Aligning"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Aim Shoot Steal 1"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 2.0,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Shoot"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Aim Shoot Steal"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 100.0,
+    "maxAngularAcceleration": 300.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -67.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "auto steal overkill",
+  "previewStartingState": {
+    "rotation": -43.43000000000001,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

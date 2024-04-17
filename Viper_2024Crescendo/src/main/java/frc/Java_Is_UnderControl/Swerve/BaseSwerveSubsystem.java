@@ -60,7 +60,7 @@ public abstract class BaseSwerveSubsystem extends SubsystemBase {
     this.maxTranslationSpeed = config.maxTranslationSpeed;
     this.maxRotationSpeed = config.maxRotationSpeed;
     this.defaultAlliance = config.defaultAlliance;
-    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.LOW;
+    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     this.createSwerveDriveFromYagsl(directory);
     this.setupPathPlanner(config.pathPlannerConfig);
   }
@@ -120,18 +120,20 @@ public abstract class BaseSwerveSubsystem extends SubsystemBase {
 
   protected Pose2d getEarlyPoseMoving(double dt) {
     Pose2d actualPose = getPose();
-    Translation2d earlyTranslation = new Translation2d(actualPose.getX() + getRobotVelocity().vxMetersPerSecond * dt,
-        actualPose.getY() + getRobotVelocity().vyMetersPerSecond * dt);
+    Translation2d earlyTranslation = new Translation2d(
+        actualPose.getX() + getFieldOrientedRobotVelocity().vxMetersPerSecond * dt,
+        actualPose.getY() + getFieldOrientedRobotVelocity().vyMetersPerSecond * dt);
     Pose2d earlyPoseMoving = new Pose2d(earlyTranslation, actualPose.getRotation());
     return earlyPoseMoving;
   }
 
   protected Pose2d getEarlyPoseMovingWithOmega(double dt) {
     Pose2d actualPose = getPose();
-    Translation2d earlyTranslation = new Translation2d(actualPose.getX() + getRobotVelocity().vxMetersPerSecond * dt,
-        actualPose.getY() + getRobotVelocity().vyMetersPerSecond * dt);
+    Translation2d earlyTranslation = new Translation2d(
+        actualPose.getX() + getFieldOrientedRobotVelocity().vxMetersPerSecond * dt,
+        actualPose.getY() + getFieldOrientedRobotVelocity().vyMetersPerSecond * dt);
     Rotation2d earlyRotation = new Rotation2d(
-        actualPose.getRotation().getRadians() + getRobotVelocity().omegaRadiansPerSecond * dt);
+        actualPose.getRotation().getRadians() + getFieldOrientedRobotVelocity().omegaRadiansPerSecond * dt);
     Pose2d earlyPoseMoving = new Pose2d(earlyTranslation, earlyRotation);
     return earlyPoseMoving;
   }
@@ -143,6 +145,10 @@ public abstract class BaseSwerveSubsystem extends SubsystemBase {
 
   protected ChassisSpeeds getRobotVelocity() {
     return this.swerveDrive.getRobotVelocity();
+  }
+
+  protected ChassisSpeeds getFieldOrientedRobotVelocity() {
+    return this.swerveDrive.getFieldVelocity();
   }
 
   protected double getAbsoluteRobotVelocity() {
