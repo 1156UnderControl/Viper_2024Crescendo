@@ -129,7 +129,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
     if (swerveInstance == null) {
       List<PoseEstimator> listOfEstimators = new ArrayList<>();
       List<PoseEstimator> listOfEstimatorsForAuto = new ArrayList<>();
-      PoseEstimator limelight3G_Two_TagsOnly = new LimelightPoseEstimator("limelight-back", true,
+      PoseEstimator limelight3G_Two_TagsOnly = new LimelightPoseEstimator("limelight-back", false,
           false, 0.05);
       PoseEstimator limelight3G = new LimelightPoseEstimator("limelight-back", false);
       PoseEstimator limelight2 = new LimelightPoseEstimator("limelight-left", false);
