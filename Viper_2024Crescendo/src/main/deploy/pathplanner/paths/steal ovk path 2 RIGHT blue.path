@@ -28,7 +28,7 @@
         "y": 1.1135001918121765
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "collect pass through"
     },
     {
       "anchor": {
@@ -152,7 +152,7 @@
             {
               "type": "named",
               "data": {
-                "name": "Aim Shoot Steal"
+                "name": "Aim Shoot Steal 2"
               }
             }
           ]

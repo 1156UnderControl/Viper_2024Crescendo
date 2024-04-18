@@ -8,27 +8,27 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.721873067141283,
-        "y": 0.8314693947504864
+        "x": 3.552066151302715,
+        "y": 2.323956865746053
       },
       "isLocked": false,
       "linkedName": "shoot 1 blue overkill"
     },
     {
       "anchor": {
-        "x": 6.87666699156508,
-        "y": 2.3538781457020823
+        "x": 6.4350051777026644,
+        "y": 0.9570934526484439
       },
       "prevControl": {
-        "x": 6.431655202825382,
-        "y": 2.295323962973176
+        "x": 5.989993388962967,
+        "y": 0.8985392699195378
       },
       "nextControl": {
-        "x": 7.432651441828431,
-        "y": 2.4270339944209427
+        "x": 6.990989627966015,
+        "y": 1.0302493013673044
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "collect pass through"
     },
     {
       "anchor": {
@@ -36,8 +36,8 @@
         "y": 3.2999000290743905
       },
       "prevControl": {
-        "x": 4.265150441855804,
-        "y": 0.7143610292926715
+        "x": 3.610957066186664,
+        "y": 1.8587543905293993
       },
       "nextControl": {
         "x": 2.594430453123296,
@@ -83,17 +83,12 @@
       "rotateFast": false
     },
     {
-      "waypointRelativePos": 0.75,
-      "rotationDegrees": 35.35964396170272,
-      "rotateFast": false
-    },
-    {
       "waypointRelativePos": 2.5,
       "rotationDegrees": -95.92605036712456,
       "rotateFast": false
     },
     {
-      "waypointRelativePos": 0.5,
+      "waypointRelativePos": 1.15,
       "rotationDegrees": -11.876114006227276,
       "rotateFast": false
     }
@@ -157,7 +152,7 @@
             {
               "type": "named",
               "data": {
-                "name": "Aim Shoot Steal"
+                "name": "Aim Shoot Steal 2"
               }
             }
           ]
