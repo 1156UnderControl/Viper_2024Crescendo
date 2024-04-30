@@ -6,10 +6,11 @@ import frc.robot.RobotSubsystems;
 import frc.robot.Constants.ShooterConstants;
 
 public class AutonomousAim extends Command {
+  private edu.wpi.first.wpilibj.Timer timer = new edu.wpi.first.wpilibj.Timer();
   private RobotSubsystems robot;
   private int shootNumber;
   // private double[] shotPositions = { 72, 60, 65, 60 }; V1
-  private double[] shotPositions = { 69, 60, 65.5, 69 };
+  private double[] shotPositions = { 68.5, 60, 65.5, 69 };
 
   public AutonomousAim(RobotSubsystems robot, int shootNumber) {
     this.robot = robot;
@@ -24,6 +25,7 @@ public class AutonomousAim extends Command {
     this.robot.shooter.setManualPivotPosition(shootPosition, ShooterConstants.setpoints.VELOCITY_SHOOT_SPEAKER);
     this.robot.intake.goToIntakePosition();
     this.robot.intake.stopIntaking();
+    timer.start();
   }
 
   @Override
@@ -32,10 +34,11 @@ public class AutonomousAim extends Command {
 
   @Override
   public void end(boolean interrupted) {
+    timer.stop();
   }
 
   @Override
   public boolean isFinished() {
-    return robot.shooter.isPivotAtSetpoint() && robot.shooter.getNoteSensor();
+    return robot.shooter.isPivotAtSetpoint() && (robot.shooter.getNoteSensor() || timer.get() > 1);
   }
 }

@@ -1,0 +1,204 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.2040432097982583,
+        "y": 6.230165042355762
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.3328624118018553,
+        "y": 6.710309340732804
+      },
+      "isLocked": false,
+      "linkedName": "end path 1 5nst 2.0 blue"
+    },
+    {
+      "anchor": {
+        "x": 2.695898344721082,
+        "y": 6.944526071648434
+      },
+      "prevControl": {
+        "x": 2.286019065618729,
+        "y": 6.979658581285779
+      },
+      "nextControl": {
+        "x": 3.7770049818983056,
+        "y": 6.8518597884618115
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.2040432097982583,
+        "y": 5.527514849608872
+      },
+      "prevControl": {
+        "x": 1.2671762861357376,
+        "y": 5.5040931765173085
+      },
+      "nextControl": {
+        "x": 3.609343595292038,
+        "y": 5.562647359246218
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.578789979263267,
+        "y": 4.20419031993556
+      },
+      "prevControl": {
+        "x": 1.2554654495899562,
+        "y": 4.473539560488536
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 2.55,
+      "rotationDegrees": -15.0,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 1.7000000000000002,
+      "rotationDegrees": 9.0,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 2.05,
+      "rotationDegrees": 11.898821879835852,
+      "rotateFast": false
+    },
+    {
+      "waypointRelativePos": 2.05,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "shoot 1",
+      "minWaypointRelativePos": 1.7,
+      "maxWaypointRelativePos": 1.85,
+      "constraints": {
+        "maxVelocity": 0.5,
+        "maxAcceleration": 4.0,
+        "maxAngularVelocity": 200.0,
+        "maxAngularAcceleration": 720.0
+      }
+    },
+    {
+      "name": "shoot 2",
+      "minWaypointRelativePos": 2.5,
+      "maxWaypointRelativePos": 2.6,
+      "constraints": {
+        "maxVelocity": 0.5,
+        "maxAcceleration": 4.0,
+        "maxAngularVelocity": 200.0,
+        "maxAngularAcceleration": 720.0
+      }
+    }
+  ],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.0,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Aim Shoot 2"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 1.75,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Shoot"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Aim Shoot 3"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 2.55,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Shoot"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 100.0,
+    "maxAngularAcceleration": 300.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -27.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Auto 5 Notes steal",
+  "previewStartingState": {
+    "rotation": 21.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

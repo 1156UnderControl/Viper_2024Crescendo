@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.552066151302715,
-        "y": 2.323956865746053
+        "x": 3.83686558739183,
+        "y": 2.6398661430120804
       },
       "isLocked": false,
       "linkedName": "shoot 1 blue overkill"
     },
     {
       "anchor": {
-        "x": 6.4350051777026644,
-        "y": 0.9570934526484439
+        "x": 6.79469113574461,
+        "y": 1.042264452574553
       },
       "prevControl": {
-        "x": 5.989993388962967,
-        "y": 0.8985392699195378
+        "x": 6.46664910272028,
+        "y": 0.8313416596638191
       },
       "nextControl": {
-        "x": 6.990989627966015,
-        "y": 1.0302493013673044
+        "x": 7.038619826967829,
+        "y": 1.1991044780722782
       },
       "isLocked": false,
       "linkedName": "collect pass through"
@@ -36,12 +36,12 @@
         "y": 3.2999000290743905
       },
       "prevControl": {
-        "x": 3.610957066186664,
-        "y": 1.8587543905293993
+        "x": 4.117899417470216,
+        "y": 2.3076100060335265
       },
       "nextControl": {
-        "x": 2.594430453123296,
-        "y": 3.6369844227737493
+        "x": 2.4744731975969065,
+        "y": 3.5330284079815817
       },
       "isLocked": false,
       "linkedName": null
@@ -52,12 +52,12 @@
         "y": 1.4638545682226887
       },
       "prevControl": {
-        "x": -0.04443740699179138,
-        "y": 0.38645760601079004
+        "x": -0.05973666150460222,
+        "y": 0.8670971960944851
       },
       "nextControl": {
-        "x": 2.45930281611533,
-        "y": 1.5046328512830938
+        "x": 2.4651041847543427,
+        "y": 1.4877248631078166
       },
       "isLocked": false,
       "linkedName": null
@@ -79,17 +79,17 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 2.0,
-      "rotationDegrees": -32.30000000000001,
+      "rotationDegrees": -34.0,
       "rotateFast": false
     },
     {
-      "waypointRelativePos": 2.5,
-      "rotationDegrees": -95.92605036712456,
-      "rotateFast": false
+      "waypointRelativePos": 2.25,
+      "rotationDegrees": -109.49000000000001,
+      "rotateFast": true
     },
     {
-      "waypointRelativePos": 1.15,
-      "rotationDegrees": -11.876114006227276,
+      "waypointRelativePos": 0.55,
+      "rotationDegrees": -1.5600000000000023,
       "rotateFast": false
     }
   ],
@@ -109,7 +109,7 @@
   "eventMarkers": [
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 0.25,
+      "waypointRelativePos": 0.65,
       "command": {
         "type": "sequential",
         "data": {
@@ -148,6 +148,23 @@
               "data": {
                 "name": "Intake"
               }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 2.4,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake Aligning"
+              }
             },
             {
               "type": "named",
@@ -168,13 +185,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -54.0,
+    "rotation": -58.5,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "auto steal overkill",
   "previewStartingState": {
-    "rotation": -32.30000000000001,
+    "rotation": -34.0,
     "velocity": 0
   },
   "useDefaultConstraints": false

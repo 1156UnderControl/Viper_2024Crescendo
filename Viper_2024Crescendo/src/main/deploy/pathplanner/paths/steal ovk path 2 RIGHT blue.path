@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 6.4350051777026644,
-        "y": 0.9570934526484439
+        "x": 6.79469113574461,
+        "y": 1.042264452574553
       },
       "prevControl": {
-        "x": 6.107101754420784,
-        "y": 0.7462983948243772
+        "x": 6.466787712462729,
+        "y": 0.8314693947504863
       },
       "nextControl": {
-        "x": 6.678304549735136,
-        "y": 1.1135001918121765
+        "x": 7.0379905077770815,
+        "y": 1.1986711917382866
       },
       "isLocked": false,
       "linkedName": "collect pass through"
@@ -52,12 +52,12 @@
         "y": 1.4638545682226887
       },
       "prevControl": {
-        "x": -0.042451411600122224,
-        "y": 0.38712411191090723
+        "x": -0.05972388620496183,
+        "y": 0.8670452259508132
       },
       "nextControl": {
-        "x": 2.4592997067789955,
-        "y": 1.5046398127799532
+        "x": 2.465103673742357,
+        "y": 1.4877269419135635
       },
       "isLocked": false,
       "linkedName": "end shoot ovk blue"
@@ -79,7 +79,7 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 2.0,
-      "rotationDegrees": -43.43000000000001,
+      "rotationDegrees": -40.43000000000001,
       "rotateFast": false
     },
     {
@@ -88,9 +88,9 @@
       "rotateFast": false
     },
     {
-      "waypointRelativePos": 2.5,
-      "rotationDegrees": -95.92605036712456,
-      "rotateFast": false
+      "waypointRelativePos": 2.25,
+      "rotationDegrees": -109.49000000000001,
+      "rotateFast": true
     }
   ],
   "constraintZones": [
@@ -148,6 +148,23 @@
               "data": {
                 "name": "Intake"
               }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 2.45,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake Aligning"
+              }
             },
             {
               "type": "named",
@@ -168,13 +185,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -67.0,
+    "rotation": -63.5,
     "rotateFast": false
   },
   "reversed": false,
   "folder": "auto steal overkill",
   "previewStartingState": {
-    "rotation": -43.43000000000001,
+    "rotation": -41.0,
     "velocity": 0
   },
   "useDefaultConstraints": false
