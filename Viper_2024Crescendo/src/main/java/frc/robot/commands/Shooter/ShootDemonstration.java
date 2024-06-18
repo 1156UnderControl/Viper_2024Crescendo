@@ -28,6 +28,10 @@ public class ShootDemonstration extends Command {
         setPointValue = dpadValue + shooterSubsystem.calculateGoalPivotSetpointSpeaker(setPointSpeaker);
         dpadValue++;
       }
+      while (controller.setAngleDOWN().getAsBoolean()) {
+        setPointValue = dpadValue + shooterSubsystem.calculateGoalPivotSetpointSpeaker(setPointSpeaker);
+        dpadValue--;
+      }
     }
   }
 
