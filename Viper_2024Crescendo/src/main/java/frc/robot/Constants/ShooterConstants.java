@@ -38,6 +38,8 @@ public class ShooterConstants {
 
     public static final double LIMIT_MAX = 230;
     public static final double LIMIT_MIN = 0;
+    public static final double LIMIT_MAX_DEMONSTRATION = 125;
+    public static final double LIMIT_MIN_DEMONSTRATION = 25;
     public static final double LIMIT_MAX_INTERPOLATION = 160;
     public static final double LIMIT_MIN_INTERPOLATION = 47;
     public static final double LIMIT_MAX_INTERPOLATION_RPM = 8500;
