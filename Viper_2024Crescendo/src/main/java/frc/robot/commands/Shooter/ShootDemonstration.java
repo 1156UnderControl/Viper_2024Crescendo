@@ -9,7 +9,7 @@ import frc.robot.subsystems.Shooter.ShooterSubsystem;
 
 public class ShootDemonstration extends Command {
   double setPointValue;
-  double setPointSpeaker;
+  double setPointInterpolation;
   double dpadValue = 0;
   long delayMiliseconds = 100;
   private RobotSubsystems robot;
@@ -29,13 +29,13 @@ public class ShootDemonstration extends Command {
     if (controller.getPrepareSpeaker().getAsBoolean()) {
       while (controller.setAngleUP().getAsBoolean()) {
         while(setPointValue > ShooterConstants.setpoints.LIMIT_MIN_DEMONSTRATION){
-          setPointValue = dpadValue + shooterSubsystem.calculateGoalPivotSetpointSpeaker(setPointSpeaker);
+          setPointValue = dpadValue + shooterSubsystem.calculateGoalPivotSetpointSpeaker(setPointInterpolation);
           dpadValue= dpadValue - 0.1;
         }
       }
       while (controller.setAngleDOWN().getAsBoolean()) {
         while(setPointValue < ShooterConstants.setpoints.LIMIT_MAX_DEMONSTRATION){
-          setPointValue = dpadValue + shooterSubsystem.calculateGoalPivotSetpointSpeaker(setPointSpeaker);
+          setPointValue = dpadValue + shooterSubsystem.calculateGoalPivotSetpointSpeaker(setPointInterpolation);
           dpadValue= dpadValue + 0.1;
         }
       }

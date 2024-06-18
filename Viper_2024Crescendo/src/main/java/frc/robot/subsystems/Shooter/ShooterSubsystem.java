@@ -52,6 +52,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private DigitalInput noteSensorIn = new InfraRed(ShooterConstants.port_IR_IN, false);
 
+  double setPointInterpolation;
+
   SimpleMotorFeedforward pivotFeedforward = new SimpleMotorFeedforward(ShooterConstants.tunning_values_pivot.KS,
       ShooterConstants.tunning_values_pivot.KV);
 
@@ -306,7 +308,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
       this.upperFlywheelMotor.set(ShooterConstants.setpoints.VELOCITY_SHOOTER_CORRECT_PASSED_NOTE);
       this.feederMotor.set(ShooterConstants.setpoints.VELOCITY_FEED_CORRECT_PASSED_NOTE);
     }
-    goal = verifyManualValue(calculateGoalPivotSetpointSpeaker(double setpointInterpolation), "Setpoint Pos Shoot Pivot");
+    goal = verifyManualValue(calculateGoalPivotSetpointSpeaker(setPointInterpolation), "Setpoint Pos Shoot Pivot");
     this.state = "PREPARING_SPEAKER_SHOT";
   }
 
