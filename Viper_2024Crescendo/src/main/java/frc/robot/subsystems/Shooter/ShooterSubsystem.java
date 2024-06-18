@@ -327,6 +327,21 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   }
 
   @Override
+  public void prepareDemonstrationShoot(double setPoint) {
+    if (noteSensorOut.getBoolean() || noteSensorIn.getBoolean()) {
+      this.feederMotor.set(0);
+      this.setVelocityFlywheel(verifyManualValue(calculateGoalFlywheelSetpointSpeaker(),
+          "Setpoint Vel Shooter"));
+    } else {
+      this.lowerFlywheelMotor.set(ShooterConstants.setpoints.VELOCITY_SHOOTER_CORRECT_PASSED_NOTE);
+      this.upperFlywheelMotor.set(ShooterConstants.setpoints.VELOCITY_SHOOTER_CORRECT_PASSED_NOTE);
+      this.feederMotor.set(ShooterConstants.setpoints.VELOCITY_FEED_CORRECT_PASSED_NOTE);
+    }
+    goal = verifyManualValue(setPoint, "Setpoint Pos Shoot Pivot");
+    this.state = "PREPARING_DEMONSTRATION_SHOT";
+  }
+
+  @Override
   public void shoot() {
     this.feederMotor.set(ShooterConstants.setpoints.VELOCITY_FEED_SHOOT);
     this.hasNote = false;
@@ -457,9 +472,9 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     return pivotFeedforward.calculate(pivotCurrentSetpoint.velocity / 12);
   }
 
-  private double calculateGoalPivotSetpointSpeaker() {
+  public double calculateGoalPivotSetpointSpeaker(double setpointInterpolation) {
     interpolationTreePivotAngle();
-    double setpointInterpolation = pivotAngleMap.get(swerve.distanceFromSpeakerMoving());
+    setpointInterpolation = pivotAngleMap.get(swerve.distanceFromSpeakerMoving());
     if (setpointInterpolation > ShooterConstants.setpoints.LIMIT_MAX_INTERPOLATION) {
       return ShooterConstants.setpoints.LIMIT_MAX_INTERPOLATION;
     }

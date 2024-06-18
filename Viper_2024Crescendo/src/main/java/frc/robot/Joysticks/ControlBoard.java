@@ -151,4 +151,14 @@ public class ControlBoard implements IDriverController, IOperatorController {
     return mDriverController.isForcingDriverControl();
   }
 
+  @Override
+  public Trigger setAngleDOWN() {
+    return mOperatorController.setAngleDOWN();
+  }
+
+  @Override
+  public Trigger setAngleUP() {
+    return mOperatorController.setAngleUP();
+  }
+
 }

@@ -35,6 +35,7 @@ public class ShooterConstants {
   }
 
   public class setpoints {
+
     public static final double LIMIT_MAX = 230;
     public static final double LIMIT_MIN = 0;
     public static final double LIMIT_MAX_INTERPOLATION = 160;

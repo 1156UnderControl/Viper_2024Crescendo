@@ -26,4 +26,8 @@ public interface IOperatorController {
   Trigger falseNegative();
 
   Trigger expell();
+
+  Trigger setAngleUP();
+
+  Trigger setAngleDOWN();
 }

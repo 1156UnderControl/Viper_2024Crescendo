@@ -81,4 +81,14 @@ public class OperatorController implements IOperatorController {
     return controller.x();
   }
 
+  @Override
+  public Trigger setAngleUP() {
+    return controller.povUp();
+  }
+
+  @Override
+  public Trigger setAngleDOWN() {
+    return controller.povDown();
+  }
+
 }

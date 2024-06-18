@@ -33,6 +33,8 @@ public interface IShooter {
 
   void prepareShootOverStage();
 
+  void prepareDemonstrationShoot(double setPoint);
+
   void goToSecuredPosition();
 
   void shoot();
