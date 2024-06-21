@@ -6,7 +6,6 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.Joysticks.ControlBoard;
 import frc.robot.subsystems.Shooter.ShooterSubsystem;
 
-
 public class ShootDemonstration extends Command {
   double setPointValue;
   double setPointInterpolation;
@@ -27,16 +26,16 @@ public class ShootDemonstration extends Command {
     this.robot.shooter.prepareDemonstrationShoot(setPointValue);
 
     if (controller.getPrepareSpeaker().getAsBoolean()) {
-      while (controller.setAngleUP().getAsBoolean()) {
-        while(setPointValue > ShooterConstants.setpoints.LIMIT_MIN_DEMONSTRATION){
+      if (controller.setAngleUP().getAsBoolean()) {
+        while (setPointValue > ShooterConstants.setpoints.LIMIT_MIN_DEMONSTRATION) {
           setPointValue = dpadValue + shooterSubsystem.calculateGoalPivotSetpointSpeaker(setPointInterpolation);
-          dpadValue= dpadValue - 0.1;
+          dpadValue--;
         }
       }
-      while (controller.setAngleDOWN().getAsBoolean()) {
-        while(setPointValue < ShooterConstants.setpoints.LIMIT_MAX_DEMONSTRATION){
+      if (controller.setAngleDOWN().getAsBoolean()) {
+        while (setPointValue < ShooterConstants.setpoints.LIMIT_MAX_DEMONSTRATION) {
           setPointValue = dpadValue + shooterSubsystem.calculateGoalPivotSetpointSpeaker(setPointInterpolation);
-          dpadValue= dpadValue + 0.1;
+          dpadValue++;
         }
       }
     }
@@ -44,6 +43,7 @@ public class ShootDemonstration extends Command {
 
   @Override
   public boolean isFinished() {
-    return this.robot.shooter.isPivotAtSetpoint();
+    return this.robot.isRobotAbleToShoot()
+        || this.controller.getShoot().getAsBoolean() && robot.swerve.isSwerveInVelocityToShoot();
   }
 }
