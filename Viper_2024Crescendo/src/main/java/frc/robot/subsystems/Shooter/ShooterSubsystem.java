@@ -249,7 +249,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
       this.wasNoteIn = true;
     }
     if (this.wasNoteIn && noteSensorOut.getBoolean()) {
-      this.hasNote = true;
+      // this.hasNote = true;
       this.feederMotor.set(0);
     }
   }
