@@ -308,7 +308,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
       this.upperFlywheelMotor.set(ShooterConstants.setpoints.VELOCITY_SHOOTER_CORRECT_PASSED_NOTE);
       this.feederMotor.set(ShooterConstants.setpoints.VELOCITY_FEED_CORRECT_PASSED_NOTE);
     }
-    goal = verifyManualValue(calculateGoalPivotSetpointSpeaker(setPointInterpolation), "Setpoint Pos Shoot Pivot");
+    goal = verifyManualValue(calculateGoalPivotSetpointSpeaker(), "Setpoint Pos Shoot Pivot");
     this.state = "PREPARING_SPEAKER_SHOT";
   }
 
@@ -474,9 +474,9 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     return pivotFeedforward.calculate(pivotCurrentSetpoint.velocity / 12);
   }
 
-  public double calculateGoalPivotSetpointSpeaker(double setpointInterpolation) {
+  private double calculateGoalPivotSetpointSpeaker() {
     interpolationTreePivotAngle();
-    setpointInterpolation = pivotAngleMap.get(swerve.distanceFromSpeakerMoving());
+    double setpointInterpolation = pivotAngleMap.get(swerve.distanceFromSpeakerMoving());
     if (setpointInterpolation > ShooterConstants.setpoints.LIMIT_MAX_INTERPOLATION) {
       return ShooterConstants.setpoints.LIMIT_MAX_INTERPOLATION;
     }
