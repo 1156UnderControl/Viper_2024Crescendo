@@ -169,11 +169,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   public void periodic() {
     this.updateManualValuesFromDashboard();
     this.updateSmartDashboard();
-    if (goal == 0) {
-      this.pivotMotor.setPositionReferenceArbFF(profilePosition(goal), getFeedForwardProfiled());
-    } else {
-      this.pivotMotor.setPositionReferenceArbFF(profilePosition(goal) + 3, getFeedForwardProfiled());
-    }
+    this.pivotMotor.setPositionReferenceArbFF(profilePosition(goal), getFeedForwardProfiled());
     this.updateLogs();
     this.runNoteCorrection();
   }
@@ -418,34 +414,20 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   @Override
   public boolean isPivotAtSetpoint() {
     boolean atSetpoint;
-    if (goal == 0) {
-      atSetpoint = this.pivotStabilizeChecker.isStableInRange(
-          this.pivotMotor.getPosition(),
-          this.goal,
-          ShooterConstants.pivotGoalAutoShootDeadband);
-    } else {
-      atSetpoint = this.pivotStabilizeChecker.isStableInRange(
-          this.pivotMotor.getPosition(),
-          this.goal + 3,
-          ShooterConstants.pivotGoalAutoShootDeadband);
-    }
+    atSetpoint = this.pivotStabilizeChecker.isStableInRange(
+        this.pivotMotor.getPosition(),
+        this.goal,
+        ShooterConstants.pivotGoalAutoShootDeadband);
     return atSetpoint;
   }
 
   @Override
   public boolean isPivotAtSetpointForAutoShoot() {
     boolean atSetpoint;
-    if (goal == 0) {
-      atSetpoint = this.pivotStabilizeChecker.isStableInRange(
-          this.pivotMotor.getPosition(),
-          this.goal,
-          ShooterConstants.pivotGoalAutoShootDeadband);
-    } else {
-      atSetpoint = this.pivotStabilizeChecker.isStableInRange(
-          this.pivotMotor.getPosition(),
-          this.goal + 3,
-          ShooterConstants.pivotGoalAutoShootDeadband);
-    }
+    atSetpoint = this.pivotStabilizeChecker.isStableInRange(
+        this.pivotMotor.getPosition(),
+        this.goal,
+        ShooterConstants.pivotGoalAutoShootDeadband);
     return atSetpoint;
   }
 
