@@ -44,7 +44,7 @@ public class ShooterConstants {
     public static final double LIMIT_MAX_INTERPOLATION_SHOOT_OVER_STAGE = 160;
     public static final double LIMIT_MIN_INTERPOLATION_SHOOT_OVER_STAGE = 47;
 
-    public static final double ANGLE_SECURED = 0.5;
+    public static final double ANGLE_SECURED = 0;
     public static final double ANGLE_INTAKE = 41;
     public static final double ANGLE_SHOOT_AMP = 125;
     public static final double ANGLE_SHOOT_SUBWOOFER = 1;

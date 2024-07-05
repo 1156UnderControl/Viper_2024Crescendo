@@ -263,7 +263,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   }
 
   public void goToIntakePositionHP() {
-    this.goal = 103;
+    this.goal = 104;
   }
 
   @Override
@@ -413,16 +413,18 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public boolean isPivotAtSetpoint() {
-    boolean atSetpoint = this.pivotStabilizeChecker.isStableInRange(
+    boolean atSetpoint;
+    atSetpoint = this.pivotStabilizeChecker.isStableInRange(
         this.pivotMotor.getPosition(),
         this.goal,
-        ShooterConstants.pivotGoalDeadband);
+        ShooterConstants.pivotGoalAutoShootDeadband);
     return atSetpoint;
   }
 
   @Override
   public boolean isPivotAtSetpointForAutoShoot() {
-    boolean atSetpoint = this.pivotStabilizeChecker.isStableInRange(
+    boolean atSetpoint;
+    atSetpoint = this.pivotStabilizeChecker.isStableInRange(
         this.pivotMotor.getPosition(),
         this.goal,
         ShooterConstants.pivotGoalAutoShootDeadband);
