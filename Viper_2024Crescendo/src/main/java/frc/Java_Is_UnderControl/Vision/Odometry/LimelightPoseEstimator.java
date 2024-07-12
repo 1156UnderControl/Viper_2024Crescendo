@@ -5,6 +5,7 @@ import java.util.Optional;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
 import frc.Java_Is_UnderControl.Limelight.LimelightHelpers.PoseEstimate;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomBooleanLogger;
@@ -14,6 +15,7 @@ import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomStringLogger;
 import frc.Java_Is_UnderControl.Swerve.OdometryEnabledSwerveSubsystem;
 
 public class LimelightPoseEstimator implements PoseEstimator {
+  NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
   double fieldLength = Units.inchesToMeters(651.223);
 
@@ -60,7 +62,7 @@ public class LimelightPoseEstimator implements PoseEstimator {
   }
 
   public LimelightPoseEstimator(String limelightName, boolean only2TagsMeasurements) {
-    this(limelightName, only2TagsMeasurements, false, 0.5);
+    this(limelightName, only2TagsMeasurements, false, 5);
   }
 
   public LimelightPoseEstimator(String limelightName) {
