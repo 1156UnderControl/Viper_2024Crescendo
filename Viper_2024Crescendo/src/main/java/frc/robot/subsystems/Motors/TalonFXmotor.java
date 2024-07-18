@@ -159,26 +159,29 @@ public class TalonFXmotor implements Motor {
 
   @Override
   public void configurePIDF(double P, double I, double D, double F) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'configurePIDF'");
+    TalonFXConfigurator cfg = motor.getConfigurator();
+    cfg.refresh(configuration.Slot0);
+    cfg.apply(
+        configuration.Slot0.withKP(P).withKI(I).withKD(D).withKS(F));
   }
 
   @Override
   public void configurePIDWrapping(double minInput, double maxInput) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'configurePIDWrapping'");
+    TalonFXConfigurator cfg = motor.getConfigurator();
+    cfg.refresh(configuration.ClosedLoopGeneral);
+    configuration.ClosedLoopGeneral.ContinuousWrap = true;
+    cfg.apply(configuration.ClosedLoopGeneral);
   }
 
   @Override
   public void setMotorBrake(boolean isBrakeMode) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'setMotorBrake'");
+    motor.setNeutralMode(isBrakeMode ? NeutralModeValue.Brake : NeutralModeValue.Coast);
   }
 
   @Override
   public void setInverted(boolean inverted) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'setInverted'");
+    //    Timer.delay(1);
+    motor.setInverted(inverted);
   }
 
   @Override
@@ -189,14 +192,12 @@ public class TalonFXmotor implements Motor {
 
   @Override
   public void burnFlash() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'burnFlash'");
+    // Do nothing
   }
 
   @Override
   public void set(double percentOutput) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'set'");
+    motor.set(percentOutput);
   }
 
   @Override
@@ -207,8 +208,7 @@ public class TalonFXmotor implements Motor {
 
   @Override
   public void setPositionReferenceArbFF(double position, double feedforward) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'setPositionReferenceArbFF'");
+    setReference(position, feedforward, getPosition());
   }
 
   @Override
@@ -219,8 +219,7 @@ public class TalonFXmotor implements Motor {
 
   @Override
   public double getVoltage() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getVoltage'");
+    return motor.getMotorVoltage().waitForUpdate(STATUS_TIMEOUT_SECONDS).getValue();
   }
 
   @Override
@@ -230,26 +229,26 @@ public class TalonFXmotor implements Motor {
 
   @Override
   public double getAppliedOutput() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getAppliedOutput'");
+    return motor.getDutyCycle().waitForUpdate(STATUS_TIMEOUT_SECONDS).getValue();
   }
 
   @Override
   public double getVelocity() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getVelocity'");
+    return motor.getVelocity().getValue();
   }
 
   @Override
   public double getPosition() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getPosition'");
+    return motor.getPosition().getValue();
   }
 
   @Override
   public void setPositionFactor(double factor) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'setPositionFactor'");
+    if (!absoluteEncoder && !SwerveDriveTelemetry.isSimulation) {
+      factor = factor < 0 ? (factor % 360) + 360 : factor;
+      TalonFXConfigurator cfg = motor.getConfigurator();
+      cfg.setPositionFactor(factor / 360);
+    }
   }
 
   @Override
@@ -258,7 +257,7 @@ public class TalonFXmotor implements Motor {
     throw new UnsupportedOperationException("Unimplemented method 'setVelocityFactor'");
   }
 
-  @Override
+  @Override 
   public void setPosition(double position) {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'setPosition'");
@@ -266,26 +265,28 @@ public class TalonFXmotor implements Motor {
 
   @Override
   public void setVoltageCompensation(double nominalVoltage) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'setVoltageCompensation'");
+    // Do not implement
   }
 
   @Override
   public void setCurrentLimit(int currentLimit) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'setCurrentLimit'");
+    TalonFXConfigurator cfg = motor.getConfigurator();
+    cfg.refresh(configuration.CurrentLimits);
+    cfg.apply(
+        configuration.CurrentLimits.withStatorCurrentLimit(currentLimit)
+                                   .withStatorCurrentLimitEnable(true));
   }
 
   @Override
   public void setLoopRampRate(double rampRate) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'setLoopRampRate'");
+    TalonFXConfigurator cfg = motor.getConfigurator();
+    cfg.refresh(configuration.ClosedLoopRamps);
+    cfg.apply(configuration.ClosedLoopRamps.withVoltageClosedLoopRampPeriod(rampRate));
   }
 
   @Override
   public Object getMotor() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getMotor'");
+    return motor;
   }
 
   @Override
