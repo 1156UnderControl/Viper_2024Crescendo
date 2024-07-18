@@ -154,8 +154,7 @@ public class TalonFXmotor implements Motor {
 
   @Override
   public void configurePIDF(double P, double I, double D, double F, double Izone) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'configurePIDF'");
+    motor.
   }
 
   @Override
@@ -226,8 +225,7 @@ public class TalonFXmotor implements Motor {
 
   @Override
   public void setVoltage(double voltage) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'setVoltage'");
+    motor.setVoltage(voltage);
   }
 
   @Override
