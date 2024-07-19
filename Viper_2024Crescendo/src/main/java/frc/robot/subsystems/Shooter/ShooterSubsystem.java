@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Shooter;
 
+import com.ctre.phoenix6.signals.GravityTypeValue;
+
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -17,6 +19,7 @@ import frc.Java_Is_UnderControl.Util.StabilizeChecker;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Motors.Motor;
 import frc.robot.subsystems.Motors.SparkMAXMotor;
+import frc.robot.subsystems.Motors.TalonFXmotor;
 import frc.robot.subsystems.Motors.VortexMotor;
 import frc.robot.subsystems.Sensors.DigitalInput;
 import frc.robot.subsystems.Sensors.InfraRed;
@@ -46,7 +49,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private Motor feederMotor = new SparkMAXMotor(ShooterConstants.ID_feeder);
 
-  private Motor pivotMotor = new SparkMAXMotor(ShooterConstants.ID_pivotShooter, true);
+  private Motor pivotMotor = new TalonFXmotor(ShooterConstants.ID_pivotShooter, GravityTypeValue.Arm_Cosine);
 
   private DigitalInput noteSensorOut = new InfraRed(ShooterConstants.port_IR_OUT, false);
 
@@ -137,10 +140,9 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   private void configurePivotMotor() {
     this.pivotMotor.setMotorBrake(true);
     this.pivotMotor.setLoopRampRate(0);
-    this.pivotMotor.setVelocityFactor(1 / 0.52);
-    this.pivotMotor.setPositionFactor(264 / 2.32);
-    this.pivotMotor.setInvertedEncoder(true);
-    this.pivotMotor.configurePIDF(0.055, 0.00008, 0, 0, 10);
+    this.pivotMotor.setPositionFactor(113.14);
+    this.pivotMotor.configurePIDF(9, 0.00008, 0, 0);
+    this.pivotMotor.configureFeedForward(0.05, 0, 0.04);
     this.pivotMotor.setPosition(0);
   }
 
@@ -169,7 +171,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   public void periodic() {
     this.updateManualValuesFromDashboard();
     this.updateSmartDashboard();
-    this.pivotMotor.setPositionReferenceArbFF(profilePosition(goal), getFeedForwardProfiled());
+    this.pivotMotor.setPositionReferenceMotionProfiling(profilePosition(goal), profilePosition(goal, true),
+        getFeedForwardProfiled());
     this.updateLogs();
     this.runNoteCorrection();
   }
@@ -443,16 +446,24 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     this.state = "PREPARING_SET_PIVOT";
   }
 
-  private double profilePosition(double goal) {
+  private double profilePosition(double goal, boolean getVelocity) {
     this.pivotGoal = new State(goal, 0);
     this.pivotCurrentSetpoint = pivotMotionProfile.calculate(kDt, this.pivotCurrentSetpoint, this.pivotGoal);
+    if (getVelocity) {
+      return pivotCurrentSetpoint.velocity;
+    }
     if (this.pivotCurrentSetpoint.position > ShooterConstants.setpoints.LIMIT_MAX) {
       return ShooterConstants.setpoints.LIMIT_MAX;
     }
     if (this.pivotCurrentSetpoint.position < ShooterConstants.setpoints.LIMIT_MIN) {
       return ShooterConstants.setpoints.LIMIT_MIN;
     }
-    return this.pivotCurrentSetpoint.position;
+
+    return pivotCurrentSetpoint.position;
+  }
+
+  private double profilePosition(double goal) {
+    return profilePosition(goal, false);
   }
 
   private double getFeedForwardProfiled() {

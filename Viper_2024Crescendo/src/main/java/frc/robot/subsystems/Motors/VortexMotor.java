@@ -354,4 +354,14 @@ public class VortexMotor implements Motor {
   public void setInvertedEncoder(boolean inverted) {
     configureSparkFlex(() -> encoder.setInverted(inverted));
   }
+
+  @Override
+  public void configureFeedForward(double Kg, double Ks, double Kv) {
+    // not implemented
+  }
+
+  @Override
+  public void setPositionReferenceMotionProfiling(double position, double velocity, double feedforward) {
+    // not implemented
+  }
 }

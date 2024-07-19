@@ -20,7 +20,7 @@ public class Phoenix6Util {
     }
   }
 
-  public static boolean checkErrorAndRetry(Supplier<StatusCode> function) {
+  public static boolean checkErrorAndRetry(Supplier<StatusCode> function, int numTries) {
     StatusCode code = function.get();
     int tries = 0;
     while (code != StatusCode.OK && tries < numTries) {
@@ -50,10 +50,5 @@ public class Phoenix6Util {
 
   public static boolean checkErrorAndRetry(Supplier<StatusCode> function) {
     return checkErrorAndRetry(function, 1);
-  }
-
-  public static void checkErrorAndRetry(Supplier<StatusCode> function) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'checkErrorAndRetry'");
   }
 }

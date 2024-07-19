@@ -3,11 +3,16 @@ package frc.robot.subsystems.Motors;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.datalog.BooleanLogEntry;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.util.datalog.IntegerLogEntry;
@@ -16,13 +21,22 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import frc.Java_Is_UnderControl.Driver.Phoenix6Util;
 
 public class TalonFXmotor implements Motor {
+
   private TalonFX motor;
+
+  private GravityTypeValue gravityType;
 
   private final MotionMagicVoltage m_angleVoltageSetter = new MotionMagicVoltage(0);
 
   private final VelocityVoltage m_velocityVoltageSetter = new VelocityVoltage(0);
 
   private TalonFXConfiguration configuration = new TalonFXConfiguration();
+
+  private double targetPosition = Double.NaN;
+
+  private double targetVelocity = Double.NaN;
+
+  private double targetOutput = Double.NaN;
 
   private Supplier<Double> velocity;
 
@@ -48,7 +62,8 @@ public class TalonFXmotor implements Motor {
 
   private DoubleLogEntry targetSpeedLog;
 
-  public TalonFXmotor(int id) {
+  public TalonFXmotor(int id, GravityTypeValue gravityType) {
+    this.gravityType = gravityType;
     motor = new TalonFX(id);
     this.factoryDefault();
     this.clearStickyFaults();
@@ -57,6 +72,10 @@ public class TalonFXmotor implements Motor {
     this.updateLogs();
     this.factoryDefault();
     this.clearStickyFaults();
+  }
+
+  public TalonFXmotor(int id) {
+    this(id, GravityTypeValue.Elevator_Static);
   }
 
   private void setupLogs(int motorId) {
@@ -154,7 +173,7 @@ public class TalonFXmotor implements Motor {
 
   @Override
   public void configurePIDF(double P, double I, double D, double F, double Izone) {
-    motor.
+    configurePIDF(P, I, D, F);
   }
 
   @Override
@@ -162,7 +181,15 @@ public class TalonFXmotor implements Motor {
     TalonFXConfigurator cfg = motor.getConfigurator();
     cfg.refresh(configuration.Slot0);
     cfg.apply(
-        configuration.Slot0.withKP(P).withKI(I).withKD(D).withKS(F));
+        configuration.Slot0.withKP(P).withKI(I).withKD(D).withKS(F).withGravityType(gravityType));
+  }
+
+  @Override
+  public void configureFeedForward(double Kg, double Ks, double Kv) {
+    TalonFXConfigurator cfg = motor.getConfigurator();
+    cfg.refresh(configuration.Slot0);
+    cfg.apply(
+        configuration.Slot0.withKG(Kg).withKS(Ks).withKV(Kv));
   }
 
   @Override
@@ -180,14 +207,12 @@ public class TalonFXmotor implements Motor {
 
   @Override
   public void setInverted(boolean inverted) {
-    //    Timer.delay(1);
     motor.setInverted(inverted);
   }
 
   @Override
   public void setInvertedEncoder(boolean inverted) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'setInvertedEncoder'");
+    //
   }
 
   @Override
@@ -197,29 +222,46 @@ public class TalonFXmotor implements Motor {
 
   @Override
   public void set(double percentOutput) {
+    targetOutput = percentOutput;
+    targetPosition = Double.NaN;
+    targetVelocity = Double.NaN;
     motor.set(percentOutput);
   }
 
   @Override
   public void setPositionReference(double position) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'setPositionReference'");
+    setPositionReferenceArbFF(position, 0);
   }
 
   @Override
   public void setPositionReferenceArbFF(double position, double feedforward) {
-    setReference(position, feedforward, getPosition());
+    double positionInRotations = Units.degreesToRotations(position);
+    targetPosition = position;
+    targetOutput = Double.NaN;
+    targetVelocity = Double.NaN;
+    motor.setControl(new PositionDutyCycle(positionInRotations).withFeedForward(feedforward));
+  }
+
+  @Override
+  public void setPositionReferenceMotionProfiling(double position, double velocity, double feedforward) {
+    double positionInRotations = Units.degreesToRotations(position);
+    targetPosition = position;
+    targetOutput = Double.NaN;
+    targetVelocity = Double.NaN;
+    motor.setControl(new PositionDutyCycle(positionInRotations, velocity, true, feedforward, 0, false, false, false));
   }
 
   @Override
   public void setVelocityReference(double velocity, double feedforward) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'setVelocityReference'");
+    targetVelocity = velocity;
+    targetOutput = Double.NaN;
+    targetPosition = Double.NaN;
+    motor.setControl(new VelocityVoltage(velocity).withFeedForward(feedforward));
   }
 
   @Override
   public double getVoltage() {
-    return motor.getMotorVoltage().waitForUpdate(STATUS_TIMEOUT_SECONDS).getValue();
+    return motor.getMotorVoltage().getValueAsDouble();
   }
 
   @Override
@@ -229,38 +271,38 @@ public class TalonFXmotor implements Motor {
 
   @Override
   public double getAppliedOutput() {
-    return motor.getDutyCycle().waitForUpdate(STATUS_TIMEOUT_SECONDS).getValue();
+    return motor.getDutyCycle().getValueAsDouble();
   }
 
   @Override
   public double getVelocity() {
-    return motor.getVelocity().getValue();
+    return motor.getVelocity().getValueAsDouble();
   }
 
   @Override
   public double getPosition() {
-    return motor.getPosition().getValue();
+    return Units.rotationsToDegrees(motor.getPosition().getValueAsDouble());
   }
 
   @Override
   public void setPositionFactor(double factor) {
-    if (!absoluteEncoder && !SwerveDriveTelemetry.isSimulation) {
-      factor = factor < 0 ? (factor % 360) + 360 : factor;
-      TalonFXConfigurator cfg = motor.getConfigurator();
-      cfg.setPositionFactor(factor / 360);
-    }
+    TalonFXConfigurator cfg = motor.getConfigurator();
+    configuration.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
+        .withSensorToMechanismRatio(factor);
+    cfg.apply(configuration);
   }
 
   @Override
   public void setVelocityFactor(double factor) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'setVelocityFactor'");
+    TalonFXConfigurator cfg = motor.getConfigurator();
+    configuration.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
+        .withSensorToMechanismRatio(factor);
+    cfg.apply(configuration);
   }
 
-  @Override 
+  @Override
   public void setPosition(double position) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'setPosition'");
+    motor.setPosition(position);
   }
 
   @Override
@@ -274,7 +316,7 @@ public class TalonFXmotor implements Motor {
     cfg.refresh(configuration.CurrentLimits);
     cfg.apply(
         configuration.CurrentLimits.withStatorCurrentLimit(currentLimit)
-                                   .withStatorCurrentLimitEnable(true));
+            .withStatorCurrentLimitEnable(true));
   }
 
   @Override
@@ -291,8 +333,14 @@ public class TalonFXmotor implements Motor {
 
   @Override
   public void updateLogs() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'updateLogs'");
+    this.appliedOutputLog.append(this.motor.getDutyCycle().getValueAsDouble());
+    this.currentLog.append(this.motor.getStatorCurrent().getValueAsDouble());
+    this.positionLog.append(Units.rotationsToDegrees(this.motor.getPosition().getValueAsDouble()));
+    this.velocityLog.append(this.motor.getVelocity().getValueAsDouble());
+    this.temperatureLog.append(this.motor.getDeviceTemp().getValueAsDouble());
+    this.faultsLog.append(this.motor.getFaultField().getValue());
+    this.targetPositionLog.append(this.targetPosition);
+    this.targetSpeedLog.append(this.targetVelocity);
   }
 
 }

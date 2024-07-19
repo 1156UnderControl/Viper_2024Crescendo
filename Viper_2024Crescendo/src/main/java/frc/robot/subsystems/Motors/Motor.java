@@ -7,6 +7,8 @@ public interface Motor {
 
   void clearStickyFaults();
 
+  void configureFeedForward(double Kg, double Ks, double Kv);
+
   void configurePIDF(double P, double I, double D, double F, double Izone);
 
   void configurePIDF(double P, double I, double D, double F);
@@ -26,6 +28,8 @@ public interface Motor {
   void setPositionReference(double position);
 
   void setPositionReferenceArbFF(double position, double feedforward);
+
+  void setPositionReferenceMotionProfiling(double position, double velocity, double feedforward);
 
   void setVelocityReference(double velocity, double feedforward);
 
