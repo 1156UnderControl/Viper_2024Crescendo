@@ -248,7 +248,7 @@ public class TalonFXmotor implements Motor {
     targetPosition = position;
     targetOutput = Double.NaN;
     targetVelocity = Double.NaN;
-    motor.setControl(new PositionDutyCycle(positionInRotations, velocity, true, feedforward, 0, false, false, false));
+    motor.setControl(new PositionDutyCycle(positionInRotations, velocity, false, feedforward, 0, false, false, false));
   }
 
   @Override

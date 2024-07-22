@@ -20,7 +20,7 @@ public class IntakeConstants {
     public static final double MAX_ACCELERATION = 2500;
 
     public class PID {
-      public static final double P = 0.025;
+      public static final double P = 0.018;
       public static final double I = 0;
       public static final double D = 0;
       public static final double F = 0;
