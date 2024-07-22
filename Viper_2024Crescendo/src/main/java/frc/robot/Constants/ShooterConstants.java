@@ -13,10 +13,10 @@ public class ShooterConstants {
   public static final double pivotGoalAutoShootDeadband = 1;
 
   public class tunning_values_pivot {
-    public static final double KS = 0.63;
+    public static final double KS = 0.05;
     public static final double KV = 0.04;
     public static final double MAX_VELOCITY = 277;
-    public static final double MAX_ACCELERATION = 1600;
+    public static final double MAX_ACCELERATION = 2000;
   }
 
   public class tunning_values_shooter {
