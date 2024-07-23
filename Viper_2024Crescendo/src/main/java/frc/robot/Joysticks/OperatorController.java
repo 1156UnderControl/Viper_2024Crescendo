@@ -22,8 +22,7 @@ public class OperatorController implements IOperatorController {
 
   @Override
   public Trigger getIntake() {
-
-    return controller.button(0);
+    return controller.button(2);
   }
 
   @Override
@@ -33,7 +32,7 @@ public class OperatorController implements IOperatorController {
 
   @Override
   public Trigger getSecured() {
-    return controller.button(0);
+    return controller.button(4);
   }
 
   @Override
@@ -53,22 +52,23 @@ public class OperatorController implements IOperatorController {
 
   @Override
   public Trigger climb() {
-    return controller.button(0);
+    return controller.button(9);
   }
 
   @Override
   public Trigger release() {
-    return controller.button(0);
+    return controller.button(10);
   }
 
   @Override
   public Trigger getDoNotShoot() {
-    return controller.button(0);
+    return controller.button(3);
   }
 
   @Override
   public Trigger falsePositive() {
     return controller.R3();
+
   }
 
   @Override
@@ -78,7 +78,7 @@ public class OperatorController implements IOperatorController {
 
   @Override
   public Trigger expell() {
-    return controller.button(0);
+    return controller.button(1);
   }
 
 }
