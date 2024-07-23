@@ -142,7 +142,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     this.pivotMotor.setLoopRampRate(0);
     this.pivotMotor.setPositionFactor(113.14);
     this.pivotMotor.configurePIDF(45, 20, 0, 0);
-    this.pivotMotor.configureFeedForward(0.05, 0, 0.04);
+    this.pivotMotor.configureFeedForward(0.1, 0, 0.04);
     this.pivotMotor.setPosition(0);
   }
 
@@ -485,20 +485,21 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   }
 
   private static void interpolationTreePivotAngle() {
-    pivotAngleMap.put(1.2, 47.0);
-    pivotAngleMap.put(1.42, 51.0);
-    pivotAngleMap.put(1.78, 56.0);
-    pivotAngleMap.put(2.07, 63.0);
-    pivotAngleMap.put(2.32, 64.0);
-    pivotAngleMap.put(2.52, 66.0);
+    pivotAngleMap.put(1.2, 49.0);
+    pivotAngleMap.put(1.43, 52.0);
+    pivotAngleMap.put(1.73, 56.0);
+    pivotAngleMap.put(2.04, 62.0);
+    pivotAngleMap.put(2.3, 65.0);
+    pivotAngleMap.put(2.6, 68.0);
     pivotAngleMap.put(2.75, 69.0);
-    pivotAngleMap.put(2.97, 70.5);
-    pivotAngleMap.put(3.14, 71.5);
-    pivotAngleMap.put(3.28, 72.0);
-    pivotAngleMap.put(3.55, 73.0);
-    pivotAngleMap.put(3.79, 73.5);
-    pivotAngleMap.put(4.05, 73.5);
-    pivotAngleMap.put(4.4, 74.5);
+    pivotAngleMap.put(3.00, 70.0);
+    pivotAngleMap.put(3.17, 71.0);
+    pivotAngleMap.put(3.30, 71.0);
+    pivotAngleMap.put(3.5, 72.0);
+    pivotAngleMap.put(3.75, 73.0);
+    pivotAngleMap.put(4.0, 74.0);
+    pivotAngleMap.put(4.2, 76.5);
+    pivotAngleMap.put(4.87, 77.0);
   }
 
   private double calculateGoalFlywheelSetpointSpeaker() {
@@ -516,11 +517,11 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private static void interpolationTreeFlywheelRPM() {
     flywheelRPMmap.put(1.2, 6000.0);
-    flywheelRPMmap.put(1.42, 6000.0);
-    flywheelRPMmap.put(1.78, 6500.0);
-    flywheelRPMmap.put(2.07, 7000.0);
-    flywheelRPMmap.put(2.32, 7000.0);
-    flywheelRPMmap.put(2.52, 8000.0);
+    flywheelRPMmap.put(1.43, 6500.0);
+    flywheelRPMmap.put(1.73, 7000.0);
+    flywheelRPMmap.put(2.04, 7000.0);
+    flywheelRPMmap.put(2.3, 7500.0);
+    flywheelRPMmap.put(2.6, 7500.0);
     flywheelRPMmap.put(2.75, 8000.0);
     flywheelRPMmap.put(2.97, 8000.0);
     flywheelRPMmap.put(3.14, 8000.0);
@@ -528,6 +529,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     flywheelRPMmap.put(3.55, 8000.0);
     flywheelRPMmap.put(3.79, 8000.0);
     flywheelRPMmap.put(4.05, 8000.0);
+    flywheelRPMmap.put(4.2, 8500.0);
   }
 
   private double calculateGoalPivotSetpointShootOverStage() {
