@@ -62,7 +62,7 @@ public class LimelightPoseEstimator implements PoseEstimator {
   }
 
   public LimelightPoseEstimator(String limelightName, boolean only2TagsMeasurements) {
-    this(limelightName, only2TagsMeasurements, false, 5);
+    this(limelightName, only2TagsMeasurements, false, 2);
   }
 
   public LimelightPoseEstimator(String limelightName) {

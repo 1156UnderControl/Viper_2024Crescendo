@@ -130,7 +130,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
       List<PoseEstimator> listOfEstimators = new ArrayList<>();
       List<PoseEstimator> listOfEstimatorsForAuto = new ArrayList<>();
       PoseEstimator limelight3G_Two_TagsOnly = new LimelightPoseEstimator("limelight-back", false,
-          false, 0.05);
+          false, 2);
       PoseEstimator limelight3G = new LimelightPoseEstimator("limelight-back", false);
       PoseEstimator limelight2 = new LimelightPoseEstimator("limelight-left", false);
       PoseEstimator arducam = new PhotonVisionPoseEstimator(new PhotonCamera("Arducam"), robotToCam, true);
@@ -139,7 +139,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
       listOfEstimators.add(limelight2);
       listOfEstimators.add(arducam);
       PoseEstimator estimatorMultiCamera = new MultiCameraPoseEstimator(listOfEstimators);
-      swerveInstance = new SwerveSubsystem(directory, estimatorMultiCamera, limelight3G_Two_TagsOnly);
+      swerveInstance = new SwerveSubsystem(directory, estimatorMultiCamera, limelight3G);
     }
     return swerveInstance;
   }
@@ -243,7 +243,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
     Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Red;
     ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation(),
         controller.getXtranslation());
-    Rotation2d spinCompensationAngle = Rotation2d.fromDegrees(-3);
+    Rotation2d spinCompensationAngle = Rotation2d.fromDegrees(-7);
     if (alliance == Alliance.Red) {
       this.driveAimingAtPositionMoving(CommandsConstants.dtShootWhileMoving, desiredSpeeds, FieldConstants.redGoalPos,
           new Rotation2d(Math.PI).plus(spinCompensationAngle));
@@ -264,7 +264,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
     Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Red;
     ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation() * 0.4,
         controller.getXtranslation() * 0.4);
-    Rotation2d spinCompensationAngle = Rotation2d.fromDegrees(-3);
+    Rotation2d spinCompensationAngle = Rotation2d.fromDegrees(-7);
     if (alliance == Alliance.Red) {
       this.driveAimingAtPositionMoving(CommandsConstants.dtShootWhileMoving, desiredSpeeds, FieldConstants.redGoalPos,
           new Rotation2d(Math.PI).plus(spinCompensationAngle));
