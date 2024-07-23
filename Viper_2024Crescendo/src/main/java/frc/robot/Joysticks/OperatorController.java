@@ -1,6 +1,6 @@
 package frc.robot.Joysticks;
 
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class OperatorController implements IOperatorController {
@@ -14,71 +14,71 @@ public class OperatorController implements IOperatorController {
     return mInstance;
   }
 
-  CommandXboxController controller;
+  CommandPS5Controller controller;
 
   private OperatorController() {
-    controller = new CommandXboxController(1);
+    controller = new CommandPS5Controller(1);
   }
 
   @Override
   public Trigger getIntake() {
 
-    return controller.a();
+    return controller.button(0);
   }
 
   @Override
   public Trigger getIntakeFromHP() {
-    return controller.rightTrigger(0.2);
+    return controller.R2();
   }
 
   @Override
   public Trigger getSecured() {
-    return controller.y();
+    return controller.button(0);
   }
 
   @Override
   public Trigger getPrepareAmp() {
-    return controller.leftBumper();
+    return controller.L1();
   }
 
   @Override
   public Trigger getPrepareSpeaker() {
-    return controller.rightBumper();
+    return controller.R1();
   }
 
   @Override
   public Trigger getShoot() {
-    return controller.leftTrigger(0.2);
+    return controller.L2();
   }
 
   @Override
   public Trigger climb() {
-    return controller.back();
+    return controller.button(0);
   }
 
   @Override
   public Trigger release() {
-    return controller.start();
+    return controller.button(0);
   }
 
   @Override
   public Trigger getDoNotShoot() {
-    return controller.b();
+    return controller.button(0);
   }
 
   @Override
   public Trigger falsePositive() {
-    return controller.rightStick();
+    return controller.R3();
   }
 
   @Override
   public Trigger falseNegative() {
-    return controller.leftStick();
+    return controller.L3();
   }
 
   @Override
   public Trigger expell() {
-    return controller.x();
+    return controller.button(0);
   }
 
 }
