@@ -1,7 +1,5 @@
 package frc.robot.subsystems.Motors;
 
-import java.util.function.Supplier;
-
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -37,10 +35,6 @@ public class TalonFXmotor implements Motor {
   private double targetVelocity = Double.NaN;
 
   private double targetOutput = Double.NaN;
-
-  private Supplier<Double> velocity;
-
-  private Supplier<Double> position;
 
   private boolean factoryDefaultOcurred = false;
 

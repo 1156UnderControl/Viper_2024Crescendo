@@ -55,8 +55,6 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
 
   public boolean alignedWithAngle;
 
-  private boolean notAbleToRotate = false;
-
   private boolean overrideRotationAuto = false;
 
   private final int MAX_LOST_SPEAKER_FRAMES = 2;
@@ -235,7 +233,6 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
 
   @Override
   public void driveAlignSpeaker() {
-    notAbleToRotate = true;
     if (this.controller.isForcingDriverControl()) {
       this.driveAlignAngleButton();
       return;
@@ -256,7 +253,6 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
 
   @Override
   public void driveAlignSpeakerSlow() {
-    notAbleToRotate = true;
     if (this.controller.isForcingDriverControl()) {
       this.driveAlignAngleButton();
       return;
@@ -277,7 +273,6 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
 
   @Override
   public void driveAlignShootOverStage() {
-    notAbleToRotate = true;
     if (this.controller.isForcingDriverControl()) {
       this.driveAlignAngleButton();
       return;
@@ -300,7 +295,6 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
 
   @Override
   public void driveAlignNote() {
-    notAbleToRotate = true;
     if (this.controller.isForcingDriverControl()) {
       driveAlignAngleButton();
       return;
@@ -327,7 +321,6 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
 
   @Override
   public void driveToAmp() {
-    notAbleToRotate = true;
     Pose2d targetPose;
     if (this.getPose().getX() > FieldConstants.midFieldLine) {
       targetPose = FieldConstants.redAmp;
