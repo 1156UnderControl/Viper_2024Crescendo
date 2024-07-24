@@ -122,7 +122,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   private PIDController yVelToAprilTag = new PIDController(0.01, 0, 0);
 
   private ObjectDetectionCamera intakeNoteDetectionCamera = new ObjectDetectionCamera(
-      new Transform3d(0.234, 0, 0.523, new Rotation3d(0, 59, 0)), 16.8, 24.75);
+      new Transform3d(0.234, 0, 0.56, new Rotation3d(0, Units.degreesToRadians(37), 0)), 16.8, 24.75);
 
   private PhotonVision shooterTopCamera = new PhotonVision("Microsoft_LifeCam_HD-3000");
 
@@ -312,7 +312,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
       estimationNote = new ObjectPoseEstimationRobotOriented(
           new ObjectDetection(intakeNoteDetecionCamera.targetPositionX(), intakeNoteDetecionCamera.targetPositionY()),
           intakeNoteDetectionCamera, 27, 37);
-      driveTowardsPose(estimationNote.getObjectPoseFromRobot());
+      // driveTowardsPose(estimationNote.getObjectPoseFromRobot());
       SmartDashboard.putString("Pose Note", estimationNote.getObjectPoseFromRobot().toString());
     } else {
       driveAlignAngleButton();

@@ -3,11 +3,14 @@ package frc.Java_Is_UnderControl.Vision.ObjectDetection;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomDoubleLogger;
 
 public class ObjectPoseEstimationRobotOriented {
   ObjectDetection object;
 
   ObjectDetectionCamera camera;
+
+  CustomDoubleLogger cameraAngleLogger;
 
   double angleObjectInMaxTy;
 
@@ -27,18 +30,19 @@ public class ObjectPoseEstimationRobotOriented {
 
   public double getXdistance() {
     return (getDistanceFromObject() * Math.cos(
-        Units.radiansToDegrees(camera.robotToCamera.getRotation().getZ()) + getObjectAngleX()))
+        Units.radiansToDegrees(camera.robotToCamera.getRotation().getZ()) + Units.degreesToRadians(getObjectAngleX())))
         + camera.robotToCamera.getX();
   }
 
   public double getYdistance() {
     return (getDistanceFromObject() * Math.sin(
-        Units.radiansToDegrees(camera.robotToCamera.getRotation().getZ()) + getObjectAngleX()))
+        Units.radiansToDegrees(camera.robotToCamera.getRotation().getZ()) + Units.degreesToRadians(getObjectAngleX())))
         + camera.robotToCamera.getY();
   }
 
   public double getDistanceFromObject() {
-    return camera.cameraHeight * Math.tan(getObjectAngleY() + camera.getCameraAngle());
+    return camera.cameraHeight
+        * Math.tan(Units.degreesToRadians(getObjectAngleY()) + Units.degreesToRadians(camera.getCameraAngle()));
   }
 
   private double getObjectAngleY() {

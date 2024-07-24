@@ -4,7 +4,7 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.util.datalog.BooleanLogEntry;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.DataLogManager;
 public class PhotonVision {
 
   private PhotonCamera camera;
+
+  private MedianFilter filter = new MedianFilter(4);
 
   private BooleanLogEntry hasTargetLogEntry;
 
@@ -39,18 +41,23 @@ public class PhotonVision {
   public double targetPositionX() {
     PhotonTrackedTarget bestTarget = this.getResult().getBestTarget();
     if (bestTarget != null) {
-      double targetPositionX = Units.degreesToRadians(bestTarget.getYaw());
+      double targetPositionX = bestTarget.getYaw();
       this.targetPositionXLogEntry.append(targetPositionX);
-      return targetPositionX;
+      return filter.calculate(targetPositionX);
     } else {
       return 0;
     }
   }
 
   public double targetPositionY() {
-    double targetPositionY = this.getResult().getBestTarget().getPitch();
-    this.targetPositionYLogEntry.append(targetPositionY);
-    return targetPositionY;
+    PhotonTrackedTarget bestTarget = this.getResult().getBestTarget();
+    if (bestTarget != null) {
+      double targetPositionY = bestTarget.getPitch();
+      this.targetPositionYLogEntry.append(targetPositionY);
+      return filter.calculate(targetPositionY);
+    } else {
+      return 0;
+    }
   }
 
   public boolean hasTarget() {
