@@ -234,6 +234,11 @@ public abstract class BaseSwerveSubsystem extends SubsystemBase {
     this.targetHeadingDegrees = Double.NaN;
   }
 
+  protected void driveRobotOriented(Translation2d vector, double angularVelocity) {
+    this.swerveDrive.drive(vector, angularVelocity, true, false);
+    this.targetHeadingDegrees = Double.NaN;
+  }
+
   private ChassisSpeeds performAllianceSpeedDirectionCorrection(ChassisSpeeds targetSpeeds) {
     Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get()
         : this.defaultAlliance;
