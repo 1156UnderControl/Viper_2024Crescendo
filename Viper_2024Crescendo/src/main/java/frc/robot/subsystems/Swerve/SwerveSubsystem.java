@@ -25,6 +25,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.Java_Is_UnderControl.Control.PidConfig;
 import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
 import frc.Java_Is_UnderControl.Logging.Pose2dLogEntry;
@@ -37,6 +38,9 @@ import frc.Java_Is_UnderControl.Swerve.OdometryEnabledSwerveSubsystem;
 import frc.Java_Is_UnderControl.Swerve.SwervePathPlannerConfig;
 import frc.Java_Is_UnderControl.Util.StabilizeChecker;
 import frc.Java_Is_UnderControl.Util.Util;
+import frc.Java_Is_UnderControl.Vision.ObjectDetection.ObjectDetection;
+import frc.Java_Is_UnderControl.Vision.ObjectDetection.ObjectDetectionCamera;
+import frc.Java_Is_UnderControl.Vision.ObjectDetection.ObjectPoseEstimationRobotOriented;
 import frc.Java_Is_UnderControl.Vision.Odometry.LimelightPoseEstimator;
 import frc.Java_Is_UnderControl.Vision.Odometry.MultiCameraPoseEstimator;
 import frc.Java_Is_UnderControl.Vision.Odometry.PhotonVisionPoseEstimator;
@@ -116,6 +120,9 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
 
   private PIDController xVelToAprilTag = new PIDController(0.01, 0, 0);
   private PIDController yVelToAprilTag = new PIDController(0.01, 0, 0);
+
+  private ObjectDetectionCamera intakeNoteDetectionCamera = new ObjectDetectionCamera(
+      new Transform3d(maxTranslationSpeed, robotAngularVelocity, maxRotationSpeed, null), 15, 15);
 
   private PhotonVision shooterTopCamera = new PhotonVision("Microsoft_LifeCam_HD-3000");
 
@@ -299,22 +306,16 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
       driveAlignAngleButton();
       return;
     }
+    ObjectPoseEstimationRobotOriented estimationNote;
     boolean isDetectingNote = intakeNoteDetecionCamera.hasTarget();
     if (isDetectingNote) {
-      this.lostNotesFrameCounter = 0;
-      this.targetNotePositionX = intakeNoteDetecionCamera.targetPositionX();
-      ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation(),
-          controller.getXtranslation());
-      driveOmegaPidFieldOriented(desiredSpeeds, 0, this.targetNotePositionX, this.pidTrackNote, false);
+      estimationNote = new ObjectPoseEstimationRobotOriented(
+          new ObjectDetection(intakeNoteDetecionCamera.targetPositionX(), intakeNoteDetecionCamera.targetPositionY()),
+          intakeNoteDetectionCamera, 0, 0);
+      driveTowardsPose(estimationNote.getObjectPoseFromRobot());
+      SmartDashboard.putString("Pose Note", estimationNote.getObjectPoseFromRobot().toString());
     } else {
-      this.lostNotesFrameCounter++;
-      if (this.lostNotesFrameCounter <= this.MAX_LOST_SPEAKER_FRAMES) {
-        ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation(),
-            controller.getXtranslation());
-        driveOmegaPidFieldOriented(desiredSpeeds, 0, this.lastTxMeasurement, this.pidTrackNote, false);
-      } else {
-        driveAlignAngleButton();
-      }
+      driveAlignAngleButton();
     }
     this.state = "DRIVE_ALIGN_NOTE";
   }
