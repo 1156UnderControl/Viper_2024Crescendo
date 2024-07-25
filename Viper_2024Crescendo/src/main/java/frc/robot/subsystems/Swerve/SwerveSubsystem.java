@@ -414,7 +414,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
     double aprilTagX = this.shooterTopCamera.targetPositionX();
     double aprilTagY = this.shooterTopCamera.targetPositionY();
     boolean isAlignedInX = Util.inRange(aprilTagX, targetX - deadbandX, targetX + deadbandX);
-    boolean isAlignedInY = aprilTagY > -2;
+    boolean isAlignedInY = aprilTagY > 1;
     double headingDegrees = getHeading().getDegrees();
     boolean alignedWithAngle = Util.inRange(Math.abs(headingDegrees), Math.abs(angleAlign.getDegrees()) - 5,
         Math.abs(angleAlign.getDegrees()) + 5);

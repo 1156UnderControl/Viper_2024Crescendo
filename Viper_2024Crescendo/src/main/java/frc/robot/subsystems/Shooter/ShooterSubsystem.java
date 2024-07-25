@@ -7,14 +7,13 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
-import edu.wpi.first.util.datalog.BooleanLogEntry;
-import edu.wpi.first.util.datalog.DoubleLogEntry;
-import edu.wpi.first.util.datalog.StringLogEntry;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomBooleanLogger;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomDoubleLogger;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomStringLogger;
 import frc.Java_Is_UnderControl.Util.StabilizeChecker;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Motors.Motor;
@@ -72,19 +71,17 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   public static InterpolatingDoubleTreeMap pivotAngleShootOverStageMap = new InterpolatingDoubleTreeMap();
 
-  private DoubleLogEntry pivotGoalLog = new DoubleLogEntry(DataLogManager.getLog(), "/ShooterSubsystem/PivotGoal");
+  private CustomDoubleLogger pivotGoalLog = new CustomDoubleLogger("/ShooterSubsystem/PivotGoal");
 
-  private BooleanLogEntry isAtSetpointLog = new BooleanLogEntry(DataLogManager.getLog(),
-      "/ShooterSubsystem/IsAtSetpoint");
+  private CustomBooleanLogger isAtSetpointLog = new CustomBooleanLogger("/ShooterSubsystem/IsAtSetpoint");
 
-  private BooleanLogEntry flywheelAtSetpointLog = new BooleanLogEntry(DataLogManager.getLog(),
-      "/ShooterSubsystem/FlywheelAtSetpoint");
+  private CustomBooleanLogger flywheelAtSetpointLog = new CustomBooleanLogger("/ShooterSubsystem/FlywheelAtSetpoint");
 
-  private BooleanLogEntry hasNoteLog = new BooleanLogEntry(DataLogManager.getLog(), "/ShooterSubsystem/HasNote");
+  private CustomBooleanLogger hasNoteLog = new CustomBooleanLogger("/ShooterSubsystem/HasNote");
 
   private String state = "SAFE_POSITION";
 
-  private StringLogEntry stateLog = new StringLogEntry(DataLogManager.getLog(), "/ShooterSubsystem/State");
+  private CustomStringLogger stateLog = new CustomStringLogger("/ShooterSubsystem/State");
 
   private StabilizeChecker lowerFlywheelStability = new StabilizeChecker();
   private StabilizeChecker upperFlywheelStability = new StabilizeChecker();
