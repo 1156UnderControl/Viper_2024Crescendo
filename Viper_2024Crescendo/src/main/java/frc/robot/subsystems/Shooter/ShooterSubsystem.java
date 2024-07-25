@@ -482,18 +482,18 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   }
 
   private static void interpolationTreePivotAngle() {
-    pivotAngleMap.put(1.2, 49.0);
-    pivotAngleMap.put(1.43, 52.0);
-    pivotAngleMap.put(1.73, 56.0);
-    pivotAngleMap.put(2.04, 62.0);
+    pivotAngleMap.put(1.2, 51.0);
+    pivotAngleMap.put(1.43, 53.0);
+    pivotAngleMap.put(1.73, 58.0);
+    pivotAngleMap.put(2.04, 61.5);
     pivotAngleMap.put(2.3, 65.0);
-    pivotAngleMap.put(2.6, 68.0);
-    pivotAngleMap.put(2.75, 69.0);
-    pivotAngleMap.put(3.00, 70.0);
-    pivotAngleMap.put(3.17, 71.0);
-    pivotAngleMap.put(3.30, 71.0);
-    pivotAngleMap.put(3.5, 72.0);
-    pivotAngleMap.put(3.75, 73.0);
+    pivotAngleMap.put(2.6, 67.0);
+    pivotAngleMap.put(2.75, 69.5);
+    pivotAngleMap.put(3.00, 71.0);
+    pivotAngleMap.put(3.17, 72.0);
+    pivotAngleMap.put(3.30, 72.0);
+    pivotAngleMap.put(3.5, 73.5);
+    pivotAngleMap.put(3.75, 73.5);
     pivotAngleMap.put(4.0, 74.0);
     pivotAngleMap.put(4.2, 76.5);
     pivotAngleMap.put(4.87, 77.0);
