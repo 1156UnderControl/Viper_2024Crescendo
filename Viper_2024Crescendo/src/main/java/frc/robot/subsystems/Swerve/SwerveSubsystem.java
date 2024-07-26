@@ -310,9 +310,10 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
     boolean isDetectingNote = intakeNoteDetecionCamera.hasTarget();
     if (isDetectingNote) {
       estimationNote = new ObjectPoseEstimationRobotOriented(
-          new ObjectDetection(intakeNoteDetecionCamera.targetPositionX(), intakeNoteDetecionCamera.targetPositionY()),
-          intakeNoteDetectionCamera, 27, 37);
-      // driveTowardsPose(estimationNote.getObjectPoseFromRobot());
+          new ObjectDetection(-intakeNoteDetecionCamera.targetPositionX(), intakeNoteDetecionCamera.targetPositionY(),
+              "Note"),
+          intakeNoteDetectionCamera, 15, 27);
+      driveTowardsPose(estimationNote.getObjectPoseFromRobot());
       SmartDashboard.putString("Pose Note", estimationNote.getObjectPoseFromRobot().toString());
     } else {
       driveAlignAngleButton();

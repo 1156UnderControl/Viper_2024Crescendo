@@ -12,6 +12,20 @@ public class ObjectPoseEstimationRobotOriented {
 
   CustomDoubleLogger cameraAngleLogger;
 
+  CustomDoubleLogger tyLogger;
+
+  CustomDoubleLogger txLogger;
+
+  CustomDoubleLogger txDegreesLogger;
+
+  CustomDoubleLogger tyDegreesLogger;
+
+  CustomDoubleLogger distanceToObjectLogger;
+
+  CustomDoubleLogger xObjectSDistanceLogger;
+
+  CustomDoubleLogger yObjectDistanceLogger;
+
   double angleObjectInMaxTy;
 
   double angleObjectInMaxTx;
@@ -22,35 +36,60 @@ public class ObjectPoseEstimationRobotOriented {
     this.camera = camera;
     this.angleObjectInMaxTy = angleObjectInMaxTy;
     this.angleObjectInMaxTx = angleObjectInMaxTx;
+    setupLogs();
+  }
+
+  private void setupLogs() {
+    cameraAngleLogger = new CustomDoubleLogger(object.objectName + " Detection/Camera Angle");
+    tyLogger = new CustomDoubleLogger(object.objectName + " Detection/Raw tY Value");
+    txLogger = new CustomDoubleLogger(object.objectName + " Detection/Raw tX Value");
+    tyDegreesLogger = new CustomDoubleLogger(object.objectName + " Detection/tY In Degrees");
+    txDegreesLogger = new CustomDoubleLogger(object.objectName + " Detection/tX In Degrees");
+    distanceToObjectLogger = new CustomDoubleLogger(object.objectName + " Detection/Camera Distance To Object");
+    xObjectSDistanceLogger = new CustomDoubleLogger(object.objectName + " Detection/X Object Distance To Robot");
+    yObjectDistanceLogger = new CustomDoubleLogger(object.objectName + " Detection/Y Object Distance To Robot");
   }
 
   public Pose2d getObjectPoseFromRobot() {
     return new Pose2d(getXdistance(), getYdistance(), new Rotation2d());
   }
 
-  public double getXdistance() {
-    return (getDistanceFromObject() * Math.cos(
+  public double getYdistance() {
+    double calculation = (getDistanceFromObject() * Math.cos(
         Units.radiansToDegrees(camera.robotToCamera.getRotation().getZ()) + Units.degreesToRadians(getObjectAngleX())))
         + camera.robotToCamera.getX();
+    xObjectSDistanceLogger.append(calculation);
+    return calculation;
   }
 
-  public double getYdistance() {
-    return (getDistanceFromObject() * Math.sin(
+  public double getXdistance() {
+    double calculation = (getDistanceFromObject() * Math.sin(
         Units.radiansToDegrees(camera.robotToCamera.getRotation().getZ()) + Units.degreesToRadians(getObjectAngleX())))
         + camera.robotToCamera.getY();
+    yObjectDistanceLogger.append(calculation);
+    return calculation;
   }
 
   public double getDistanceFromObject() {
-    return camera.cameraHeight
+    cameraAngleLogger.append(camera.getCameraAngle());
+    double calculation = camera.cameraHeight
         * Math.tan(Units.degreesToRadians(getObjectAngleY()) + Units.degreesToRadians(camera.getCameraAngle()));
+    distanceToObjectLogger.append(calculation);
+    return calculation;
   }
 
   private double getObjectAngleY() {
-    return (object.ty * angleObjectInMaxTy) / camera.maxTy;
+    tyLogger.append(object.ty);
+    double calculation = (object.ty * angleObjectInMaxTy) / camera.maxTy;
+    tyDegreesLogger.append(calculation);
+    return calculation;
   }
 
   private double getObjectAngleX() {
-    return (object.tx * angleObjectInMaxTx) / camera.maxTx;
+    txLogger.append(object.tx);
+    double calculation = (object.tx * angleObjectInMaxTx) / camera.maxTx;
+    txDegreesLogger.append(calculation);
+    return calculation;
   }
 
 }
