@@ -46,7 +46,7 @@ public class ShooterConstants {
 
     public static final double ANGLE_SECURED = 0.5;
     public static final double ANGLE_INTAKE = 41;
-    public static final double ANGLE_SHOOT_AMP = 125;
+    public static final double ANGLE_SHOOT_AMP = 127.5;
     public static final double ANGLE_SHOOT_SUBWOOFER = 1;
     public static final double ANGLE_SHOOT_OVER_STAGE = 55;
 

@@ -7,14 +7,13 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
-import edu.wpi.first.util.datalog.BooleanLogEntry;
-import edu.wpi.first.util.datalog.DoubleLogEntry;
-import edu.wpi.first.util.datalog.StringLogEntry;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomBooleanLogger;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomDoubleLogger;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomStringLogger;
 import frc.Java_Is_UnderControl.Util.StabilizeChecker;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.Motors.Motor;
@@ -72,19 +71,17 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   public static InterpolatingDoubleTreeMap pivotAngleShootOverStageMap = new InterpolatingDoubleTreeMap();
 
-  private DoubleLogEntry pivotGoalLog = new DoubleLogEntry(DataLogManager.getLog(), "/ShooterSubsystem/PivotGoal");
+  private CustomDoubleLogger pivotGoalLog = new CustomDoubleLogger("/ShooterSubsystem/PivotGoal");
 
-  private BooleanLogEntry isAtSetpointLog = new BooleanLogEntry(DataLogManager.getLog(),
-      "/ShooterSubsystem/IsAtSetpoint");
+  private CustomBooleanLogger isAtSetpointLog = new CustomBooleanLogger("/ShooterSubsystem/IsAtSetpoint");
 
-  private BooleanLogEntry flywheelAtSetpointLog = new BooleanLogEntry(DataLogManager.getLog(),
-      "/ShooterSubsystem/FlywheelAtSetpoint");
+  private CustomBooleanLogger flywheelAtSetpointLog = new CustomBooleanLogger("/ShooterSubsystem/FlywheelAtSetpoint");
 
-  private BooleanLogEntry hasNoteLog = new BooleanLogEntry(DataLogManager.getLog(), "/ShooterSubsystem/HasNote");
+  private CustomBooleanLogger hasNoteLog = new CustomBooleanLogger("/ShooterSubsystem/HasNote");
 
   private String state = "SAFE_POSITION";
 
-  private StringLogEntry stateLog = new StringLogEntry(DataLogManager.getLog(), "/ShooterSubsystem/State");
+  private CustomStringLogger stateLog = new CustomStringLogger("/ShooterSubsystem/State");
 
   private StabilizeChecker lowerFlywheelStability = new StabilizeChecker();
   private StabilizeChecker upperFlywheelStability = new StabilizeChecker();
@@ -485,18 +482,18 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   }
 
   private static void interpolationTreePivotAngle() {
-    pivotAngleMap.put(1.2, 49.0);
-    pivotAngleMap.put(1.43, 52.0);
-    pivotAngleMap.put(1.73, 56.0);
-    pivotAngleMap.put(2.04, 62.0);
+    pivotAngleMap.put(1.2, 51.0);
+    pivotAngleMap.put(1.43, 53.0);
+    pivotAngleMap.put(1.73, 58.0);
+    pivotAngleMap.put(2.04, 61.5);
     pivotAngleMap.put(2.3, 65.0);
-    pivotAngleMap.put(2.6, 68.0);
-    pivotAngleMap.put(2.75, 69.0);
-    pivotAngleMap.put(3.00, 70.0);
-    pivotAngleMap.put(3.17, 71.0);
-    pivotAngleMap.put(3.30, 71.0);
-    pivotAngleMap.put(3.5, 72.0);
-    pivotAngleMap.put(3.75, 73.0);
+    pivotAngleMap.put(2.6, 67.0);
+    pivotAngleMap.put(2.75, 69.5);
+    pivotAngleMap.put(3.00, 71.0);
+    pivotAngleMap.put(3.17, 72.0);
+    pivotAngleMap.put(3.30, 72.0);
+    pivotAngleMap.put(3.5, 73.5);
+    pivotAngleMap.put(3.75, 73.5);
     pivotAngleMap.put(4.0, 74.0);
     pivotAngleMap.put(4.2, 76.5);
     pivotAngleMap.put(4.87, 77.0);
