@@ -122,12 +122,6 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   private PhotonVision intakeNoteDetecionCamera = new PhotonVision("Microsoft_LifeCam_HD-3000 (1)");
 
   public static SwerveSubsystem getInstance(File directory) {
-    Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Red;
-    if (alliance == Alliance.Red) {
-      LimelightHelpers.setPipelineIndex("limelight-back", 1);
-    } else {
-      LimelightHelpers.setPipelineIndex("limelight-back", 0);
-    }
     Transform3d robotToCam = new Transform3d(new Translation3d(-0.185, -0.272, 0.27),
         new Rotation3d(0, Units.degreesToRadians(-37.5), Units.degreesToRadians(-70)));
     if (swerveInstance == null) {
