@@ -69,11 +69,7 @@ public abstract class BaseSwerveSubsystem extends SubsystemBase {
 
   private void createSwerveDriveFromYagsl(File directory) {
     try {
-      this.swerveDrive = new SwerveParser(directory)
-          .createSwerveDrive(
-              SwerveConstants.MAX_VEL,
-              SwerveConstants.SteeringConversionFactor,
-              SwerveConstants.DriveConversionFactor);
+      this.swerveDrive = new SwerveParser(directory).createSwerveDrive(SwerveConstants.MAX_VEL);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
