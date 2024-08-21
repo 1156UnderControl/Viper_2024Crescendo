@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomDoubleLogger;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomPose2dLogger;
 
 public class ObjectPoseEstimationRobotOriented {
   ObjectDetection object;
@@ -25,6 +26,8 @@ public class ObjectPoseEstimationRobotOriented {
   CustomDoubleLogger xObjectSDistanceLogger;
 
   CustomDoubleLogger yObjectDistanceLogger;
+
+  CustomPose2dLogger poseOBjectInTheFieldLogger;
 
   double angleObjectInMaxTy;
 
@@ -48,13 +51,24 @@ public class ObjectPoseEstimationRobotOriented {
     distanceToObjectLogger = new CustomDoubleLogger(object.objectName + " Detection/Camera Distance To Object");
     xObjectSDistanceLogger = new CustomDoubleLogger(object.objectName + " Detection/X Object Distance To Robot");
     yObjectDistanceLogger = new CustomDoubleLogger(object.objectName + " Detection/Y Object Distance To Robot");
+    poseOBjectInTheFieldLogger = new CustomPose2dLogger(object.objectName + " Detection/Note Pose In The Field");
   }
 
-  public Pose2d getObjectPoseFromRobot() {
-    return new Pose2d(getXdistance(), getYdistance(), new Rotation2d());
+  public Pose2d getObjectPoseInField(Pose2d robotPose, Pose2d objectPose) {
+    double xNotePoseInField = (objectPose.getX() * robotPose.getRotation().getCos()
+        + robotPose.getX()) + objectPose.getY() * robotPose.getRotation().getSin();
+    double yNotePoseInField = (objectPose.getY() * robotPose.getRotation().getSin()
+        + robotPose.getY()) + objectPose.getY() * robotPose.getRotation().getCos();
+    Pose2d poseInTheField = new Pose2d(xNotePoseInField, yNotePoseInField, new Rotation2d());
+    poseOBjectInTheFieldLogger.appendRadians(poseInTheField);
+    return poseInTheField;
   }
 
-  public double getYdistance() {
+  public Pose2d getObjectPoseFromRobotCenter() {
+    return new Pose2d(getXnoteDistanceFromRobotCenter(), getYnoteDistanceFromRobotCenter(), new Rotation2d());
+  }
+
+  public double getXnoteDistanceFromRobotCenter() {
     double calculation = (getDistanceFromObject() * Math.cos(
         Units.radiansToDegrees(camera.robotToCamera.getRotation().getZ()) + Units.degreesToRadians(getObjectAngleX())))
         + camera.robotToCamera.getX();
@@ -62,7 +76,7 @@ public class ObjectPoseEstimationRobotOriented {
     return calculation;
   }
 
-  public double getXdistance() {
+  public double getYnoteDistanceFromRobotCenter() {
     double calculation = (getDistanceFromObject() * Math.sin(
         Units.radiansToDegrees(camera.robotToCamera.getRotation().getZ()) + Units.degreesToRadians(getObjectAngleX())))
         + camera.robotToCamera.getY();

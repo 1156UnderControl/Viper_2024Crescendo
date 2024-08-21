@@ -30,7 +30,7 @@ public class IntakeConstants {
   }
 
   public class setpoints {
-    public static final double SPEED_INTAKE = 1;
+    public static final double SPEED_INTAKE = 0;
     public static final double SPEED_EXPELL = -1;
 
     public static final double LIMIT_MAX = 140;

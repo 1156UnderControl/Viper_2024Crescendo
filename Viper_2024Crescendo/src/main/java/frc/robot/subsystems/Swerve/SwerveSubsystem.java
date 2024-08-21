@@ -122,7 +122,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   private PIDController yVelToAprilTag = new PIDController(0.01, 0, 0);
 
   private ObjectDetectionCamera intakeNoteDetectionCamera = new ObjectDetectionCamera(
-      new Transform3d(0.234, 0, 0.56, new Rotation3d(0, Units.degreesToRadians(37), 0)), 16.8, 24.75);
+      new Transform3d(0.211, 0, 0.545, new Rotation3d(0, Units.degreesToRadians(30), 0)), 1, 1);
 
   private PhotonVision shooterTopCamera = new PhotonVision("Microsoft_LifeCam_HD-3000");
 
@@ -137,11 +137,9 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
       PoseEstimator limelight3G_Two_TagsOnly = new LimelightPoseEstimator("limelight-back", false,
           false, 2);
       PoseEstimator limelight3G = new LimelightPoseEstimator("limelight-back", false);
-      PoseEstimator limelight2 = new LimelightPoseEstimator("limelight-left", false);
       PoseEstimator arducam = new PhotonVisionPoseEstimator(new PhotonCamera("Arducam"), robotToCam, true);
       listOfEstimatorsForAuto.add(limelight3G_Two_TagsOnly);
       listOfEstimators.add(limelight3G);
-      listOfEstimators.add(limelight2);
       listOfEstimators.add(arducam);
       PoseEstimator estimatorMultiCamera = new MultiCameraPoseEstimator(listOfEstimators);
       swerveInstance = new SwerveSubsystem(directory, estimatorMultiCamera, limelight3G);
@@ -307,14 +305,16 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
       return;
     }
     ObjectPoseEstimationRobotOriented estimationNote;
-    boolean isDetectingNote = intakeNoteDetecionCamera.hasTarget();
+    boolean isDetectingNote = LimelightHelpers.getTV("limelight-note");
     if (isDetectingNote) {
       estimationNote = new ObjectPoseEstimationRobotOriented(
-          new ObjectDetection(-intakeNoteDetecionCamera.targetPositionX(), intakeNoteDetecionCamera.targetPositionY(),
+          new ObjectDetection(-LimelightHelpers.getTX("limelight-note"), -LimelightHelpers.getTY("limelight-note"),
               "Note"),
-          intakeNoteDetectionCamera, 15, 27);
-      driveTowardsPose(estimationNote.getObjectPoseFromRobot());
-      SmartDashboard.putString("Pose Note", estimationNote.getObjectPoseFromRobot().toString());
+          intakeNoteDetectionCamera, 1, 1);
+      // driveTowardsPose(estimationNote.getObjectPoseFromRobot());
+
+      SmartDashboard.putString("Pose Note", estimationNote
+          .getObjectPoseInField(swerveDrive.getPose(), estimationNote.getObjectPoseFromRobotCenter()).toString());
     } else {
       driveAlignAngleButton();
     }
