@@ -1,6 +1,11 @@
 package frc.robot.Constants;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+
 public class IntakeConstants {
+  public static final Pose2d intakeRollerPositionRelativeToRobotCenter = new Pose2d(0.46, 0, new Rotation2d());
+
   public static final int ID_pivotIntake = 9; // Adicionar o correto
   public static final int ID_intake = 12; // Adicionar o correto
 

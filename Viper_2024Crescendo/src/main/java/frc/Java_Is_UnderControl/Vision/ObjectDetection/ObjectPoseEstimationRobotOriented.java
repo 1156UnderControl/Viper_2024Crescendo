@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomDoubleLogger;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomPose2dLogger;
+import frc.Java_Is_UnderControl.Util.CoordinatesTransform;
 
 public class ObjectPoseEstimationRobotOriented {
   ObjectDetection object;
@@ -55,11 +56,7 @@ public class ObjectPoseEstimationRobotOriented {
   }
 
   public Pose2d getObjectPoseInField(Pose2d robotPose, Pose2d objectPose) {
-    double xNotePoseInField = (objectPose.getX() * robotPose.getRotation().getCos()
-        + robotPose.getX()) + objectPose.getY() * robotPose.getRotation().getSin();
-    double yNotePoseInField = (objectPose.getY() * robotPose.getRotation().getSin()
-        + robotPose.getY()) + objectPose.getY() * robotPose.getRotation().getCos();
-    Pose2d poseInTheField = new Pose2d(xNotePoseInField, yNotePoseInField, new Rotation2d());
+    Pose2d poseInTheField = CoordinatesTransform.fromRobotRelativeToF(robotPose, objectPose);
     poseOBjectInTheFieldLogger.appendRadians(poseInTheField);
     return poseInTheField;
   }
