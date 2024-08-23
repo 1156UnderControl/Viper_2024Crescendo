@@ -11,7 +11,7 @@ public class IntakeConstants {
 
   public static final double pivotDeadband = 1;
 
-  public static final double ANGLE_PASSED_FOR_SHOOTER_MOVE = 110;
+  public static final double ANGLE_PASSED_FOR_SHOOTER_MOVE = 100;
 
   public class tunning_values {
     public static final double KS = 0.36;
