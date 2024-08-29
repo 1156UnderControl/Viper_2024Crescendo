@@ -35,6 +35,7 @@ import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomDoubleLogger;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomPose2dLogger;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomStringLogger;
 import frc.Java_Is_UnderControl.PhotonVision.PhotonVision;
+import frc.Java_Is_UnderControl.Swerve.DriveAssist;
 import frc.Java_Is_UnderControl.Swerve.OdometryEnabledSwerveConfig;
 import frc.Java_Is_UnderControl.Swerve.OdometryEnabledSwerveSubsystem;
 import frc.Java_Is_UnderControl.Swerve.SwervePathPlannerConfig;
@@ -133,7 +134,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
 
   private PhotonVision intakeNoteDetecionCamera = new PhotonVision("Microsoft_LifeCam_HD-3000 (1)");
 
-  private DriveIntakeAssist intakeDriveAssist = new DriveIntakeAssist(
+  private DriveAssist intakeDriveAssist = new DriveAssist(
       IntakeConstants.intakeRollerPositionRelativeToRobotCenter.getTranslation(), 0.5);
 
   public static SwerveSubsystem getInstance(File directory) {
@@ -329,7 +330,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
       ChassisSpeeds desiredChassisSpeeds = inputsToChassisSpeeds(controller.getYtranslation(),
           controller.getXtranslation());
       this.driveFieldOrientedLockedAngle(
-          intakeDriveAssist.getCorrectedDesiredSpeed(getPose(),
+          intakeDriveAssist.getCorrectedDesiredSpeedToTranslation(getPose(),
               estimationNote.getObjectPoseInField(getPose(), estimationNote.getObjectPoseFromRobotCenter()),
               desiredChassisSpeeds),
           targetAngle);
