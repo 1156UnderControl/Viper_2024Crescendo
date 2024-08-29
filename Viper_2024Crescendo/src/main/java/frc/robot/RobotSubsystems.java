@@ -106,6 +106,50 @@ public class RobotSubsystems extends SubsystemBase {
     swerveSubsystem.setDefaultCommand(new SwerveTeleopControl(swerveSubsystem));
   }
 
+  @Override
+  public void periodic() {
+    SmartDashboard.putData("Subsystem Intake", IntakeSubsystem.getInstance());
+    SmartDashboard.putData("Subsystem Shooter", ShooterSubsystem.getInstance());
+    this.intakeSubsystem.periodic();
+    this.shooterSubsystem.periodic();
+    this.climberSubsystem.periodic();
+    this.ledSubsystem.periodic();
+    this.batteryVoltageLogEntry.append(this.powerDistributionHub.getVoltage());
+    this.totalCurrentDrawLogEntry.append(this.powerDistributionHub.getTotalCurrent());
+  }
+
+  public boolean robotHasNote() {
+    return this.shooter.hasNote();
+  }
+
+  public void setHeadingCorrection(boolean active) {
+    swerveSubsystem.setHeadingCorrection(active);
+  }
+
+  public void setCoastToRobot() {
+    this.intake.setCoastPivot();
+    this.shooter.setCoastPivot();
+    this.swerve.setModulesToCoast();
+  }
+
+  public void setBrakeToRobot() {
+    this.intake.setBrakePivot();
+    this.shooter.setBrakePivot();
+    this.swerve.setModulesToBrake();
+  }
+
+  public boolean isRobotAbleToShoot() {
+    if (this.controlBoard.getDoNotShoot().getAsBoolean()) {
+      return false;
+    }
+    return shooter.isPivotAtSetpointForAutoShoot()
+        && shooter.isFlywheelAtSetpoint()
+        && swerve.isSwerveAlignedWithSpeaker()
+        && swerve.isSwerveInAutoShootZone()
+        && swerve.isSwerveInVelocityToAutoShoot()
+        && LimelightHelpers.getTV("limelight-back");
+  }
+
   private void configureBindings() {
     this.configureSwerveBindings();
     this.configureRobotBindings();
@@ -169,50 +213,5 @@ public class RobotSubsystems extends SubsystemBase {
     NamedCommands.registerCommand("Aim Shoot 2", new AutonomousAim(this, 1));
     NamedCommands.registerCommand("Aim Shoot 3", new AutonomousAim(this, 2));
     NamedCommands.registerCommand("Aim Shoot 4", new AutonomousAim(this, 3));
-  }
-
-  @Override
-  public void periodic() {
-    SmartDashboard.putData("Subsystem Intake", IntakeSubsystem.getInstance());
-    SmartDashboard.putData("Subsystem Shooter", ShooterSubsystem.getInstance());
-    this.intakeSubsystem.periodic();
-    this.shooterSubsystem.periodic();
-    this.climberSubsystem.periodic();
-    this.ledSubsystem.periodic();
-    this.batteryVoltageLogEntry.append(this.powerDistributionHub.getVoltage());
-    this.totalCurrentDrawLogEntry.append(this.powerDistributionHub.getTotalCurrent());
-  }
-
-  public boolean robotHasNote() {
-    return this.shooter.hasNote();
-  }
-
-  public void setHeadingCorrection(boolean active) {
-    swerveSubsystem.setHeadingCorrection(active);
-  }
-
-  public void setCoastToRobot() {
-    this.intake.setCoastPivot();
-    this.shooter.setCoastPivot();
-    this.swerve.setModulesToCoast();
-  }
-
-  public void setBrakeToRobot() {
-    this.intake.setBrakePivot();
-    this.shooter.setBrakePivot();
-    this.swerve.setModulesToBrake();
-  }
-
-  public boolean isRobotAbleToShoot() {
-    if (this.controlBoard.getDoNotShoot().getAsBoolean()) {
-      return false;
-    }
-    return shooter.isPivotAtSetpointForAutoShoot()
-        && shooter.isFlywheelAtSetpoint()
-        && swerve.isSwerveAlignedWithSpeaker()
-        && swerve.isSwerveInAutoShootZone()
-        && swerve.isSwerveInVelocityToAutoShoot()
-        && LimelightHelpers.getTV("limelight-back");
-
   }
 }
