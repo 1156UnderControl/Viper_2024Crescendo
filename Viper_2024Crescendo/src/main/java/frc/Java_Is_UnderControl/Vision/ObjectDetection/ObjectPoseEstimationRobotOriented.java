@@ -62,7 +62,7 @@ public class ObjectPoseEstimationRobotOriented {
   }
 
   public Pose2d getObjectPoseFromRobotCenter() {
-    return new Pose2d(getXnoteDistanceFromRobotCenter(), getYnoteDistanceFromRobotCenter(), new Rotation2d());
+    return new Pose2d(getXnoteDistanceFromRobotCenter(), -getYnoteDistanceFromRobotCenter(), new Rotation2d());
   }
 
   public double getXnoteDistanceFromRobotCenter() {
