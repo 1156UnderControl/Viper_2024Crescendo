@@ -318,7 +318,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
     boolean isDetectingNote = LimelightHelpers.getTV("limelight-note");
     if (isDetectingNote) {
       estimationNote = new ObjectPoseEstimationRobotOriented(
-          new ObjectDetection(-LimelightHelpers.getTX("limelight-note"), -LimelightHelpers.getTY("limelight-note"),
+          new ObjectDetection(LimelightHelpers.getTX("limelight-note"), LimelightHelpers.getTY("limelight-note"),
               "Note"),
           intakeNoteDetectionCamera, 1, 1);
       targetAngle = controller.notUsingJoystick() ? angleAlign
