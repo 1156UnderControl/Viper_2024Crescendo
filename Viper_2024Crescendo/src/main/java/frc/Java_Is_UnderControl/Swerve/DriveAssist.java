@@ -1,9 +1,11 @@
 package frc.Java_Is_UnderControl.Swerve;
 
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.numbers.N2;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomDoubleLogger;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomStringLogger;
 import frc.Java_Is_UnderControl.Util.CoordinatesTransform;
@@ -31,20 +33,19 @@ public class DriveAssist {
 
   public ChassisSpeeds getCorrectedDesiredSpeedToTranslation(Pose2d robotPose, Pose2d objectPose,
       ChassisSpeeds robotVelocity) {
-    ChassisSpeeds fieldBasedRobotVelocity = ChassisSpeeds.fromRobotRelativeSpeeds(robotVelocity,
-        robotPose.getRotation());
-
     if (robotPose.getTranslation().getDistance(objectPose.getTranslation()) > 3) {
       stateLogger.append("REJECTED_TOO_FAR_FROM_OBJECT");
       return robotVelocity;
     }
     Translation2d correctedReferencePose = CoordinatesTransform.fromRobotRelativeToF(robotPose, objectPose)
         .getTranslation();
-    Translation2d perfectTranslationDirection = objectPose.getTranslation().minus(correctedReferencePose);
+    Vector<N2> perfectTranslationDirectionVector = objectPose.getTranslation().toVector()
+        .minus(correctedReferencePose.toVector());
+    Translation2d perfectTranslationDirection = new Translation2d(perfectTranslationDirectionVector);
     Rotation2d perfectTranslationAngle = perfectTranslationDirection.getAngle();
     this.perfectTranslationAngleLogger.append(perfectTranslationAngle.getDegrees());
-    Rotation2d requestedTranslationAngle = new Translation2d(fieldBasedRobotVelocity.vxMetersPerSecond,
-        fieldBasedRobotVelocity.vyMetersPerSecond).getAngle();
+    Rotation2d requestedTranslationAngle = new Translation2d(robotVelocity.vxMetersPerSecond,
+        robotVelocity.vyMetersPerSecond).getAngle();
     this.requestedTranslationAngleLogger.append(requestedTranslationAngle.getDegrees());
     Rotation2d requestedToPerfectAngleDifference = perfectTranslationAngle.minus(requestedTranslationAngle);
     angleDifferenceLogger.append(requestedToPerfectAngleDifference.getDegrees());
@@ -54,14 +55,12 @@ public class DriveAssist {
     }
     Rotation2d desiredTranslationAngle = requestedTranslationAngle
         .plus(requestedToPerfectAngleDifference.times(correntionPercentage));
-    double robotVelocityIntensity = Math.hypot(fieldBasedRobotVelocity.vxMetersPerSecond,
-        fieldBasedRobotVelocity.vyMetersPerSecond);
+    double robotVelocityIntensity = Math.hypot(robotVelocity.vxMetersPerSecond,
+        robotVelocity.vyMetersPerSecond);
     double desiredVx = robotVelocityIntensity * desiredTranslationAngle.getCos();
     double desiredVy = robotVelocityIntensity * desiredTranslationAngle.getSin();
     stateLogger.append("RETURNING_CORRECTED_SPEEDS");
-    ChassisSpeeds fieldCorrected = new ChassisSpeeds(desiredVx, desiredVy, robotVelocity.omegaRadiansPerSecond);
-    ChassisSpeeds finalCorrectedSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(fieldCorrected, robotPose.getRotation());
-    return new ChassisSpeeds(finalCorrectedSpeeds.vxMetersPerSecond, finalCorrectedSpeeds.vyMetersPerSecond,
+    return new ChassisSpeeds(desiredVx, desiredVy,
         robotVelocity.omegaRadiansPerSecond);
   }
 
