@@ -25,6 +25,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.Java_Is_UnderControl.Control.PidConfig;
 import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
 import frc.Java_Is_UnderControl.Logging.Pose2dLogEntry;
@@ -121,6 +123,8 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
 
   private PhotonVision intakeNoteDetecionCamera = new PhotonVision("Microsoft_LifeCam_HD-3000 (1)");
 
+  private final Field2d field = new Field2d();
+
   public static SwerveSubsystem getInstance(File directory) {
     Transform3d robotToCam = new Transform3d(new Translation3d(-0.185, -0.272, 0.27),
         new Rotation3d(0, Units.degreesToRadians(-37.5), Units.degreesToRadians(-70)));
@@ -164,12 +168,14 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
         new PidConfig(0.7, 0, 0)));
     PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
     this.updateLogs();
+    SmartDashboard.putData("Field", this.field);
   }
 
   @Override
   public void periodic() {
     super.periodic();
     this.updateLogs();
+    field.setRobotPose(this.getPose());
     LimelightHelpers.SetRobotOrientation("limelight-back", this.swerveDrive.getOdometryHeading().getDegrees(), 0, 0, 0,
         0, 0);
     LimelightHelpers.SetRobotOrientation("limelight-left", this.swerveDrive.getOdometryHeading().getDegrees(), 0, 0, 0,
