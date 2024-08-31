@@ -44,15 +44,15 @@ public class ObjectPoseEstimationRobotOriented {
   }
 
   private void setupLogs() {
-    cameraAngleLogger = new CustomDoubleLogger(object.objectName + " Detection/Camera Angle");
-    tyLogger = new CustomDoubleLogger(object.objectName + " Detection/Raw tY Value");
-    txLogger = new CustomDoubleLogger(object.objectName + " Detection/Raw tX Value");
-    tyDegreesLogger = new CustomDoubleLogger(object.objectName + " Detection/tY In Degrees");
-    txDegreesLogger = new CustomDoubleLogger(object.objectName + " Detection/tX In Degrees");
-    distanceToObjectLogger = new CustomDoubleLogger(object.objectName + " Detection/Camera Distance To Object");
-    xObjectSDistanceLogger = new CustomDoubleLogger(object.objectName + " Detection/X Object Distance To Robot");
-    yObjectDistanceLogger = new CustomDoubleLogger(object.objectName + " Detection/Y Object Distance To Robot");
-    poseOBjectInTheFieldLogger = new CustomPose2dLogger(object.objectName + " Detection/Note Pose In The Field");
+    cameraAngleLogger = new CustomDoubleLogger("ObjectDetection/Camera Angle");
+    tyLogger = new CustomDoubleLogger("ObjectDetection/Raw tY Value");
+    txLogger = new CustomDoubleLogger("ObjectDetection/Raw tX Value");
+    tyDegreesLogger = new CustomDoubleLogger("ObjectDetection/tY In Degrees");
+    txDegreesLogger = new CustomDoubleLogger("ObjectDetection/tX In Degrees");
+    distanceToObjectLogger = new CustomDoubleLogger("ObjectDetection/Camera Distance To Object");
+    xObjectSDistanceLogger = new CustomDoubleLogger("ObjectDetection/X Object Distance To Robot");
+    yObjectDistanceLogger = new CustomDoubleLogger("ObjectDetection/Y Object Distance To Robot");
+    poseOBjectInTheFieldLogger = new CustomPose2dLogger("ObjectDetection/Note Pose In The Field");
   }
 
   public Pose2d getObjectPoseInField(Pose2d robotPose, Pose2d objectPose) {
