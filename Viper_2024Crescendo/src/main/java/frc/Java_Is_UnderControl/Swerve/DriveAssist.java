@@ -1,11 +1,9 @@
 package frc.Java_Is_UnderControl.Swerve;
 
-import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.numbers.N2;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomDoubleLogger;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomStringLogger;
 import frc.Java_Is_UnderControl.Util.CoordinatesTransform;
@@ -37,11 +35,10 @@ public class DriveAssist {
       stateLogger.append("REJECTED_TOO_FAR_FROM_OBJECT");
       return robotVelocity;
     }
-    Translation2d correctedReferencePose = CoordinatesTransform.fromRobotRelativeToF(robotPose, objectPose)
+    Translation2d correctedReferencePose = CoordinatesTransform
+        .fromRobotRelativeToF(robotPose, new Pose2d(correctionReferencePosition, new Rotation2d()))
         .getTranslation();
-    Vector<N2> perfectTranslationDirectionVector = objectPose.getTranslation().toVector()
-        .minus(correctedReferencePose.toVector());
-    Translation2d perfectTranslationDirection = new Translation2d(perfectTranslationDirectionVector);
+    Translation2d perfectTranslationDirection = objectPose.getTranslation().minus(correctedReferencePose);
     Rotation2d perfectTranslationAngle = perfectTranslationDirection.getAngle();
     this.perfectTranslationAngleLogger.append(perfectTranslationAngle.getDegrees());
     Rotation2d requestedTranslationAngle = new Translation2d(robotVelocity.vxMetersPerSecond,
