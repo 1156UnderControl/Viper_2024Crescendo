@@ -10,12 +10,12 @@ import frc.Java_Is_UnderControl.Util.CoordinatesTransform;
 
 public class DriveAssist {
   CustomDoubleLogger angleDifferenceLogger = new CustomDoubleLogger(
-      "Drive Assist/Variables/Perfect to Requested Angle Difference");
+      "DriveAssist/PerfectToRequestedAngleDifference");
   CustomDoubleLogger perfectTranslationAngleLogger = new CustomDoubleLogger(
-      "Drive Assist/Variables/Perfect Translation Angle");
+      "DriveAssist/PerfectTranslationAngle");
   CustomDoubleLogger requestedTranslationAngleLogger = new CustomDoubleLogger(
-      "Drive Assist/Variables/Requested Translation Angle");
-  CustomStringLogger stateLogger = new CustomStringLogger("Drive Assist/State");
+      "DriveAssist/RequestedTranslationAngle");
+  CustomStringLogger stateLogger = new CustomStringLogger("DriveAssist/State");
 
   Translation2d correctionReferencePosition;
   double correntionPercentage;
@@ -46,7 +46,7 @@ public class DriveAssist {
     this.requestedTranslationAngleLogger.append(requestedTranslationAngle.getDegrees());
     Rotation2d requestedToPerfectAngleDifference = perfectTranslationAngle.minus(requestedTranslationAngle);
     angleDifferenceLogger.append(requestedToPerfectAngleDifference.getDegrees());
-    if (Math.abs(requestedToPerfectAngleDifference.getDegrees()) > 90) {
+    if (Math.abs(requestedToPerfectAngleDifference.getDegrees()) > 40) {
       stateLogger.append("REJECTED_ANGLE_REQUESTED_TOO_FAR_FROM_PERFECT");
       return robotVelocity;
     }
