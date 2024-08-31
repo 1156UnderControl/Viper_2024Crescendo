@@ -11,12 +11,10 @@ import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 
-import edu.wpi.first.util.datalog.BooleanLogEntry;
-import edu.wpi.first.util.datalog.DoubleLogEntry;
-import edu.wpi.first.util.datalog.IntegerLogEntry;
-import edu.wpi.first.util.datalog.StringLogEntry;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomBooleanLogger;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomDoubleLogger;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomStringLogger;
 
 public class VortexMotor implements Motor {
   public CANSparkFlex motor;
@@ -27,29 +25,29 @@ public class VortexMotor implements Motor {
 
   private boolean factoryDefaultOccurred = false;
 
-  private DoubleLogEntry appliedOutputLog;
+  private CustomDoubleLogger appliedOutputLog;
 
-  private DoubleLogEntry currentLog;
+  private CustomDoubleLogger currentLog;
 
-  private DoubleLogEntry positionLog;
+  private CustomDoubleLogger positionLog;
 
-  private DoubleLogEntry velocityLog;
+  private CustomDoubleLogger velocityLog;
 
-  private DoubleLogEntry temperatureLog;
+  private CustomDoubleLogger temperatureLog;
 
-  private IntegerLogEntry faultsLog;
+  private CustomDoubleLogger faultsLog;
 
   private double targetPercentage = Double.NaN;
 
-  private DoubleLogEntry targetOutputLog;
+  private CustomDoubleLogger targetOutputLog;
 
   private double targetPosition = Double.NaN;
 
-  private DoubleLogEntry targetPositionLog;
+  private CustomDoubleLogger targetPositionLog;
 
   private double targetSpeed = Double.NaN;
 
-  private DoubleLogEntry targetSpeedLog;
+  private CustomDoubleLogger targetSpeedLog;
 
   private double pidP = Double.NaN;
 
@@ -87,24 +85,24 @@ public class VortexMotor implements Motor {
   }
 
   private void setupLogs(int motorId, boolean isAlternateEncoder) {
-    this.appliedOutputLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/appliedOutput");
-    this.currentLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/current");
-    this.positionLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/position");
-    this.velocityLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/velocity");
-    this.temperatureLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/temperature");
-    this.faultsLog = new IntegerLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/faults");
-    this.targetOutputLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/targetOutput");
-    this.targetPositionLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/targetPosition");
-    this.targetSpeedLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/targetSpeed");
-    StringLogEntry firmwareVersionLog = new StringLogEntry(DataLogManager.getLog(),
+    this.appliedOutputLog = new CustomDoubleLogger("/motors/" + motorId + "/appliedOutput");
+    this.currentLog = new CustomDoubleLogger("/motors/" + motorId + "/current");
+    this.positionLog = new CustomDoubleLogger("/motors/" + motorId + "/position");
+    this.velocityLog = new CustomDoubleLogger("/motors/" + motorId + "/velocity");
+    this.temperatureLog = new CustomDoubleLogger("/motors/" + motorId + "/temperature");
+    this.faultsLog = new CustomDoubleLogger("/motors/" + motorId + "/faults");
+    this.targetOutputLog = new CustomDoubleLogger("/motors/" + motorId + "/targetOutput");
+    this.targetPositionLog = new CustomDoubleLogger("/motors/" + motorId + "/targetPosition");
+    this.targetSpeedLog = new CustomDoubleLogger("/motors/" + motorId + "/targetSpeed");
+    CustomStringLogger firmwareVersionLog = new CustomStringLogger(
         "/motors/" + motorId + "/firmwareVersion");
     firmwareVersionLog.append(this.motor.getFirmwareString());
-    BooleanLogEntry isAlternateEncoderLog = new BooleanLogEntry(DataLogManager.getLog(),
+    CustomBooleanLogger isAlternateEncoderLog = new CustomBooleanLogger(
         "/motors/" + motorId + "/isAlternateEncoder");
     isAlternateEncoderLog.append(isAlternateEncoder);
-    BooleanLogEntry isFollowerLog = new BooleanLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/isFollower");
+    CustomBooleanLogger isFollowerLog = new CustomBooleanLogger("/motors/" + motorId + "/isFollower");
     isFollowerLog.append(this.motor.isFollower());
-    BooleanLogEntry isInvertedLog = new BooleanLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/isInverted");
+    CustomBooleanLogger isInvertedLog = new CustomBooleanLogger("/motors/" + motorId + "/isInverted");
     isInvertedLog.append(this.motor.getInverted());
   }
 
