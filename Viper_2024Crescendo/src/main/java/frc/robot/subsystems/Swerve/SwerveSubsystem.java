@@ -22,16 +22,15 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.Java_Is_UnderControl.Control.PidConfig;
 import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
-import frc.Java_Is_UnderControl.Logging.Pose2dLogEntry;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomBooleanLogger;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomDoubleLogger;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomPose2dLogger;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomStringLogger;
 import frc.Java_Is_UnderControl.PhotonVision.PhotonVision;
 import frc.Java_Is_UnderControl.Swerve.OdometryEnabledSwerveConfig;
@@ -86,8 +85,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
 
   LimelightHelpers.PoseEstimate limelightMeasurement;
 
-  private Pose2dLogEntry poseVisionLogEntry = new Pose2dLogEntry(DataLogManager.getLog(),
-      "/SwerveSubsystem/PoseVision");
+  private CustomPose2dLogger poseVisionLogEntry = new CustomPose2dLogger("/SwerveSubsystem/PoseVision");
 
   private CustomBooleanLogger isAlignedWithSpeakerLogEntry = new CustomBooleanLogger(
       "/SwerveSubsystem/SpeakerAlign/isAligned");

@@ -4,12 +4,11 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
-import edu.wpi.first.util.datalog.BooleanLogEntry;
-import edu.wpi.first.util.datalog.DoubleLogEntry;
-import edu.wpi.first.util.datalog.StringLogEntry;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomBooleanLogger;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomDoubleLogger;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomStringLogger;
 import frc.Java_Is_UnderControl.Util.Util;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.subsystems.Motors.Motor;
@@ -37,14 +36,10 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
 
   private TrapezoidProfile.State pivotGoal = new TrapezoidProfile.State();
 
-  private DoubleLogEntry pivotGoalLog = new DoubleLogEntry(DataLogManager.getLog(), "/IntakeSubsystem/PivotGoal");
-
-  private BooleanLogEntry isAtSetpointLog = new BooleanLogEntry(DataLogManager.getLog(),
-      "/IntakeSubsystem/IsAtSetpoint");
-
+  private CustomDoubleLogger pivotGoalLog = new CustomDoubleLogger("/IntakeSubsystem/PivotGoal");
+  private CustomBooleanLogger isAtSetpointLog = new CustomBooleanLogger("/IntakeSubsystem/IsAtSetpoint");
   private String state = "SAFE_POSITION";
-
-  private StringLogEntry stateLog = new StringLogEntry(DataLogManager.getLog(), "/IntakeSubsystem/State");
+  private CustomStringLogger stateLog = new CustomStringLogger("/IntakeSubsystem/State");
 
   public static IntakeSubsystem getInstance() {
     if (intakeInstance == null) {
@@ -57,7 +52,6 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
     this.configurePivotMotor();
     this.configureRollerMotor();
     SmartDashboard.putNumber("Position Manual Setpoint Shooter", 0);
-    this.updateSmartDashboard();
     this.updateLogs();
   }
 
@@ -91,16 +85,7 @@ public class IntakeSubsystem extends SubsystemBase implements IIntake {
   @Override
   public void periodic() {
     this.pivotMotor.setPositionReferenceArbFF(profilePosition(goal), getFeedForwardProfiled());
-    this.updateSmartDashboard();
     this.updateLogs();
-  }
-
-  private void updateSmartDashboard() {
-    SmartDashboard.putNumber("Position intake Pivot", pivotMotor.getPosition());
-    SmartDashboard.putNumber("Velocity intake Pivot", pivotMotor.getVelocity());
-    SmartDashboard.putNumber("Voltage Collect", rollerMotor.getVoltage());
-    SmartDashboard.putNumber("Output Pivot intake", pivotMotor.getAppliedOutput());
-    SmartDashboard.putNumber("Setpoint Intake", pivotCurrentSetpoint.position);
   }
 
   @Override
