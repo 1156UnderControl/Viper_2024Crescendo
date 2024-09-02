@@ -126,24 +126,33 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   private final Field2d field = new Field2d();
 
   public static SwerveSubsystem getInstance(File directory) {
-    Transform3d robotToCam = new Transform3d(new Translation3d(-0.185, -0.272, 0.27),
-        new Rotation3d(0, Units.degreesToRadians(-37.5), Units.degreesToRadians(-70)));
     if (swerveInstance == null) {
-      List<PoseEstimator> listOfEstimators = new ArrayList<>();
-      List<PoseEstimator> listOfEstimatorsForAuto = new ArrayList<>();
-      PoseEstimator limelight3G_Two_TagsOnly = new LimelightPoseEstimator("limelight-back", false,
-          false, 2);
       PoseEstimator limelight3G = new LimelightPoseEstimator("limelight-back", false);
-      PoseEstimator limelight2 = new LimelightPoseEstimator("limelight-left", false);
-      PoseEstimator arducam = new PhotonVisionPoseEstimator(new PhotonCamera("Arducam"), robotToCam, true);
-      listOfEstimatorsForAuto.add(limelight3G_Two_TagsOnly);
-      listOfEstimators.add(limelight3G);
-      listOfEstimators.add(limelight2);
-      listOfEstimators.add(arducam);
-      PoseEstimator estimatorMultiCamera = new MultiCameraPoseEstimator(listOfEstimators);
-      swerveInstance = new SwerveSubsystem(directory, estimatorMultiCamera, limelight3G);
+      swerveInstance = new SwerveSubsystem(directory, configureMulticameraPoseEstimation(), limelight3G);
     }
     return swerveInstance;
+  }
+
+  private static PoseEstimator configureMulticameraPoseEstimation() {
+    Transform3d robotToCamArducamLeft = new Transform3d(new Translation3d(-0.185, 0.272, 0.27),
+        new Rotation3d(0, Units.degreesToRadians(-37.5), Units.degreesToRadians(70)));
+    Transform3d robotToCamArducamRight = new Transform3d(new Translation3d(-0.185, -0.272, 0.27),
+        new Rotation3d(0, Units.degreesToRadians(-37.5), Units.degreesToRadians(-70)));
+    List<PoseEstimator> listOfEstimators = new ArrayList<>();
+    List<PoseEstimator> listOfEstimatorsForAuto = new ArrayList<>();
+    PoseEstimator limelight3G_Two_TagsOnly = new LimelightPoseEstimator("limelight-back", false,
+        false, 2);
+    PoseEstimator limelight3G = new LimelightPoseEstimator("limelight-back", false);
+    PoseEstimator arducamRight = new PhotonVisionPoseEstimator(new PhotonCamera("Arducam-right"),
+        robotToCamArducamRight, false);
+    PoseEstimator arducamLeft = new PhotonVisionPoseEstimator(new PhotonCamera("Arducam-left"), robotToCamArducamLeft,
+        false);
+    listOfEstimatorsForAuto.add(limelight3G_Two_TagsOnly);
+    listOfEstimators.add(limelight3G);
+    listOfEstimators.add(arducamRight);
+    listOfEstimators.add(arducamLeft);
+    PoseEstimator estimatorMultiCamera = new MultiCameraPoseEstimator(listOfEstimators);
+    return estimatorMultiCamera;
   }
 
   public static SwerveSubsystem getInstance() {
@@ -151,7 +160,6 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
       DriverStation.reportError("YAGSL Configuration not provided", true);
     }
     return swerveInstance;
-
   }
 
   private SwerveSubsystem(File directory, PoseEstimator poseEstimatorTeleOp, PoseEstimator poseEstimatorAuto) {
