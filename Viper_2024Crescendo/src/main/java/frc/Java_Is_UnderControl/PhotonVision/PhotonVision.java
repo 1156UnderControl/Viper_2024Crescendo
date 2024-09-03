@@ -5,19 +5,18 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.util.datalog.BooleanLogEntry;
-import edu.wpi.first.util.datalog.DoubleLogEntry;
-import edu.wpi.first.wpilibj.DataLogManager;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomBooleanLogger;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomDoubleLogger;
 
 public class PhotonVision {
 
   private PhotonCamera camera;
 
-  private BooleanLogEntry hasTargetLogEntry;
+  private CustomBooleanLogger hasTargetLogEntry;
 
-  private DoubleLogEntry targetPositionXLogEntry;
+  private CustomDoubleLogger targetPositionXLogEntry;
 
-  private DoubleLogEntry targetPositionYLogEntry;
+  private CustomDoubleLogger targetPositionYLogEntry;
 
   public PhotonVision() {
     this("Microsoft_LifeCam_HD-3000 (1)");
@@ -25,11 +24,9 @@ public class PhotonVision {
 
   public PhotonVision(String cameraName) {
     this.camera = new PhotonCamera(cameraName);
-    this.hasTargetLogEntry = new BooleanLogEntry(DataLogManager.getLog(), "/Cameras/" + cameraName + "/hasTarget");
-    this.targetPositionXLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
-        "/Cameras/" + cameraName + "/targetPositionX");
-    this.targetPositionYLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
-        "/Cameras/" + cameraName + "/targetPositionY");
+    this.hasTargetLogEntry = new CustomBooleanLogger("/Cameras/" + cameraName + "/hasTarget");
+    this.targetPositionXLogEntry = new CustomDoubleLogger("/Cameras/" + cameraName + "/targetPositionX");
+    this.targetPositionYLogEntry = new CustomDoubleLogger("/Cameras/" + cameraName + "/targetPositionY");
   }
 
   private PhotonPipelineResult getResult() {

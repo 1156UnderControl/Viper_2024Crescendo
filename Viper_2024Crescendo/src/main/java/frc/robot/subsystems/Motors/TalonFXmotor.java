@@ -12,11 +12,11 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.datalog.BooleanLogEntry;
-import edu.wpi.first.util.datalog.DoubleLogEntry;
-import edu.wpi.first.util.datalog.IntegerLogEntry;
 import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import frc.Java_Is_UnderControl.Driver.Phoenix6Util;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomDoubleLogger;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomIntegerLogger;
 
 public class TalonFXmotor implements Motor {
 
@@ -38,23 +38,23 @@ public class TalonFXmotor implements Motor {
 
   private boolean factoryDefaultOcurred = false;
 
-  private DoubleLogEntry appliedOutputLog;
+  private CustomDoubleLogger appliedOutputLog;
 
-  private DoubleLogEntry targetOutputLog;
+  private CustomDoubleLogger targetOutputLog;
 
-  private DoubleLogEntry currentLog;
+  private CustomDoubleLogger currentLog;
 
-  private DoubleLogEntry positionLog;
+  private CustomDoubleLogger positionLog;
 
-  private DoubleLogEntry velocityLog;
+  private CustomDoubleLogger velocityLog;
 
-  private DoubleLogEntry temperatureLog;
+  private CustomDoubleLogger temperatureLog;
 
-  private IntegerLogEntry faultsLog;
+  private CustomIntegerLogger faultsLog;
 
-  private DoubleLogEntry targetPositionLog;
+  private CustomDoubleLogger targetPositionLog;
 
-  private DoubleLogEntry targetSpeedLog;
+  private CustomDoubleLogger targetSpeedLog;
 
   public TalonFXmotor(int id, GravityTypeValue gravityType) {
     this.gravityType = gravityType;
@@ -73,15 +73,15 @@ public class TalonFXmotor implements Motor {
   }
 
   private void setupLogs(int motorId) {
-    this.appliedOutputLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/appliedOutput");
-    this.targetOutputLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/targetOutput");
-    this.currentLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/current");
-    this.positionLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/position");
-    this.velocityLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/velocity");
-    this.temperatureLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/temperature");
-    this.faultsLog = new IntegerLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/faults");
-    this.targetPositionLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/targetPosition");
-    this.targetSpeedLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/targetSpeed");
+    this.appliedOutputLog = new CustomDoubleLogger("/motors/" + motorId + "/appliedOutput");
+    this.targetOutputLog = new CustomDoubleLogger("/motors/" + motorId + "/targetOutput");
+    this.currentLog = new CustomDoubleLogger("/motors/" + motorId + "/current");
+    this.positionLog = new CustomDoubleLogger("/motors/" + motorId + "/position");
+    this.velocityLog = new CustomDoubleLogger("/motors/" + motorId + "/velocity");
+    this.temperatureLog = new CustomDoubleLogger("/motors/" + motorId + "/temperature");
+    this.faultsLog = new CustomIntegerLogger("/motors/" + motorId + "/faults");
+    this.targetPositionLog = new CustomDoubleLogger("/motors/" + motorId + "/targetPosition");
+    this.targetSpeedLog = new CustomDoubleLogger("/motors/" + motorId + "/targetSpeed");
     StringLogEntry descriptionLog = new StringLogEntry(DataLogManager.getLog(),
         "/motors/" + motorId + "/Description");
     descriptionLog.append(this.motor.getDescription());
