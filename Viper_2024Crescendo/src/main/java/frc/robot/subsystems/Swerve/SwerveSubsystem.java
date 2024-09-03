@@ -18,9 +18,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
@@ -32,7 +30,6 @@ import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
 import frc.Java_Is_UnderControl.Logging.Pose2dLogEntry;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomBooleanLogger;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomDoubleLogger;
-import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomPose2dLogger;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomStringLogger;
 import frc.Java_Is_UnderControl.PhotonVision.PhotonVision;
 import frc.Java_Is_UnderControl.Swerve.DriveAssist;
@@ -95,8 +92,6 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   private Pose2dLogEntry poseVisionLogEntry = new Pose2dLogEntry(DataLogManager.getLog(),
       "/SwerveSubsystem/PoseVision");
 
-  private CustomPose2dLogger poseTest = new CustomPose2dLogger("/SwerveSubsystem/posetest");
-
   private CustomBooleanLogger isAlignedWithSpeakerLogEntry = new CustomBooleanLogger(
       "/SwerveSubsystem/SpeakerAlign/isAligned");
 
@@ -135,7 +130,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   private PhotonVision intakeNoteDetecionCamera = new PhotonVision("Microsoft_LifeCam_HD-3000 (1)");
 
   private DriveAssist intakeDriveAssist = new DriveAssist(
-      IntakeConstants.intakeRollerPositionRelativeToRobotCenter.getTranslation(), 0.8);
+      IntakeConstants.intakeRollerPositionRelativeToRobotCenter.getTranslation(), 0.6);
 
   public static SwerveSubsystem getInstance(File directory) {
     Transform3d robotToCam = new Transform3d(new Translation3d(-0.185, -0.272, 0.27),
@@ -324,9 +319,6 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
       targetAngle = controller.notUsingJoystick() ? angleAlign
           : new Rotation2d(
               Units.degreesToRadians(Math.atan2(controller.getCOS_Joystick(), controller.getSIN_Joystick())));
-      // Pose2d posetest = getPose().plus(new Transform2d(new Translation2d(2, 1), new
-      // Rotation2d()));
-      // poseTest.appendRadians(posetest);
       ChassisSpeeds desiredChassisSpeeds = inputsToChassisSpeeds(controller.getYtranslation(),
           controller.getXtranslation());
       this.driveFieldOrientedLockedAngle(
@@ -552,7 +544,6 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   }
 
   protected void updateLogs() {
-    poseTest.appendRadians(getPose().plus(new Transform2d(new Translation2d(2, 1), new Rotation2d())));
     this.poseVisionLogEntry.appendRadians(this.poseVision2D);
     this.isAlignedWithSpeakerLogEntry.append(isSwerveAlignedWithSpeaker());
     this.distanceToSpeakerAllianceLogEntry.append(distanceFromSpeaker());

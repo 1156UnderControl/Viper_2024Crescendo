@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomDoubleLogger;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomPose2dLogger;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomStringLogger;
 import frc.Java_Is_UnderControl.Util.CoordinatesTransform;
 
@@ -15,6 +16,8 @@ public class DriveAssist {
       "DriveAssist/PerfectTranslationAngle");
   CustomDoubleLogger requestedTranslationAngleLogger = new CustomDoubleLogger(
       "DriveAssist/RequestedTranslationAngle");
+  CustomPose2dLogger robotPoseLogger = new CustomPose2dLogger("DriveAssist/RobotPose");
+  CustomPose2dLogger objectPoseLogger = new CustomPose2dLogger("DriveAssist/ObjectPose");
   CustomStringLogger stateLogger = new CustomStringLogger("DriveAssist/State");
 
   Translation2d correctionReferencePosition;
@@ -31,9 +34,12 @@ public class DriveAssist {
 
   public ChassisSpeeds getCorrectedDesiredSpeedToTranslation(Pose2d robotPose, Pose2d objectPose,
       ChassisSpeeds robotVelocity) {
+    robotPoseLogger.appendRadians(robotPose);
+    objectPoseLogger.appendRadians(objectPose);
     if (robotPose.getTranslation().getDistance(objectPose.getTranslation()) > 3) {
       stateLogger.append("REJECTED_TOO_FAR_FROM_OBJECT");
       return robotVelocity;
+
     }
     Translation2d correctedReferencePose = CoordinatesTransform
         .fromRobotRelativeToF(robotPose, new Pose2d(correctionReferencePosition, new Rotation2d()))
@@ -46,7 +52,7 @@ public class DriveAssist {
     this.requestedTranslationAngleLogger.append(requestedTranslationAngle.getDegrees());
     Rotation2d requestedToPerfectAngleDifference = perfectTranslationAngle.minus(requestedTranslationAngle);
     angleDifferenceLogger.append(requestedToPerfectAngleDifference.getDegrees());
-    if (Math.abs(requestedToPerfectAngleDifference.getDegrees()) > 40) {
+    if (Math.abs(requestedToPerfectAngleDifference.getDegrees()) > 45) {
       stateLogger.append("REJECTED_ANGLE_REQUESTED_TOO_FAR_FROM_PERFECT");
       return robotVelocity;
     }

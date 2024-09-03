@@ -197,9 +197,8 @@ public abstract class BaseSwerveSubsystem extends SubsystemBase {
   }
 
   protected void driveFieldOriented(ChassisSpeeds speeds) {
-    ChassisSpeeds correctedSpeeds = this.performAllianceSpeedDirectionCorrection(speeds);
-    this.swerveDrive.driveFieldOriented(correctedSpeeds);
-    this.targetSpeeds = correctedSpeeds;
+    this.swerveDrive.driveFieldOriented(speeds);
+    this.targetSpeeds = speeds;
     this.targetHeadingDegrees = Double.NaN;
   }
 
@@ -233,16 +232,6 @@ public abstract class BaseSwerveSubsystem extends SubsystemBase {
   protected void driveRobotOriented(Translation2d vector, double angularVelocity) {
     this.swerveDrive.drive(vector, angularVelocity, true, false);
     this.targetHeadingDegrees = Double.NaN;
-  }
-
-  private ChassisSpeeds performAllianceSpeedDirectionCorrection(ChassisSpeeds targetSpeeds) {
-    Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get()
-        : this.defaultAlliance;
-    if (alliance == Alliance.Red) {
-      targetSpeeds = new ChassisSpeeds(-targetSpeeds.vxMetersPerSecond, -targetSpeeds.vyMetersPerSecond,
-          targetSpeeds.omegaRadiansPerSecond);
-    }
-    return targetSpeeds;
   }
 
   protected ChassisSpeeds inputsToChassisSpeeds(double xInput, double yInput) {
