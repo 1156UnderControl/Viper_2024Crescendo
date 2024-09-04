@@ -36,7 +36,7 @@ public class Robot extends TimedRobot {
   private static Robot instance;
   private Command autonomousCommand;
 
-  private RobotSubsystems robotSubsystems;
+  private RobotContainer robotContainer;
 
   private Timer disabledTimer;
 
@@ -66,7 +66,7 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our
     // autonomous chooser on the dashboard.
-    this.robotSubsystems = new RobotSubsystems();
+    this.robotContainer = new RobotContainer();
 
     // Create a timer to disable motor brake a few seconds after disable. This will
     // let the robot stop
@@ -98,7 +98,7 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
-    SmartDashboard.putData("Robot", robotSubsystems);
+    SmartDashboard.putData("Robot", robotContainer.robot);
     isDisabled = isDisabled();
   }
 
@@ -121,11 +121,11 @@ public class Robot extends TimedRobot {
       LimelightHelpers.setPipelineIndex("limelight-back", 0);
     }
     if (switchBrake.get()) {
-      this.robotSubsystems.setCoastToRobot();
-      this.robotSubsystems.led.setSolidColor(LedColor.RED);
+      this.robotContainer.setRobotToCoast();
+      this.robotContainer.robot.led.setSolidColor(LedColor.RED);
     } else {
-      this.robotSubsystems.setBrakeToRobot();
-      this.robotSubsystems.led.setRainbow();
+      this.robotContainer.setRobotToBrake();
+      this.robotContainer.robot.led.setRainbow();
     }
   }
 
@@ -136,12 +136,12 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     SwerveConstants.ACELL_CORREC = false;
-    this.robotSubsystems.setDefaultCommand(new AutonomousCollect(robotSubsystems));
+    this.robotContainer.robot.setDefaultCommand(new AutonomousCollect(robotContainer.robot));
     Robot.isInAutonomous = true;
-    this.robotSubsystems.setHeadingCorrection(false);
-    this.robotSubsystems.setBrakeToRobot();
-    this.autonomousCommand = robotSubsystems.getAutonomousCommand();
-    this.robotSubsystems.led.turnOff();
+    this.robotContainer.setHeadingCorrection(false);
+    this.robotContainer.setRobotToBrake();
+    this.autonomousCommand = robotContainer.getAutonomousCommand();
+    this.robotContainer.robot.led.turnOff();
 
     // schedule the autonomous command (example)
     if (this.autonomousCommand != null) {
@@ -159,16 +159,16 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    this.robotSubsystems.setBrakeToRobot();
+    this.robotContainer.setRobotToBrake();
     SwerveConstants.ACELL_CORREC = true;
-    robotSubsystems.setDefaultCommand(new SecuredPosition(robotSubsystems));
+    this.robotContainer.robot.setDefaultCommand(new SecuredPosition(robotContainer.robot));
     Robot.isInAutonomous = false;
-    robotSubsystems.setHeadingCorrection(true);
+    this.robotContainer.setHeadingCorrection(true);
     if (this.autonomousCommand != null) {
       autonomousCommand.cancel();
     }
     ;
-    robotSubsystems.led.turnOff();
+    this.robotContainer.robot.led.turnOff();
   }
 
   /**
