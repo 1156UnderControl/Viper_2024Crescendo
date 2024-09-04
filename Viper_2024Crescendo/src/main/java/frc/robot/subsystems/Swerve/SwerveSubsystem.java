@@ -123,14 +123,14 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   private PIDController yVelToAprilTag = new PIDController(0.01, 0, 0);
 
   private ObjectDetectionCamera intakeNoteDetectionCamera = new ObjectDetectionCamera(
-      new Transform3d(0.211, 0, 0.545, new Rotation3d(0, Units.degreesToRadians(30), 0)), 1, 1);
+      new Transform3d(0.174, 0, 0.643, new Rotation3d(0, Units.degreesToRadians(28), 0)), 1, 1);
 
   private PhotonVision shooterTopCamera = new PhotonVision("Microsoft_LifeCam_HD-3000");
 
   private PhotonVision intakeNoteDetecionCamera = new PhotonVision("Microsoft_LifeCam_HD-3000 (1)");
 
   private DriveAssist intakeDriveAssist = new DriveAssist(
-      IntakeConstants.intakeRollerPositionRelativeToRobotCenter.getTranslation(), 0.6);
+      IntakeConstants.intakeRollerPositionRelativeToRobotCenter.getTranslation(), 0.7);
   private final Field2d field = new Field2d();
 
   public static SwerveSubsystem getInstance(File directory) {
