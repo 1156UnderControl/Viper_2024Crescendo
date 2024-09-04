@@ -1,11 +1,10 @@
 package frc.robot;
 
-import edu.wpi.first.util.datalog.DoubleLogEntry;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomDoubleLogger;
 import frc.robot.Joysticks.ControlBoard;
 import frc.robot.subsystems.Climber.ClimberSubsystem;
 import frc.robot.subsystems.Climber.IClimber;
@@ -38,10 +37,9 @@ public class RobotSubsystems extends SubsystemBase {
 
   private PowerDistribution powerDistributionHub;
 
-  private DoubleLogEntry batteryVoltageLogEntry = new DoubleLogEntry(DataLogManager.getLog(), "/Robot/BatteryVoltage");
+  private CustomDoubleLogger batteryVoltageLogEntry = new CustomDoubleLogger("/Robot/BatteryVoltage");
 
-  private DoubleLogEntry totalCurrentDrawLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
-      "/Robot/TotalCurrentDraw");
+  private CustomDoubleLogger totalCurrentDrawLogEntry = new CustomDoubleLogger("/Robot/TotalCurrentDraw");
 
   public RobotSubsystems() {
     this.swerve = SwerveSubsystem.getInstance();

@@ -22,14 +22,15 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.Java_Is_UnderControl.Control.PidConfig;
 import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
-import frc.Java_Is_UnderControl.Logging.Pose2dLogEntry;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomBooleanLogger;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomDoubleLogger;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomPose2dLogger;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomStringLogger;
 import frc.Java_Is_UnderControl.PhotonVision.PhotonVision;
 import frc.Java_Is_UnderControl.Swerve.DriveAssist;
@@ -89,8 +90,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
 
   LimelightHelpers.PoseEstimate limelightMeasurement;
 
-  private Pose2dLogEntry poseVisionLogEntry = new Pose2dLogEntry(DataLogManager.getLog(),
-      "/SwerveSubsystem/PoseVision");
+  private CustomPose2dLogger poseVisionLogEntry = new CustomPose2dLogger("/SwerveSubsystem/PoseVision");
 
   private CustomBooleanLogger isAlignedWithSpeakerLogEntry = new CustomBooleanLogger(
       "/SwerveSubsystem/SpeakerAlign/isAligned");
@@ -131,24 +131,36 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
 
   private DriveAssist intakeDriveAssist = new DriveAssist(
       IntakeConstants.intakeRollerPositionRelativeToRobotCenter.getTranslation(), 0.6);
+  private final Field2d field = new Field2d();
 
   public static SwerveSubsystem getInstance(File directory) {
-    Transform3d robotToCam = new Transform3d(new Translation3d(-0.185, -0.272, 0.27),
-        new Rotation3d(0, Units.degreesToRadians(-37.5), Units.degreesToRadians(-70)));
     if (swerveInstance == null) {
-      List<PoseEstimator> listOfEstimators = new ArrayList<>();
-      List<PoseEstimator> listOfEstimatorsForAuto = new ArrayList<>();
-      PoseEstimator limelight3G_Two_TagsOnly = new LimelightPoseEstimator("limelight-back", false,
-          false, 2);
       PoseEstimator limelight3G = new LimelightPoseEstimator("limelight-back", false);
-      PoseEstimator arducam = new PhotonVisionPoseEstimator(new PhotonCamera("Arducam"), robotToCam, true);
-      listOfEstimatorsForAuto.add(limelight3G_Two_TagsOnly);
-      listOfEstimators.add(limelight3G);
-      listOfEstimators.add(arducam);
-      PoseEstimator estimatorMultiCamera = new MultiCameraPoseEstimator(listOfEstimators);
-      swerveInstance = new SwerveSubsystem(directory, estimatorMultiCamera, limelight3G);
+      swerveInstance = new SwerveSubsystem(directory, configureMulticameraPoseEstimation(), limelight3G);
     }
     return swerveInstance;
+  }
+
+  private static PoseEstimator configureMulticameraPoseEstimation() {
+    Transform3d robotToCamArducamLeft = new Transform3d(new Translation3d(-0.185, 0.272, 0.27),
+        new Rotation3d(0, Units.degreesToRadians(-37.5), Units.degreesToRadians(70)));
+    Transform3d robotToCamArducamRight = new Transform3d(new Translation3d(-0.185, -0.272, 0.27),
+        new Rotation3d(0, Units.degreesToRadians(-37.5), Units.degreesToRadians(-70)));
+    List<PoseEstimator> listOfEstimators = new ArrayList<>();
+    List<PoseEstimator> listOfEstimatorsForAuto = new ArrayList<>();
+    PoseEstimator limelight3G_Two_TagsOnly = new LimelightPoseEstimator("limelight-back", false,
+        false, 2);
+    PoseEstimator limelight3G = new LimelightPoseEstimator("limelight-back", false);
+    PoseEstimator arducamRight = new PhotonVisionPoseEstimator(new PhotonCamera("Arducam-right"),
+        robotToCamArducamRight, false);
+    PoseEstimator arducamLeft = new PhotonVisionPoseEstimator(new PhotonCamera("Arducam-left"), robotToCamArducamLeft,
+        false);
+    listOfEstimatorsForAuto.add(limelight3G_Two_TagsOnly);
+    listOfEstimators.add(limelight3G);
+    listOfEstimators.add(arducamRight);
+    listOfEstimators.add(arducamLeft);
+    PoseEstimator estimatorMultiCamera = new MultiCameraPoseEstimator(listOfEstimators);
+    return estimatorMultiCamera;
   }
 
   public static SwerveSubsystem getInstance() {
@@ -156,7 +168,6 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
       DriverStation.reportError("YAGSL Configuration not provided", true);
     }
     return swerveInstance;
-
   }
 
   private SwerveSubsystem(File directory, PoseEstimator poseEstimatorTeleOp, PoseEstimator poseEstimatorAuto) {
@@ -173,12 +184,14 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
         new PidConfig(0.7, 0, 0)));
     PPHolonomicDriveController.setRotationTargetOverride(this::getRotationTargetOverride);
     this.updateLogs();
+    SmartDashboard.putData("Field", this.field);
   }
 
   @Override
   public void periodic() {
     super.periodic();
     this.updateLogs();
+    field.setRobotPose(this.getPose());
     LimelightHelpers.SetRobotOrientation("limelight-back", this.swerveDrive.getOdometryHeading().getDegrees(), 0, 0, 0,
         0, 0);
     LimelightHelpers.SetRobotOrientation("limelight-left", this.swerveDrive.getOdometryHeading().getDegrees(), 0, 0, 0,

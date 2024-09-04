@@ -1,17 +1,16 @@
 package frc.robot.subsystems.LEDs;
 
-import edu.wpi.first.util.datalog.BooleanLogEntry;
-import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomBooleanLogger;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomStringLogger;
 
 class LedMode {
   public static final String SOLID = "SOLID";
   public static final String RAINBOW = "RAINBOW";
-  public static final String BLINK = "BLINK";  
+  public static final String BLINK = "BLINK";
 }
 
 public class LedSubsystem extends SubsystemBase implements ILed {
@@ -37,11 +36,11 @@ public class LedSubsystem extends SubsystemBase implements ILed {
 
   private Color color;
 
-  private StringLogEntry modeLogEntry = new StringLogEntry(DataLogManager.getLog(), "/LedSubsystem/Mode");
+  private CustomStringLogger modeLogEntry = new CustomStringLogger("/LedSubsystem/Mode");
 
-  private StringLogEntry colorLogEntry = new StringLogEntry(DataLogManager.getLog(), "/LedSubsystem/Color");
+  private CustomStringLogger colorLogEntry = new CustomStringLogger("/LedSubsystem/Color");
 
-  private BooleanLogEntry blinkTrackerLogEntry = new BooleanLogEntry(DataLogManager.getLog(), "/LedSubsystem/BlinkTracker");
+  private CustomBooleanLogger blinkTrackerLogEntry = new CustomBooleanLogger("/LedSubsystem/BlinkTracker");
 
   public static LedSubsystem getInstance() {
     if (instance == null) {
@@ -90,7 +89,7 @@ public class LedSubsystem extends SubsystemBase implements ILed {
     this.setSolidColor(LedColor.OFF);
   }
 
-  public void setSolidColor(Color color){
+  public void setSolidColor(Color color) {
     this.mode = LedMode.SOLID;
     this.color = color;
     this.blinkTrackerLogEntry.append(false);
@@ -134,23 +133,23 @@ public class LedSubsystem extends SubsystemBase implements ILed {
     led.setData(ledBuffer);
   }
 
-  private void processSolidColor(Color solidColor){
+  private void processSolidColor(Color solidColor) {
     for (var i = 0; i < ledBuffer.getLength(); i++) {
       ledBuffer.setRGB(i, solidColor.red, solidColor.blue, solidColor.green);
     }
     led.setData(ledBuffer);
   }
 
-  private void processBlink(){
+  private void processBlink() {
     double elapsedTime = this.blinkTimer.get();
-    if (this.numberOfBlinks > 0){
+    if (this.numberOfBlinks > 0) {
       double elapsedBlinkPeriods = elapsedTime / this.blinkPeriod;
-      if (elapsedBlinkPeriods > this.numberOfBlinks){
+      if (elapsedBlinkPeriods > this.numberOfBlinks) {
         this.setSolidColor(this.colorAfterBlink);
         return;
       }
     }
-    if (elapsedTime % this.blinkPeriod < this.halfBlinkPeriod){
+    if (elapsedTime % this.blinkPeriod < this.halfBlinkPeriod) {
       this.processSolidColor(this.color);
       this.blinkTrackerLogEntry.append(true);
     } else {

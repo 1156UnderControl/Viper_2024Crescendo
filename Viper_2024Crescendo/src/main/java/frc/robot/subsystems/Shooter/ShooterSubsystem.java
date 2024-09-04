@@ -138,8 +138,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     this.pivotMotor.setMotorBrake(true);
     this.pivotMotor.setLoopRampRate(0);
     this.pivotMotor.setPositionFactor(113.14);
-    this.pivotMotor.configurePIDF(45, 20, 0, 0);
-    this.pivotMotor.configureFeedForward(0.1, 0, 0.04);
+    this.pivotMotor.configurePIDF(49, 40, 0, 0);
+    this.pivotMotor.configureFeedForward(0.26, 0, 0.01);
     this.pivotMotor.setPosition(0);
   }
 
