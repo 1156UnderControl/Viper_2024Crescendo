@@ -142,7 +142,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   }
 
   private static PoseEstimator configureMulticameraPoseEstimation() {
-    Transform3d robotToCamArducamLeft = new Transform3d(new Translation3d(-0.185, 0.272, 0.27),
+    Transform3d robotToCamArducamLeft = new Transform3d(new Translation3d(-0.185, 0.272, 0.28),
         new Rotation3d(0, Units.degreesToRadians(-37.5), Units.degreesToRadians(70)));
     Transform3d robotToCamArducamRight = new Transform3d(new Translation3d(-0.185, -0.272, 0.27),
         new Rotation3d(0, Units.degreesToRadians(-37.5), Units.degreesToRadians(-70)));

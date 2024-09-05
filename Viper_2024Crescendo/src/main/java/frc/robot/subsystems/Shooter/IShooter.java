@@ -1,6 +1,8 @@
 package frc.robot.subsystems.Shooter;
 
 public interface IShooter {
+  void runNoteDetection();
+
   void setCoastPivot();
 
   void setBrakePivot();
