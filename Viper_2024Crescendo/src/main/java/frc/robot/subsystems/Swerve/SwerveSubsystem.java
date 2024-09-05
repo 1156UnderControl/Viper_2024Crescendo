@@ -130,7 +130,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   private PhotonVision intakeNoteDetecionCamera = new PhotonVision("Microsoft_LifeCam_HD-3000 (1)");
 
   private DriveAssist intakeDriveAssist = new DriveAssist(
-      IntakeConstants.intakeRollerPositionRelativeToRobotCenter.getTranslation(), 0.7);
+      IntakeConstants.intakeRollerPositionRelativeToRobotCenter.getTranslation(), 0.7, 2, 45);
   private final Field2d field = new Field2d();
 
   public static SwerveSubsystem getInstance(File directory) {
