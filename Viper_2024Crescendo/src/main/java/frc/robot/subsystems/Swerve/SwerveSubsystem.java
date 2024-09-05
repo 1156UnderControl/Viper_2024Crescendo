@@ -330,8 +330,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
               "Note"),
           intakeNoteDetectionCamera, 1, 1);
       targetAngle = controller.notUsingJoystick() ? angleAlign
-          : new Rotation2d(
-              Units.degreesToRadians(Math.atan2(controller.getCOS_Joystick(), controller.getSIN_Joystick())));
+          : Rotation2d.fromRadians(Math.atan2(controller.getCOS_Joystick(), controller.getSIN_Joystick()));
       ChassisSpeeds desiredChassisSpeeds = inputsToChassisSpeeds(controller.getYtranslation(),
           controller.getXtranslation());
       this.driveFieldOrientedLockedAngle(
