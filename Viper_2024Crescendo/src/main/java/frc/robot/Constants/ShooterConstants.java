@@ -56,7 +56,7 @@ public class ShooterConstants {
     public static final double VELOCITY_CRUISE_SHOOTER = 6000;
     public static final double VELOCITY_SHOOTER_CORRECT_PASSED_NOTE = -0.2;
     public static final double VELOCITY_SHOOTER_COLLECT_HP = -6000;
-    public static final double VELOCITY_FEED_COLLECT = 0.8;
+    public static final double VELOCITY_FEED_COLLECT = 0;
     public static final double VELOCITY_FEED_COLLECT_AUTO = 0.3;
     public static final double VELOCITY_FEED_SHOOT = 0.9;
     public static final double VELOCITY_FEED_CORRECT_PASSED_NOTE = -0.1;
