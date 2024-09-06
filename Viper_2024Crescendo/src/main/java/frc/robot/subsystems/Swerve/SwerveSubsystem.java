@@ -133,7 +133,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
       IntakeConstants.intakeRollerPositionRelativeToRobotCenter.getTranslation(), 0.7, 2, 45);
 
   private DriveAssist driveToNoteAssist = new DriveAssist(
-      IntakeConstants.intakeRollerPositionRelativeToRobotCenter.getTranslation(), 1, 10, 100);
+      IntakeConstants.intakeRollerPositionRelativeToRobotCenter.getTranslation(), 1, 10, 360);
 
   private final Field2d field = new Field2d();
 
@@ -357,12 +357,10 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
           new ObjectDetection(LimelightHelpers.getTX("limelight-note"), LimelightHelpers.getTY("limelight-note"),
               "Note"),
           intakeNoteDetectionCamera, 1, 1);
-      ChassisSpeeds desiredChassisSpeeds = inputsToChassisSpeeds(controller.getYtranslation(),
-          controller.getXtranslation());
       this.driveFieldOrientedLockedAngle(
-          intakeDriveAssist.getCorrectedDesiredSpeedToTranslation(getPose(),
+          driveToNoteAssist.getCorrectedDesiredSpeedToTranslation(getPose(),
               estimationNote.getObjectPoseInField(getPose(), estimationNote.getObjectPoseFromRobotCenter()),
-              desiredChassisSpeeds),
+              new ChassisSpeeds(5, 0, 0)),
           getHeading());
     }
     this.state = "DRIVE_TO_NOTE";

@@ -15,17 +15,21 @@ public class AutonomousGoToNote extends Command {
   @Override
   public void initialize() {
     this.robot.intake.goToIntakePosition();
-    this.robot.shooter.goToIntakePosition();
-    this.robot.shooter.intakeAuto();
     this.robot.intake.intake();
-    robot.swerve.driveToNote();
+    if (this.robot.intake.isSecureForShooter()) {
+      this.robot.shooter.goToIntakePosition();
+      this.robot.shooter.intakeAuto();
+    }
   }
 
   @Override
   public void execute() {
-    this.robot.shooter.intakeAuto();
     this.robot.intake.intake();
-    robot.swerve.driveToNote();
+    if (this.robot.intake.isSecureForShooter()) {
+      this.robot.shooter.goToIntakePosition();
+      this.robot.shooter.intakeAuto();
+      this.robot.swerve.driveToNote();
+    }
   }
 
   @Override
