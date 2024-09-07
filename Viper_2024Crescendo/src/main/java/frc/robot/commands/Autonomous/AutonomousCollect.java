@@ -15,14 +15,15 @@ public class AutonomousCollect extends Command {
   @Override
   public void initialize() {
     Robot.autonomousState = "Collect";
-    this.robot.shooter.intakeAuto();
     this.robot.intake.goToIntakePosition();
     this.robot.intake.intake();
   }
 
   @Override
   public void execute() {
-    this.robot.shooter.intakeAuto();
+    if (robot.intake.isSecureForShooter()) {
+      this.robot.shooter.intakeAuto();
+    }
     this.robot.intake.intake();
   }
 
