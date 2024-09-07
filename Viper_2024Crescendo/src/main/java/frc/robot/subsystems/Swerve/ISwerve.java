@@ -17,6 +17,8 @@ public interface ISwerve {
 
   void driveAlignNote();
 
+  void driveToNote();
+
   void driveToAmp();
 
   void alignWithAmpAprilTag();

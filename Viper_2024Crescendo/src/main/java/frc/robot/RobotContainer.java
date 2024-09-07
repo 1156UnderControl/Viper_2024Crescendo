@@ -10,6 +10,7 @@ import java.io.File;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -27,9 +28,11 @@ import frc.robot.commands.Autonomous.AutonomousAimSubwoofer;
 import frc.robot.commands.Autonomous.AutonomousCollect;
 import frc.robot.commands.Autonomous.AutonomousCollectAligning;
 import frc.robot.commands.Autonomous.AutonomousDeployOnlyIntake;
+import frc.robot.commands.Autonomous.AutonomousGoToNote;
 import frc.robot.commands.Autonomous.AutonomousPassThrough;
 import frc.robot.commands.Autonomous.AutonomousSecured;
 import frc.robot.commands.Autonomous.AutonomousShoot;
+import frc.robot.commands.Autonomous.Auto.AutoTestComand;
 import frc.robot.commands.States.ClimbPosition;
 import frc.robot.commands.States.CollectHPposition;
 import frc.robot.commands.States.CollectPosition;
@@ -80,6 +83,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Aim Shoot Steal 2", new AutonomousAimSteal2(robot));
     NamedCommands.registerCommand("Deploy Intake", new AutonomousDeployOnlyIntake(robot));
     NamedCommands.registerCommand("Secured", new AutonomousSecured(robot));
+    NamedCommands.registerCommand("Go To Note", new AutonomousGoToNote(robot));
 
     autoChooser = AutoBuilder.buildAutoChooser("None");
     SmartDashboard.putData("Aut Chooser", autoChooser);
@@ -121,7 +125,10 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return autoChooser.getSelected();
+    // return autoChooser.getSelected();
+    PathPlannerPath path1 = PathPlannerPath.fromPathFile("New Path");
+    return new AutoTestComand(robot, autoChooser);
+    // return AutoBuilder.followPath(path1);
   }
 
   public void setRobotToBrake() {

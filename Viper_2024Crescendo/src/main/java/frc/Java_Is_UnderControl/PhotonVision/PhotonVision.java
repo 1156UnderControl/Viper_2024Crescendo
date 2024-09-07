@@ -28,8 +28,10 @@ public class PhotonVision {
   public PhotonVision(String cameraName) {
     this.camera = new PhotonCamera(cameraName);
     this.hasTargetLogEntry = new CustomBooleanLogger("/Cameras/" + cameraName + "/hasTarget");
-    this.targetPositionXLogEntry = new CustomDoubleLogger("/Cameras/" + cameraName + "/targetPositionX");
-    this.targetPositionYLogEntry = new CustomDoubleLogger("/Cameras/" + cameraName + "/targetPositionY");
+    this.targetPositionXLogEntry = new CustomDoubleLogger(
+        "/Cameras/" + cameraName + "/targetPositionX");
+    this.targetPositionYLogEntry = new CustomDoubleLogger(
+        "/Cameras/" + cameraName + "/targetPositionY");
   }
 
   private PhotonPipelineResult getResult() {
