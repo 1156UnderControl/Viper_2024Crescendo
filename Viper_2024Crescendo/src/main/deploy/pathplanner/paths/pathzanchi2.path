@@ -1,0 +1,82 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.934780484945588,
+        "y": 2.4272679314589416
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.534123991324907,
+        "y": 0.05920165686485353
+      },
+      "isLocked": false,
+      "linkedName": "end pathzanchi 1"
+    },
+    {
+      "anchor": {
+        "x": 2.5276958246224197,
+        "y": 3.5224985834587055
+      },
+      "prevControl": {
+        "x": 2.290889197163011,
+        "y": 3.394228326918193
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "end pathzanchi 2"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Aim Shoot Interpolation"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 5.0,
+    "maxAngularVelocity": 100.0,
+    "maxAngularAcceleration": 300.0
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": -37.48000000000002,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "ZANZHI AUTO",
+  "previewStartingState": {
+    "rotation": 0.0,
+    "velocity": 1.0
+  },
+  "useDefaultConstraints": false
+}

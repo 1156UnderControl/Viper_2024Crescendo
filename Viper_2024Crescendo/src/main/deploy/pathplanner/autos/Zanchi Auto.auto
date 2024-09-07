@@ -1,0 +1,67 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.5,
+      "y": 2.28
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "pathzanchi1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "pathzanchi2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Aim Swerve Speaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Interpolation"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "pathzanchi3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "pathzanchi4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Aim Swerve Speaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Interpolation"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
