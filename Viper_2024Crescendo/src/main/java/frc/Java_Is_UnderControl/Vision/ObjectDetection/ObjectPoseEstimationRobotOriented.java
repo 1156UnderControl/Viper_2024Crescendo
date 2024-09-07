@@ -1,10 +1,11 @@
 package frc.Java_Is_UnderControl.Vision.ObjectDetection;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomDoubleLogger;
-import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomPose2dLogger;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomPose3dLogger;
 import frc.Java_Is_UnderControl.Util.CoordinatesTransform;
 
 public class ObjectPoseEstimationRobotOriented {
@@ -28,7 +29,7 @@ public class ObjectPoseEstimationRobotOriented {
 
   CustomDoubleLogger yObjectDistanceLogger;
 
-  CustomPose2dLogger poseOBjectInTheFieldLogger;
+  CustomPose3dLogger poseOBjectInTheFieldLogger;
 
   double angleObjectInMaxTy;
 
@@ -52,13 +53,14 @@ public class ObjectPoseEstimationRobotOriented {
     distanceToObjectLogger = new CustomDoubleLogger("ObjectDetection/Camera Distance To Object");
     xObjectSDistanceLogger = new CustomDoubleLogger("ObjectDetection/X Object Distance To Robot");
     yObjectDistanceLogger = new CustomDoubleLogger("ObjectDetection/Y Object Distance To Robot");
-    poseOBjectInTheFieldLogger = new CustomPose2dLogger("ObjectDetection/Note Pose In The Field");
+    poseOBjectInTheFieldLogger = new CustomPose3dLogger("ObjectDetection/Note Pose In The Field");
   }
 
   public Pose2d getObjectPoseInField(Pose2d robotPose, Pose2d objectPose) {
-    Pose2d poseInTheField = CoordinatesTransform.fromRobotRelativeToF(robotPose, objectPose);
-    poseOBjectInTheFieldLogger.appendRadians(poseInTheField);
-    return poseInTheField;
+    Pose2d poseInTheField2d = CoordinatesTransform.fromRobotRelativeToF(robotPose, objectPose);
+    Pose3d poseInTheField3d = new Pose3d(poseInTheField2d);
+    poseOBjectInTheFieldLogger.appendRadians(poseInTheField3d);
+    return poseInTheField2d;
   }
 
   public Pose2d getObjectPoseFromRobotCenter() {

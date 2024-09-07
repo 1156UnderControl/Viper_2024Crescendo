@@ -22,24 +22,28 @@ public class DriveAssist {
 
   Translation2d correctionReferencePosition;
   double correntionPercentage;
+  double maxDistanceToCorrect;
+  double maxJoystickAngleToCorrect;
 
   public DriveAssist() {
-    this(new Translation2d(), 1);
+    this(new Translation2d(), 1, 2, 45);
   }
 
-  public DriveAssist(Translation2d correctionReferencePosition, double correctionPercentage) {
+  public DriveAssist(Translation2d correctionReferencePosition, double correctionPercentage,
+      double maxDistanceToCorrect, double maxJoystickAngleToCorrect) {
     this.correctionReferencePosition = correctionReferencePosition;
     this.correntionPercentage = correctionPercentage;
+    this.maxDistanceToCorrect = maxDistanceToCorrect;
+    this.maxJoystickAngleToCorrect = maxJoystickAngleToCorrect;
   }
 
   public ChassisSpeeds getCorrectedDesiredSpeedToTranslation(Pose2d robotPose, Pose2d objectPose,
       ChassisSpeeds robotVelocity) {
     robotPoseLogger.appendRadians(robotPose);
     objectPoseLogger.appendRadians(objectPose);
-    if (robotPose.getTranslation().getDistance(objectPose.getTranslation()) > 3) {
+    if (robotPose.getTranslation().getDistance(objectPose.getTranslation()) > this.maxDistanceToCorrect) {
       stateLogger.append("REJECTED_TOO_FAR_FROM_OBJECT");
       return robotVelocity;
-
     }
     Translation2d correctedReferencePose = CoordinatesTransform
         .fromRobotRelativeToF(robotPose, new Pose2d(correctionReferencePosition, new Rotation2d()))
@@ -52,7 +56,7 @@ public class DriveAssist {
     this.requestedTranslationAngleLogger.append(requestedTranslationAngle.getDegrees());
     Rotation2d requestedToPerfectAngleDifference = perfectTranslationAngle.minus(requestedTranslationAngle);
     angleDifferenceLogger.append(requestedToPerfectAngleDifference.getDegrees());
-    if (Math.abs(requestedToPerfectAngleDifference.getDegrees()) > 45) {
+    if (Math.abs(requestedToPerfectAngleDifference.getDegrees()) > this.maxJoystickAngleToCorrect) {
       stateLogger.append("REJECTED_ANGLE_REQUESTED_TOO_FAR_FROM_PERFECT");
       return robotVelocity;
     }

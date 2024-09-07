@@ -35,7 +35,7 @@ public class Robot extends TimedRobot {
 
   private static Robot instance;
   private Command autonomousCommand;
-  
+
   private RobotContainer robotContainer;
 
   private Timer disabledTimer;
@@ -50,6 +50,9 @@ public class Robot extends TimedRobot {
 
   public Robot() {
     instance = this;
+    addPeriodic(() -> {
+      robotContainer.robot.shooter.runNoteDetection();
+    }, 0.05, 0.005);
   }
 
   public static Robot getInstance() {

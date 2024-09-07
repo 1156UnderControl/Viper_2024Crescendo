@@ -123,15 +123,15 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   private PIDController yVelToAprilTag = new PIDController(0.01, 0, 0);
 
   private ObjectDetectionCamera intakeNoteDetectionCamera = new ObjectDetectionCamera(
-      new Transform3d(0.211, 0, 0.545, new Rotation3d(0, Units.degreesToRadians(30), 0)), 1, 1);
+      new Transform3d(0.174, 0, 0.643, new Rotation3d(0, Units.degreesToRadians(28), 0)), 1, 1);
 
   private PhotonVision shooterTopCamera = new PhotonVision("Microsoft_LifeCam_HD-3000");
 
   private PhotonVision intakeNoteDetecionCamera = new PhotonVision("Microsoft_LifeCam_HD-3000 (1)");
 
-  private final Field2d field = new Field2d();
   private DriveAssist intakeDriveAssist = new DriveAssist(
-      IntakeConstants.intakeRollerPositionRelativeToRobotCenter.getTranslation(), 0.6);
+      IntakeConstants.intakeRollerPositionRelativeToRobotCenter.getTranslation(), 0.7, 2, 45);
+  private final Field2d field = new Field2d();
 
   public static SwerveSubsystem getInstance(File directory) {
     if (swerveInstance == null) {
@@ -142,7 +142,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   }
 
   private static PoseEstimator configureMulticameraPoseEstimation() {
-    Transform3d robotToCamArducamLeft = new Transform3d(new Translation3d(-0.185, 0.272, 0.27),
+    Transform3d robotToCamArducamLeft = new Transform3d(new Translation3d(-0.185, 0.272, 0.28),
         new Rotation3d(0, Units.degreesToRadians(-37.5), Units.degreesToRadians(70)));
     Transform3d robotToCamArducamRight = new Transform3d(new Translation3d(-0.185, -0.272, 0.27),
         new Rotation3d(0, Units.degreesToRadians(-37.5), Units.degreesToRadians(-70)));
@@ -330,8 +330,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
               "Note"),
           intakeNoteDetectionCamera, 1, 1);
       targetAngle = controller.notUsingJoystick() ? angleAlign
-          : new Rotation2d(
-              Units.degreesToRadians(Math.atan2(controller.getCOS_Joystick(), controller.getSIN_Joystick())));
+          : Rotation2d.fromRadians(Math.atan2(controller.getCOS_Joystick(), controller.getSIN_Joystick()));
       ChassisSpeeds desiredChassisSpeeds = inputsToChassisSpeeds(controller.getYtranslation(),
           controller.getXtranslation());
       this.driveFieldOrientedLockedAngle(
