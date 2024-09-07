@@ -13,6 +13,8 @@ public interface ISwerve {
 
   void driveAlignSpeakerSlow();
 
+  void alignSpeaker();
+
   void driveAlignShootOverStage();
 
   void driveAlignNote();

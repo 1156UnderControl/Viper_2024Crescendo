@@ -127,10 +127,8 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
 
   private PhotonVision shooterTopCamera = new PhotonVision("Microsoft_LifeCam_HD-3000");
 
-  private PhotonVision intakeNoteDetecionCamera = new PhotonVision("Microsoft_LifeCam_HD-3000 (1)");
-
   private DriveAssist intakeDriveAssist = new DriveAssist(
-      IntakeConstants.intakeRollerPositionRelativeToRobotCenter.getTranslation(), 0.7, 2, 45);
+      IntakeConstants.intakeRollerPositionRelativeToRobotCenter.getTranslation(), 0.7, 2, 70);
 
   private DriveAssist driveToNoteAssist = new DriveAssist(
       IntakeConstants.intakeRollerPositionRelativeToRobotCenter.getTranslation(), 1, 10, 360);
@@ -272,6 +270,22 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
           new Rotation2d(Math.PI).plus(spinCompensationAngle));
     } else {
       this.driveAimingAtPositionMoving(CommandsConstants.dtShootWhileMoving, desiredSpeeds, FieldConstants.blueGoalPos,
+          spinCompensationAngle);
+    }
+    this.state = "DRIVE_ALIGN_SPEAKER";
+  }
+
+  @Override
+  public void alignSpeaker() {
+    Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Red;
+    Rotation2d spinCompensationAngle = Rotation2d.fromDegrees(-7);
+    if (alliance == Alliance.Red) {
+      this.driveAimingAtPositionMoving(CommandsConstants.dtShootWhileMoving, new ChassisSpeeds(),
+          FieldConstants.redGoalPos,
+          new Rotation2d(Math.PI).plus(spinCompensationAngle));
+    } else {
+      this.driveAimingAtPositionMoving(CommandsConstants.dtShootWhileMoving, new ChassisSpeeds(),
+          FieldConstants.blueGoalPos,
           spinCompensationAngle);
     }
     this.state = "DRIVE_ALIGN_SPEAKER";
@@ -488,10 +502,8 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   }
 
   public Optional<Rotation2d> getRotationTargetOverride() {
-    if (overrideRotationAuto && intakeNoteDetecionCamera.hasTarget()) {
-      double angleToAimNote = pidTrackNoteAuto.calculate(intakeNoteDetecionCamera.targetPositionX(), 0);
-      return Optional.of(swerveDrive.getOdometryHeading()
-          .plus(new Rotation2d(Units.degreesToRadians(angleToAimNote))));
+    if (overrideRotationAuto) {
+      return Optional.of(new Rotation2d());
     } else {
       return Optional.empty();
     }
