@@ -12,11 +12,11 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 
 import edu.wpi.first.util.datalog.BooleanLogEntry;
-import edu.wpi.first.util.datalog.DoubleLogEntry;
-import edu.wpi.first.util.datalog.IntegerLogEntry;
 import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomDoubleLogger;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomIntegerLogger;
 
 public class SparkMAXMotor implements Motor {
   private CANSparkMax motor;
@@ -31,26 +31,17 @@ public class SparkMAXMotor implements Motor {
 
   private boolean factoryDefaultOcurred = false;
 
-  private DoubleLogEntry appliedOutputLog;
-
-  private DoubleLogEntry targetOutputLog;
-
-  private DoubleLogEntry currentLog;
-
-  private DoubleLogEntry positionLog;
-
-  private DoubleLogEntry velocityLog;
-
-  private DoubleLogEntry temperatureLog;
-
-  private IntegerLogEntry faultsLog;
-
-  private DoubleLogEntry targetPositionLog;
-
-  private DoubleLogEntry targetSpeedLog;
+  private CustomDoubleLogger appliedOutputLog;
+  private CustomDoubleLogger targetOutputLog;
+  private CustomDoubleLogger currentLog;
+  private CustomDoubleLogger positionLog;
+  private CustomDoubleLogger velocityLog;
+  private CustomDoubleLogger temperatureLog;
+  private CustomIntegerLogger faultsLog;
+  private CustomDoubleLogger targetPositionLog;
+  private CustomDoubleLogger targetSpeedLog;
 
   private double targetPercentage = Double.NaN;
-
   private double targetPosition = Double.NaN;
 
   private double targetSpeed = Double.NaN;
@@ -119,15 +110,15 @@ public class SparkMAXMotor implements Motor {
   }
 
   private void setupLogs(int motorId, boolean isAlternateEncoder) {
-    this.appliedOutputLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/appliedOutput");
-    this.targetOutputLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/targetOutput");
-    this.currentLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/current");
-    this.positionLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/position");
-    this.velocityLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/velocity");
-    this.temperatureLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/temperature");
-    this.faultsLog = new IntegerLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/faults");
-    this.targetPositionLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/targetPosition");
-    this.targetSpeedLog = new DoubleLogEntry(DataLogManager.getLog(), "/motors/" + motorId + "/targetSpeed");
+    this.appliedOutputLog = new CustomDoubleLogger("/motors/" + motorId + "/appliedOutput");
+    this.targetOutputLog = new CustomDoubleLogger("/motors/" + motorId + "/targetOutput");
+    this.currentLog = new CustomDoubleLogger("/motors/" + motorId + "/current");
+    this.positionLog = new CustomDoubleLogger("/motors/" + motorId + "/position");
+    this.velocityLog = new CustomDoubleLogger("/motors/" + motorId + "/velocity");
+    this.temperatureLog = new CustomDoubleLogger("/motors/" + motorId + "/temperature");
+    this.faultsLog = new CustomIntegerLogger("/motors/" + motorId + "/faults");
+    this.targetPositionLog = new CustomDoubleLogger("/motors/" + motorId + "/targetPosition");
+    this.targetSpeedLog = new CustomDoubleLogger("/motors/" + motorId + "/targetSpeed");
     StringLogEntry firmwareVersionLog = new StringLogEntry(DataLogManager.getLog(),
         "/motors/" + motorId + "/firmwareVersion");
     firmwareVersionLog.append(this.motor.getFirmwareString());

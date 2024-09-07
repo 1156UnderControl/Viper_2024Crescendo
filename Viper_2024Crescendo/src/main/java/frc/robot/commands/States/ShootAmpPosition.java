@@ -18,6 +18,7 @@ public class ShootAmpPosition extends SequentialCommandGroup {
   public ShootAmpPosition(RobotSubsystems robot, SwerveSubsystem swerve) {
     addCommands(
         new InstantCommand(() -> RobotSubsystems.shootFinished = false),
+        new InstantCommand(() -> robot.intake.stopIntaking()),
         new InstantCommand(() -> robot.preparingShoot = true),
         new InstantCommand(() -> robot.led.setSolidColor(LedColor.YELLOW)),
         new GoToShootIntake(robot),

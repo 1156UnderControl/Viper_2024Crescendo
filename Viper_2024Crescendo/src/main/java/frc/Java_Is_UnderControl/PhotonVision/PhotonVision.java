@@ -4,20 +4,22 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.util.datalog.BooleanLogEntry;
-import edu.wpi.first.util.datalog.DoubleLogEntry;
-import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.math.filter.MedianFilter;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomBooleanLogger;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomDoubleLogger;
 
 public class PhotonVision {
 
   private PhotonCamera camera;
 
-  private BooleanLogEntry hasTargetLogEntry;
+  private MedianFilter filterTX = new MedianFilter(4);
+  private MedianFilter filterTY = new MedianFilter(4);
 
-  private DoubleLogEntry targetPositionXLogEntry;
+  private CustomBooleanLogger hasTargetLogEntry;
 
-  private DoubleLogEntry targetPositionYLogEntry;
+  private CustomDoubleLogger targetPositionXLogEntry;
+
+  private CustomDoubleLogger targetPositionYLogEntry;
 
   public PhotonVision() {
     this("Microsoft_LifeCam_HD-3000 (1)");
@@ -25,10 +27,10 @@ public class PhotonVision {
 
   public PhotonVision(String cameraName) {
     this.camera = new PhotonCamera(cameraName);
-    this.hasTargetLogEntry = new BooleanLogEntry(DataLogManager.getLog(), "/Cameras/" + cameraName + "/hasTarget");
-    this.targetPositionXLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
+    this.hasTargetLogEntry = new CustomBooleanLogger("/Cameras/" + cameraName + "/hasTarget");
+    this.targetPositionXLogEntry = new CustomDoubleLogger(
         "/Cameras/" + cameraName + "/targetPositionX");
-    this.targetPositionYLogEntry = new DoubleLogEntry(DataLogManager.getLog(),
+    this.targetPositionYLogEntry = new CustomDoubleLogger(
         "/Cameras/" + cameraName + "/targetPositionY");
   }
 
@@ -39,18 +41,23 @@ public class PhotonVision {
   public double targetPositionX() {
     PhotonTrackedTarget bestTarget = this.getResult().getBestTarget();
     if (bestTarget != null) {
-      double targetPositionX = Units.degreesToRadians(bestTarget.getYaw());
+      double targetPositionX = bestTarget.getYaw();
       this.targetPositionXLogEntry.append(targetPositionX);
-      return targetPositionX;
+      return filterTX.calculate(targetPositionX);
     } else {
       return 0;
     }
   }
 
   public double targetPositionY() {
-    double targetPositionY = this.getResult().getBestTarget().getPitch();
-    this.targetPositionYLogEntry.append(targetPositionY);
-    return targetPositionY;
+    PhotonTrackedTarget bestTarget = this.getResult().getBestTarget();
+    if (bestTarget != null) {
+      double targetPositionY = bestTarget.getPitch();
+      this.targetPositionYLogEntry.append(targetPositionY);
+      return filterTY.calculate(targetPositionY);
+    } else {
+      return 0;
+    }
   }
 
   public boolean hasTarget() {

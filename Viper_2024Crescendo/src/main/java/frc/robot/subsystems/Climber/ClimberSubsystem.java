@@ -1,7 +1,7 @@
 package frc.robot.subsystems.Climber;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomDoubleLogger;
 import frc.Java_Is_UnderControl.Util.Util;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.subsystems.Motors.Motor;
@@ -14,6 +14,8 @@ public class ClimberSubsystem extends SubsystemBase implements IClimber {
 
   private Motor climberMotor = new SparkMAXMotor(ClimberConstants.ID_climber);
 
+  private CustomDoubleLogger getPositionLogger;
+
   public static ClimberSubsystem getInstance() {
     if (climberInstance == null) {
       return climberInstance = new ClimberSubsystem();
@@ -23,6 +25,7 @@ public class ClimberSubsystem extends SubsystemBase implements IClimber {
   }
 
   private ClimberSubsystem() {
+    getPositionLogger = new CustomDoubleLogger("ClimberSubsystem/Position");
     climberMotor.setPosition(0);
     climberMotor.setMotorBrake(true);
     goal = 0;
@@ -30,7 +33,7 @@ public class ClimberSubsystem extends SubsystemBase implements IClimber {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Position Climber", climberMotor.getPosition());
+    getPositionLogger.append(climberMotor.getPosition());
   }
 
   @Override

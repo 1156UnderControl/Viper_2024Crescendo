@@ -14,6 +14,7 @@ import com.revrobotics.SparkPIDController;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomBooleanLogger;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomDoubleLogger;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomIntegerLogger;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomStringLogger;
 
 public class VortexMotor implements Motor {
@@ -35,7 +36,7 @@ public class VortexMotor implements Motor {
 
   private CustomDoubleLogger temperatureLog;
 
-  private CustomDoubleLogger faultsLog;
+  private CustomIntegerLogger faultsLog;
 
   private double targetPercentage = Double.NaN;
 
@@ -90,15 +91,13 @@ public class VortexMotor implements Motor {
     this.positionLog = new CustomDoubleLogger("/motors/" + motorId + "/position");
     this.velocityLog = new CustomDoubleLogger("/motors/" + motorId + "/velocity");
     this.temperatureLog = new CustomDoubleLogger("/motors/" + motorId + "/temperature");
-    this.faultsLog = new CustomDoubleLogger("/motors/" + motorId + "/faults");
+    this.faultsLog = new CustomIntegerLogger("/motors/" + motorId + "/faults");
     this.targetOutputLog = new CustomDoubleLogger("/motors/" + motorId + "/targetOutput");
     this.targetPositionLog = new CustomDoubleLogger("/motors/" + motorId + "/targetPosition");
     this.targetSpeedLog = new CustomDoubleLogger("/motors/" + motorId + "/targetSpeed");
-    CustomStringLogger firmwareVersionLog = new CustomStringLogger(
-        "/motors/" + motorId + "/firmwareVersion");
+    CustomStringLogger firmwareVersionLog = new CustomStringLogger("/motors/" + motorId + "/firmwareVersion");
     firmwareVersionLog.append(this.motor.getFirmwareString());
-    CustomBooleanLogger isAlternateEncoderLog = new CustomBooleanLogger(
-        "/motors/" + motorId + "/isAlternateEncoder");
+    CustomBooleanLogger isAlternateEncoderLog = new CustomBooleanLogger("/motors/" + motorId + "/isAlternateEncoder");
     isAlternateEncoderLog.append(isAlternateEncoder);
     CustomBooleanLogger isFollowerLog = new CustomBooleanLogger("/motors/" + motorId + "/isFollower");
     isFollowerLog.append(this.motor.isFollower());

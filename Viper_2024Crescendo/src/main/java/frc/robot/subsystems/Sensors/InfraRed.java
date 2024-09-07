@@ -1,8 +1,7 @@
 package frc.robot.subsystems.Sensors;
 
-import edu.wpi.first.util.datalog.BooleanLogEntry;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DigitalInput;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomBooleanLogger;
 
 public class InfraRed implements frc.robot.subsystems.Sensors.DigitalInput {
 
@@ -10,12 +9,12 @@ public class InfraRed implements frc.robot.subsystems.Sensors.DigitalInput {
 
   private boolean inverted;
 
-  private BooleanLogEntry measurementLog;
+  private CustomBooleanLogger measurementLog;
 
   public InfraRed(int port, boolean invert) {
     IR = new DigitalInput(port);
     inverted = invert;
-    this.measurementLog = new BooleanLogEntry(DataLogManager.getLog(), "/sensors/InfraRed/" + port + "/measurement");
+    this.measurementLog = new CustomBooleanLogger("/sensors/InfraRed/" + port + "/measurement");
   }
 
   @Override

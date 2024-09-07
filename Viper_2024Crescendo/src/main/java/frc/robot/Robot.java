@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
 import frc.robot.Constants.SwerveConstants;
-import frc.robot.commands.Autonomous.AutonomousCollect;
 import frc.robot.commands.States.SecuredPosition;
 import frc.robot.subsystems.LEDs.LedColor;
 import swervelib.parser.SwerveParser;
@@ -35,7 +34,7 @@ public class Robot extends TimedRobot {
 
   private static Robot instance;
   private Command autonomousCommand;
-  
+
   private RobotContainer robotContainer;
 
   private Timer disabledTimer;
@@ -50,6 +49,9 @@ public class Robot extends TimedRobot {
 
   public Robot() {
     instance = this;
+    addPeriodic(() -> {
+      robotContainer.robot.shooter.runNoteDetection();
+    }, 0.05, 0.005);
   }
 
   public static Robot getInstance() {
@@ -136,7 +138,8 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     SwerveConstants.ACELL_CORREC = false;
-    this.robotContainer.robot.setDefaultCommand(new AutonomousCollect(robotContainer.robot));
+    // this.robotContainer.robot.setDefaultCommand(new
+    // AutonomousCollect(robotContainer.robot));
     Robot.isInAutonomous = true;
     this.robotContainer.setHeadingCorrection(false);
     this.robotContainer.setRobotToBrake();

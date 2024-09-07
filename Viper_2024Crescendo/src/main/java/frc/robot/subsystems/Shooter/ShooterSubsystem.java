@@ -216,39 +216,42 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   @Override
   public void intake() {
+    this.state = "INTAKING";
     this.setVelocityFlywheel(0);
     this.goToIntakePosition();
     this.runNoteDetection();
     this.feederMotor.set(this.hasNote ? 0 : ShooterConstants.setpoints.VELOCITY_FEED_COLLECT);
-    this.state = "INTAKING";
   }
 
   @Override
   public void intakeFromHP() {
+    this.state = "INTAKING_HP";
     this.goToIntakePositionHP();
     this.runNoteDetection();
     this.setVelocityFlywheel(this.hasNote ? 0 : ShooterConstants.setpoints.VELOCITY_SHOOTER_COLLECT_HP);
-    this.state = "INTAKING_HP";
   }
 
   public void intakeAuto() {
+    this.state = "INTAKING";
     this.goToIntakePosition();
     this.runNoteDetection();
     this.feederMotor.set(this.hasNote ? 0 : ShooterConstants.setpoints.VELOCITY_FEED_COLLECT_AUTO);
-    this.state = "INTAKING";
   }
 
-  private void runNoteDetection() {
-    this.numberOfHasNoteChecks++;
-    SmartDashboard.putBoolean("IR Out", this.noteSensorOut.getBoolean());
-    SmartDashboard.putBoolean("IR In", this.noteSensorIn.getBoolean());
-    SmartDashboard.putNumber("Number of Note Checks", this.numberOfHasNoteChecks);
-    if (noteSensorIn.getBoolean()) {
-      this.wasNoteIn = true;
-    }
-    if (this.wasNoteIn && noteSensorOut.getBoolean()) {
-      this.hasNote = true;
-      this.feederMotor.set(0);
+  @Override
+  public void runNoteDetection() {
+    if (state == "INTAKING" || state == "INTAKING_HP") {
+      this.numberOfHasNoteChecks++;
+      SmartDashboard.putBoolean("IR Out", this.noteSensorOut.getBoolean());
+      SmartDashboard.putBoolean("IR In", this.noteSensorIn.getBoolean());
+      SmartDashboard.putNumber("Number of Note Checks", this.numberOfHasNoteChecks);
+      if (noteSensorIn.getBoolean()) {
+        this.wasNoteIn = true;
+      }
+      if (this.wasNoteIn && noteSensorOut.getBoolean()) {
+        this.hasNote = true;
+        this.feederMotor.set(0);
+      }
     }
   }
 

@@ -14,7 +14,7 @@ public class GoToIntakeIntake extends Command {
 
   @Override
   public void initialize() {
-    this.robot.intake.intake();
+    this.robot.intake.goToIntakePosition();
     this.robot.led.setSolidColor(LedColor.YELLOW);
   }
 

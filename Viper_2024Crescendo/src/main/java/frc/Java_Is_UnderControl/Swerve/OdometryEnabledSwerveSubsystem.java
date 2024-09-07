@@ -83,6 +83,13 @@ public abstract class OdometryEnabledSwerveSubsystem extends BaseSwerveSubsystem
     return this.getPose().getTranslation().getDistance(targetPosition);
   }
 
+  protected void driveTowardsPose(Pose2d poseReference) {
+    Translation2d actualVec = new Translation2d(getRobotVelocity().vxMetersPerSecond,
+        getRobotVelocity().vyMetersPerSecond);
+    Translation2d velCorrection = poseReference.getTranslation().times(2).minus(actualVec);
+    super.driveRobotOriented(velCorrection, 0);
+  }
+
   protected void driveAimingAtPosition(ChassisSpeeds targetSpeeds, Translation2d targetPosition) {
     this.driveAimingAtPosition(targetSpeeds, targetPosition, Rotation2d.fromDegrees(0));
   }
