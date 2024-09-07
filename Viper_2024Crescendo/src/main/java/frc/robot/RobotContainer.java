@@ -25,6 +25,7 @@ import frc.robot.commands.Autonomous.AutonomousAimSteal1;
 import frc.robot.commands.Autonomous.AutonomousAimSteal2;
 import frc.robot.commands.Autonomous.AutonomousAimStealAuto2;
 import frc.robot.commands.Autonomous.AutonomousAimSubwoofer;
+import frc.robot.commands.Autonomous.AutonomousAimSwerveSpeaker;
 import frc.robot.commands.Autonomous.AutonomousCollect;
 import frc.robot.commands.Autonomous.AutonomousCollectAligning;
 import frc.robot.commands.Autonomous.AutonomousDeployOnlyIntake;
@@ -73,6 +74,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Shoot", new AutonomousShoot(robot).andThen(Commands.waitSeconds(0.1)));
     NamedCommands.registerCommand("Shoot Interpolation",
         new AutonomousShootInterpolation(robot).andThen(Commands.waitSeconds(0.1)));
+    NamedCommands.registerCommand("Aim Swerve Speaker", new AutonomousAimSwerveSpeaker(robot));
     NamedCommands.registerCommand("Aim Shoot Subwoofer", new AutonomousAimSubwoofer(robot));
     NamedCommands.registerCommand("Aim Shoot Subwoofer Side", new AutonomousAimSubwoofer(robot));
     NamedCommands.registerCommand("Aim Shoot 1", new AutonomousAim(robot, 0));
