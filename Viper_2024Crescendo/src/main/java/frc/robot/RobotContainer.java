@@ -10,7 +10,6 @@ import java.io.File;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -32,7 +31,6 @@ import frc.robot.commands.Autonomous.AutonomousGoToNote;
 import frc.robot.commands.Autonomous.AutonomousPassThrough;
 import frc.robot.commands.Autonomous.AutonomousSecured;
 import frc.robot.commands.Autonomous.AutonomousShoot;
-import frc.robot.commands.Autonomous.Auto.AutoTestComand;
 import frc.robot.commands.States.ClimbPosition;
 import frc.robot.commands.States.CollectHPposition;
 import frc.robot.commands.States.CollectPosition;
@@ -125,10 +123,9 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    // return autoChooser.getSelected();
-    PathPlannerPath path1 = PathPlannerPath.fromPathFile("New Path");
-    return new AutoTestComand(robot, autoChooser);
-    // return AutoBuilder.followPath(path1);
+    return autoChooser.getSelected();
+    // PathPlannerPath path1 = PathPlannerPath.fromPathFile("New Path");
+    // return new AutoTestComand(robot, autoChooser);
   }
 
   public void setRobotToBrake() {
