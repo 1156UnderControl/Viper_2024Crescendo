@@ -81,6 +81,11 @@ public class PhotonVisionPoseEstimator implements PoseEstimator {
     if (only2TagsMeasurements && poseEstimation.numberOfTargetsUsed < 2) {
       return Optional.empty();
     }
+    if (poseEstimation.numberOfTargetsUsed == 1) {
+      if (photonPoseEstimation.get().targetsUsed.get(0).getPoseAmbiguity() > 0.7) {
+        return Optional.empty();
+      }
+    }
     distToTag.append(poseEstimation.distanceToTag);
     numberOfDetectedTagsLogger.append(poseEstimation.numberOfTargetsUsed);
     detectedPoseLogger.appendRadians(poseEstimation.estimatedPose.toPose2d());
