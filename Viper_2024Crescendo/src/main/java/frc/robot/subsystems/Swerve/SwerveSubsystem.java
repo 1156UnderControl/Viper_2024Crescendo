@@ -63,9 +63,9 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
 
   private boolean overrideRotationAuto = false;
 
-  private final int MAX_LOST_SPEAKER_FRAMES = 2;
+  private final int MAX_LOST_SPEAKER_FRAMES = 3;
 
-  private final int MAX_LOST_NOTE_FRAMES = 2;
+  private final int MAX_LOST_NOTE_FRAMES = 3;
 
   private int lostNotesFrameCounter = this.MAX_LOST_NOTE_FRAMES;
 
@@ -343,6 +343,8 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
     ObjectPoseEstimationRobotOriented estimationNote;
     boolean isDetectingNote = LimelightHelpers.getTV("limelight-note");
     if (isDetectingNote) {
+      this.lostNotesFrameCounter = 0;
+      this.lastTxMeasurement = LimelightHelpers.getTX("limelight-note");
       estimationNote = new ObjectPoseEstimationRobotOriented(
           new ObjectDetection(LimelightHelpers.getTX("limelight-note"), LimelightHelpers.getTY("limelight-note"),
               "Note"),
@@ -488,8 +490,8 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
     boolean isAlignedInX = Util.inRange(aprilTagX, targetX - deadbandX, targetX + deadbandX);
     boolean isAlignedInY = aprilTagY > 1;
     double headingDegrees = getHeading().getDegrees();
-    boolean alignedWithAngle = Util.inRange(Math.abs(headingDegrees), Math.abs(angleAlign.getDegrees()) - 5,
-        Math.abs(angleAlign.getDegrees()) + 5);
+    boolean alignedWithAngle = Util.inRange(Math.abs(headingDegrees), Math.abs(angleAlign.getDegrees()) - 3,
+        Math.abs(angleAlign.getDegrees()) + 3);
     return isAlignedInX && isAlignedInY && alignedWithAngle;
   }
 
