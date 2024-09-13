@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.2788871226815193,
-      "y": 5.562647359246215
+      "x": 2.9066934025451485,
+      "y": 4.766310474133074
     },
     "rotation": 0
   },
@@ -12,21 +12,9 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "Aim Shoot Subwoofer"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
           "type": "path",
           "data": {
-            "pathName": "startdynamictest"
+            "pathName": "New Path"
           }
         }
       ]

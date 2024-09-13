@@ -1,0 +1,79 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.4948760201796716,
+      "y": 1.419253426500274
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "auto steal ovk path 1 LEFT"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Aim Swerve Speaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "steal ovk path 2 LEFT RED"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Go To Note"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "steal ovk path 3 LEFT"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Aim Swerve Speaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Aim Last Note Overkill"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Go To Note"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

@@ -13,6 +13,12 @@ public interface ISwerve {
 
   void driveAlignSpeakerSlow();
 
+  void alignSpeaker();
+
+  void aimSwerve(double angleToAim);
+
+  boolean isAtTargetHeading();
+
   void driveAlignShootOverStage();
 
   void driveAlignNote();

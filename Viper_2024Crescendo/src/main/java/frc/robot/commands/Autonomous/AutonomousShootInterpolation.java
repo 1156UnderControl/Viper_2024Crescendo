@@ -27,7 +27,7 @@ public class AutonomousShootInterpolation extends Command {
     if (!isShooting) {
       this.robot.shooter.prepareSpeakerShot();
     }
-    if (robot.shooter.isPivotAtSetpoint() && robot.shooter.isFlywheelAtSetpoint()) {
+    if (robot.shooter.isPivotAtSetpointForAutoShoot() && robot.shooter.isFlywheelAtSetpoint()) {
       isShooting = true;
       this.robot.shooter.shoot();
     }

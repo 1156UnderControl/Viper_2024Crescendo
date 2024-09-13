@@ -1,0 +1,70 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.5276958246224197,
+        "y": 3.5224985834587055
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.968269475004459,
+        "y": 2.447001817081892
+      },
+      "isLocked": false,
+      "linkedName": "end pathzanchi 2"
+    },
+    {
+      "anchor": {
+        "x": 7.9446474277563945,
+        "y": 0.779488482053888
+      },
+      "prevControl": {
+        "x": 6.277134092729723,
+        "y": 1.1050975948105748
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "end pathzanchi 3"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 100.0,
+    "maxAngularAcceleration": 300.0
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": -9.462322208025602,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "ZANZHI AUTO",
+  "previewStartingState": {
+    "rotation": -37.48000000000002,
+    "velocity": 0.0
+  },
+  "useDefaultConstraints": false
+}

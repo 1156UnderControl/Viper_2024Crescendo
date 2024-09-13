@@ -1,0 +1,76 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 6.150595125726627,
+        "y": 0.9017344140251753
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.347126297676274,
+        "y": 1.9205771935081675
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.379705757984981,
+        "y": 3.688913511921175
+      },
+      "prevControl": {
+        "x": 4.675029720958157,
+        "y": 1.7332038087756627
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "shoot point ovk"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.0,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Aim Shoot Interpolation"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 100.0,
+    "maxAngularAcceleration": 300.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -42.139999999999986,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "auto steal overkill",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

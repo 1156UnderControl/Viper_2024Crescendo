@@ -63,9 +63,9 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
 
   private boolean overrideRotationAuto = false;
 
-  private final int MAX_LOST_SPEAKER_FRAMES = 2;
+  private final int MAX_LOST_SPEAKER_FRAMES = 3;
 
-  private final int MAX_LOST_NOTE_FRAMES = 2;
+  private final int MAX_LOST_NOTE_FRAMES = 3;
 
   private int lostNotesFrameCounter = this.MAX_LOST_NOTE_FRAMES;
 
@@ -127,10 +127,8 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
 
   private PhotonVision shooterTopCamera = new PhotonVision("Microsoft_LifeCam_HD-3000");
 
-  private PhotonVision intakeNoteDetecionCamera = new PhotonVision("Microsoft_LifeCam_HD-3000 (1)");
-
   private DriveAssist intakeDriveAssist = new DriveAssist(
-      IntakeConstants.intakeRollerPositionRelativeToRobotCenter.getTranslation(), 0.7, 2, 45);
+      IntakeConstants.intakeRollerPositionRelativeToRobotCenter.getTranslation(), 1, 2, 70);
 
   private DriveAssist driveToNoteAssist = new DriveAssist(
       IntakeConstants.intakeRollerPositionRelativeToRobotCenter.getTranslation(), 1, 10, 360);
@@ -278,6 +276,22 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   }
 
   @Override
+  public void alignSpeaker() {
+    Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Red;
+    Rotation2d spinCompensationAngle = Rotation2d.fromDegrees(-7);
+    if (alliance == Alliance.Red) {
+      this.driveAimingAtPositionMoving(CommandsConstants.dtShootWhileMoving, new ChassisSpeeds(),
+          FieldConstants.redGoalPos,
+          new Rotation2d(Math.PI).plus(spinCompensationAngle));
+    } else {
+      this.driveAimingAtPositionMoving(CommandsConstants.dtShootWhileMoving, new ChassisSpeeds(),
+          FieldConstants.blueGoalPos,
+          spinCompensationAngle);
+    }
+    this.state = "DRIVE_ALIGN_SPEAKER";
+  }
+
+  @Override
   public void driveAlignSpeakerSlow() {
     if (this.controller.isForcingDriverControl()) {
       this.driveAlignAngleButton();
@@ -329,6 +343,8 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
     ObjectPoseEstimationRobotOriented estimationNote;
     boolean isDetectingNote = LimelightHelpers.getTV("limelight-note");
     if (isDetectingNote) {
+      this.lostNotesFrameCounter = 0;
+      this.lastTxMeasurement = LimelightHelpers.getTX("limelight-note");
       estimationNote = new ObjectPoseEstimationRobotOriented(
           new ObjectDetection(LimelightHelpers.getTX("limelight-note"), LimelightHelpers.getTY("limelight-note"),
               "Note"),
@@ -350,6 +366,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
 
   @Override
   public void driveToNote() {
+    double kP = 2;
     ObjectPoseEstimationRobotOriented estimationNote;
     boolean isDetectingNote = LimelightHelpers.getTV("limelight-note");
     if (isDetectingNote) {
@@ -360,10 +377,20 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
       this.driveFieldOrientedLockedAngle(
           driveToNoteAssist.getCorrectedDesiredSpeedToTranslation(getPose(),
               estimationNote.getObjectPoseInField(getPose(), estimationNote.getObjectPoseFromRobotCenter()),
-              new ChassisSpeeds(5, 0, 0)),
+              new ChassisSpeeds(estimationNote.getDistanceFromObject() * kP, 0, 0)),
           getHeading());
     }
     this.state = "DRIVE_TO_NOTE";
+  }
+
+  @Override
+  public void aimSwerve(double angleToAim) {
+    this.driveFieldOrientedLockedAngle(new ChassisSpeeds(), Rotation2d.fromDegrees(angleToAim));
+  }
+
+  @Override
+  public boolean isAtTargetHeading() {
+    return this.isAtTargetHeading(5);
   }
 
   @Override
@@ -463,8 +490,8 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
     boolean isAlignedInX = Util.inRange(aprilTagX, targetX - deadbandX, targetX + deadbandX);
     boolean isAlignedInY = aprilTagY > 1;
     double headingDegrees = getHeading().getDegrees();
-    boolean alignedWithAngle = Util.inRange(Math.abs(headingDegrees), Math.abs(angleAlign.getDegrees()) - 5,
-        Math.abs(angleAlign.getDegrees()) + 5);
+    boolean alignedWithAngle = Util.inRange(Math.abs(headingDegrees), Math.abs(angleAlign.getDegrees()) - 3,
+        Math.abs(angleAlign.getDegrees()) + 3);
     return isAlignedInX && isAlignedInY && alignedWithAngle;
   }
 
@@ -488,10 +515,18 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   }
 
   public Optional<Rotation2d> getRotationTargetOverride() {
-    if (overrideRotationAuto && intakeNoteDetecionCamera.hasTarget()) {
-      double angleToAimNote = pidTrackNoteAuto.calculate(intakeNoteDetecionCamera.targetPositionX(), 0);
-      return Optional.of(swerveDrive.getOdometryHeading()
-          .plus(new Rotation2d(Units.degreesToRadians(angleToAimNote))));
+    if (overrideRotationAuto) {
+      Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Red;
+      Rotation2d spinCompensationAngle = Rotation2d.fromDegrees(-7);
+      if (alliance == Alliance.Red) {
+        return Optional
+            .of(this.getHeadingAimingAtPositionMoving(CommandsConstants.dtShootWhileMoving, FieldConstants.redGoalPos,
+                new Rotation2d(Math.PI).plus(spinCompensationAngle)).plus(Rotation2d.fromDegrees(180)));
+      } else {
+        return Optional
+            .of(this.getHeadingAimingAtPositionMoving(CommandsConstants.dtShootWhileMoving, FieldConstants.blueGoalPos,
+                spinCompensationAngle).plus(Rotation2d.fromDegrees(180)));
+      }
     } else {
       return Optional.empty();
     }

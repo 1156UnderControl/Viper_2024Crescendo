@@ -20,6 +20,7 @@ public class AutonomousAimSteal extends Command {
     this.robot.intake.goToIntakePosition();
     this.robot.intake.stopIntaking();
     this.robot.shooter.setManualPivotPosition(shotPosition, ShooterConstants.setpoints.VELOCITY_SHOOT_SPEAKER);
+
   }
 
   @Override
