@@ -1,6 +1,8 @@
 package frc.robot.commands.Autonomous;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
+import frc.robot.Robot;
 import frc.robot.RobotSubsystems;
 
 public class AutonomousGoToNote extends Command {
@@ -14,6 +16,8 @@ public class AutonomousGoToNote extends Command {
 
   @Override
   public void initialize() {
+    Robot.autonomousState = "Go to note";
+    timer.start();
     this.robot.intake.goToIntakePosition();
     this.robot.intake.intake();
     if (this.robot.intake.isSecureForShooter()) {
@@ -34,10 +38,12 @@ public class AutonomousGoToNote extends Command {
 
   @Override
   public void end(boolean interrupted) {
+    timer.stop();
   }
 
   @Override
   public boolean isFinished() {
-    return robot.shooter.hasNote();
+    return (robot.shooter.hasNote() || !LimelightHelpers.getTV("limelight-note") || timer.get() > 2)
+        && timer.get() > 0.5;
   }
 }

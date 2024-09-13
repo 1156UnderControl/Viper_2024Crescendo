@@ -128,7 +128,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   private PhotonVision shooterTopCamera = new PhotonVision("Microsoft_LifeCam_HD-3000");
 
   private DriveAssist intakeDriveAssist = new DriveAssist(
-      IntakeConstants.intakeRollerPositionRelativeToRobotCenter.getTranslation(), 0.7, 2, 70);
+      IntakeConstants.intakeRollerPositionRelativeToRobotCenter.getTranslation(), 1, 2, 70);
 
   private DriveAssist driveToNoteAssist = new DriveAssist(
       IntakeConstants.intakeRollerPositionRelativeToRobotCenter.getTranslation(), 1, 10, 360);
@@ -364,6 +364,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
 
   @Override
   public void driveToNote() {
+    double kP = 2;
     ObjectPoseEstimationRobotOriented estimationNote;
     boolean isDetectingNote = LimelightHelpers.getTV("limelight-note");
     if (isDetectingNote) {
@@ -374,10 +375,20 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
       this.driveFieldOrientedLockedAngle(
           driveToNoteAssist.getCorrectedDesiredSpeedToTranslation(getPose(),
               estimationNote.getObjectPoseInField(getPose(), estimationNote.getObjectPoseFromRobotCenter()),
-              new ChassisSpeeds(5, 0, 0)),
+              new ChassisSpeeds(estimationNote.getDistanceFromObject() * kP, 0, 0)),
           getHeading());
     }
     this.state = "DRIVE_TO_NOTE";
+  }
+
+  @Override
+  public void aimSwerve(double angleToAim) {
+    this.driveFieldOrientedLockedAngle(new ChassisSpeeds(), Rotation2d.fromDegrees(angleToAim));
+  }
+
+  @Override
+  public boolean isAtTargetHeading() {
+    return this.isAtTargetHeading(5);
   }
 
   @Override
@@ -503,7 +514,17 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
 
   public Optional<Rotation2d> getRotationTargetOverride() {
     if (overrideRotationAuto) {
-      return Optional.of(new Rotation2d());
+      Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Red;
+      Rotation2d spinCompensationAngle = Rotation2d.fromDegrees(-7);
+      if (alliance == Alliance.Red) {
+        return Optional
+            .of(this.getHeadingAimingAtPositionMoving(CommandsConstants.dtShootWhileMoving, FieldConstants.redGoalPos,
+                new Rotation2d(Math.PI).plus(spinCompensationAngle)).plus(Rotation2d.fromDegrees(180)));
+      } else {
+        return Optional
+            .of(this.getHeadingAimingAtPositionMoving(CommandsConstants.dtShootWhileMoving, FieldConstants.blueGoalPos,
+                spinCompensationAngle).plus(Rotation2d.fromDegrees(180)));
+      }
     } else {
       return Optional.empty();
     }

@@ -1,0 +1,139 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 6.1271734526350645,
+        "y": 0.9485777602083012
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.3211515752560734,
+        "y": 2.072818068603326
+      },
+      "isLocked": false,
+      "linkedName": "end path 2 ovk moving"
+    },
+    {
+      "anchor": {
+        "x": 2.4499707772596704,
+        "y": 3.3844317617308555
+      },
+      "prevControl": {
+        "x": 3.234596825827032,
+        "y": 3.583515983009141
+      },
+      "nextControl": {
+        "x": 2.125320108988446,
+        "y": 3.3020577115724854
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.9112722961537205,
+        "y": 2.389010655339427
+      },
+      "prevControl": {
+        "x": 2.2508865559813844,
+        "y": 3.0916608480863172
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": -57.8042660652868,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "New Constraints Zone",
+      "minWaypointRelativePos": 0.65,
+      "maxWaypointRelativePos": 1.3,
+      "constraints": {
+        "maxVelocity": 1.0,
+        "maxAcceleration": 3.5,
+        "maxAngularVelocity": 100.0,
+        "maxAngularAcceleration": 200.0
+      }
+    }
+  ],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.0,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Aim At Speaker ON"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Aim Shoot Interpolation"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.8,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Shoot Interpolation"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Aim At Speaker OFF"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 100.0,
+    "maxAngularAcceleration": 100.0
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": -46.397181027296355,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "auto steal overkill",
+  "previewStartingState": {
+    "rotation": 0.027469448026011357,
+    "velocity": 0.0
+  },
+  "useDefaultConstraints": false
+}

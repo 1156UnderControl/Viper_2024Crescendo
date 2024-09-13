@@ -27,7 +27,7 @@ public class OperatorController implements IOperatorController {
 
   @Override
   public Trigger getIntakeFromHP() {
-    return controller.R2();
+    return controller.L2();
   }
 
   @Override
@@ -47,7 +47,7 @@ public class OperatorController implements IOperatorController {
 
   @Override
   public Trigger getShoot() {
-    return controller.L2();
+    return controller.R2();
   }
 
   @Override

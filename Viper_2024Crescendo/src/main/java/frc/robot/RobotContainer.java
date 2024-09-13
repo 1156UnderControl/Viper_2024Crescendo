@@ -19,6 +19,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Joysticks.ControlBoard;
 import frc.robot.commands.Autonomous.AutonomousAim;
+import frc.robot.commands.Autonomous.AutonomousAimAtLastNote;
+import frc.robot.commands.Autonomous.AutonomousAimAtSpeakerMovingOFF;
+import frc.robot.commands.Autonomous.AutonomousAimAtSpeakerMovingON;
 import frc.robot.commands.Autonomous.AutonomousAimInterpolation;
 import frc.robot.commands.Autonomous.AutonomousAimSteal;
 import frc.robot.commands.Autonomous.AutonomousAimSteal1;
@@ -27,7 +30,6 @@ import frc.robot.commands.Autonomous.AutonomousAimStealAuto2;
 import frc.robot.commands.Autonomous.AutonomousAimSubwoofer;
 import frc.robot.commands.Autonomous.AutonomousAimSwerveSpeaker;
 import frc.robot.commands.Autonomous.AutonomousCollect;
-import frc.robot.commands.Autonomous.AutonomousCollectAligning;
 import frc.robot.commands.Autonomous.AutonomousDeployOnlyIntake;
 import frc.robot.commands.Autonomous.AutonomousGoToNote;
 import frc.robot.commands.Autonomous.AutonomousPassThrough;
@@ -69,7 +71,8 @@ public class RobotContainer {
         "swerve/swerve"));
     this.robot = new RobotSubsystems();
     NamedCommands.registerCommand("Intake", new AutonomousCollect(robot));
-    NamedCommands.registerCommand("Intake Aligning", new AutonomousCollectAligning(robot));
+    NamedCommands.registerCommand("Aim At Speaker ON", new AutonomousAimAtSpeakerMovingON(robot));
+    NamedCommands.registerCommand("Aim At Speaker OFF", new AutonomousAimAtSpeakerMovingOFF(robot));
     NamedCommands.registerCommand("Pass Through", new AutonomousPassThrough(robot));
     NamedCommands.registerCommand("Shoot", new AutonomousShoot(robot).andThen(Commands.waitSeconds(0.1)));
     NamedCommands.registerCommand("Shoot Interpolation",
@@ -89,6 +92,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Deploy Intake", new AutonomousDeployOnlyIntake(robot));
     NamedCommands.registerCommand("Secured", new AutonomousSecured(robot));
     NamedCommands.registerCommand("Go To Note", new AutonomousGoToNote(robot));
+    NamedCommands.registerCommand("Aim Last Note Overkill", new AutonomousAimAtLastNote(robot));
 
     autoChooser = AutoBuilder.buildAutoChooser("None");
     SmartDashboard.putData("Aut Chooser", autoChooser);
