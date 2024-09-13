@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.260571548247232,
-        "y": 1.08910779875768
+        "x": 6.150595125726627,
+        "y": 0.9017344140251753
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.667897778020947,
-        "y": 2.342167309156301
+        "x": 4.347126297676274,
+        "y": 1.9205771935081675
       },
       "isLocked": false,
-      "linkedName": "end path2 ovk left"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.2274648828898216,
-        "y": 3.7708893677416455
+        "x": 2.379705757984981,
+        "y": 3.688913511921175
       },
       "prevControl": {
-        "x": 2.9301150756299443,
-        "y": 2.9862633191712002
+        "x": 4.675029720958157,
+        "y": 1.7332038087756627
       },
       "nextControl": null,
       "isLocked": false,
@@ -69,8 +69,8 @@
   "reversed": false,
   "folder": "auto steal overkill",
   "previewStartingState": {
-    "rotation": -1.5074357587751332,
+    "rotation": 0,
     "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }
