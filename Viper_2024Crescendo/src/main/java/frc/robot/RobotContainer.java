@@ -36,6 +36,7 @@ import frc.robot.commands.Autonomous.AutonomousPassThrough;
 import frc.robot.commands.Autonomous.AutonomousSecured;
 import frc.robot.commands.Autonomous.AutonomousShoot;
 import frc.robot.commands.Autonomous.AutonomousShootInterpolation;
+import frc.robot.commands.Autonomous.Auto.AutoStealOverkillDynamic;
 import frc.robot.commands.States.ClimbPosition;
 import frc.robot.commands.States.CollectHPposition;
 import frc.robot.commands.States.CollectPosition;
@@ -134,9 +135,9 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return autoChooser.getSelected();
+    // return autoChooser.getSelected();
     // PathPlannerPath path1 = PathPlannerPath.fromPathFile("New Path");
-    // return new AutoTestComand(robot, autoChooser);
+    return new AutoStealOverkillDynamic(robot, autoChooser);
   }
 
   public void setRobotToBrake() {

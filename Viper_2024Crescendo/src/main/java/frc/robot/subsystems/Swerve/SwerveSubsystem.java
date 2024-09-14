@@ -69,7 +69,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
 
   private int lostNotesFrameCounter = this.MAX_LOST_NOTE_FRAMES;
 
-  private double lastTxMeasurement;
+  private Rotation2d lastHeadingJoystickTarget = Rotation2d.fromDegrees(0);
 
   private static SwerveSubsystem swerveInstance = null;
 
@@ -231,7 +231,8 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
     ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation(),
         controller.getXtranslation());
     double angleTarget = Math.atan2(controller.getCOS_Joystick(), controller.getSIN_Joystick());
-    this.driveFieldOrientedLockedAngle(desiredSpeeds, Rotation2d.fromRadians(angleTarget));
+    this.angleAlign = Rotation2d.fromRadians(angleTarget);
+    this.driveFieldOrientedLockedAngle(desiredSpeeds, this.angleAlign);
     this.state = "DRIVE_ALIGN_ANGLE_JOY";
   }
 
@@ -343,14 +344,16 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
     ObjectPoseEstimationRobotOriented estimationNote;
     boolean isDetectingNote = LimelightHelpers.getTV("limelight-note");
     if (isDetectingNote) {
-      this.lostNotesFrameCounter = 0;
-      this.lastTxMeasurement = LimelightHelpers.getTX("limelight-note");
       estimationNote = new ObjectPoseEstimationRobotOriented(
           new ObjectDetection(LimelightHelpers.getTX("limelight-note"), LimelightHelpers.getTY("limelight-note"),
               "Note"),
           intakeNoteDetectionCamera, 1, 1);
-      targetAngle = controller.notUsingJoystick() ? angleAlign
-          : Rotation2d.fromRadians(Math.atan2(controller.getCOS_Joystick(), controller.getSIN_Joystick()));
+      if (controller.notUsingJoystick()) {
+        targetAngle = lastHeadingJoystickTarget;
+      } else {
+        targetAngle = Rotation2d.fromRadians(Math.atan2(controller.getCOS_Joystick(), controller.getSIN_Joystick()));
+        lastHeadingJoystickTarget = targetAngle;
+      }
       ChassisSpeeds desiredChassisSpeeds = inputsToChassisSpeeds(controller.getYtranslation(),
           controller.getXtranslation());
       this.driveFieldOrientedLockedAngle(
@@ -359,6 +362,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
               desiredChassisSpeeds),
           targetAngle);
     } else {
+      lastHeadingJoystickTarget = angleAlign;
       driveAlignAngleButton();
     }
     this.state = "DRIVE_ALIGN_NOTE";
