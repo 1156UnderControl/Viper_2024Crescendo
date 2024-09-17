@@ -3,7 +3,7 @@
   "startingPose": {
     "position": {
       "x": 1.477620263679793,
-      "y": 2.0429246508206678
+      "y": 1.4367366755566853
     },
     "rotation": 0
   },
@@ -12,15 +12,27 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "Klaus's Path 1"
+          }
+        },
+        {
           "type": "named",
           "data": {
-            "name": "Pass Through"
+            "name": "Go To Note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Klaus's Path"
+            "pathName": "Klaus's Path 2"
           }
         }
       ]

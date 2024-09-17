@@ -355,7 +355,15 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     this.goToIntakePosition();
     this.feederMotor.set(1);
     this.state = "PASSING_THROUGH";
+  }
 
+  @Override
+  public void longPassThrough() {
+    this.lowerFlywheelMotor.setVelocityReference(3600, 0);
+    this.upperFlywheelMotor.setVelocityReference(3200, 0);
+    this.goToIntakePosition();
+    this.feederMotor.set(1);
+    this.state = "LONG_PASSING_THROUGH";
   }
 
   @Override

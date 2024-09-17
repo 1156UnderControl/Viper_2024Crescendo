@@ -32,6 +32,7 @@ import frc.robot.commands.Autonomous.AutonomousAimSwerveSpeaker;
 import frc.robot.commands.Autonomous.AutonomousCollect;
 import frc.robot.commands.Autonomous.AutonomousDeployOnlyIntake;
 import frc.robot.commands.Autonomous.AutonomousGoToNote;
+import frc.robot.commands.Autonomous.AutonomousLongPassThrough;
 import frc.robot.commands.Autonomous.AutonomousPassThrough;
 import frc.robot.commands.Autonomous.AutonomousSecured;
 import frc.robot.commands.Autonomous.AutonomousShoot;
@@ -74,6 +75,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Aim At Speaker ON", new AutonomousAimAtSpeakerMovingON(robot));
     NamedCommands.registerCommand("Aim At Speaker OFF", new AutonomousAimAtSpeakerMovingOFF(robot));
     NamedCommands.registerCommand("Pass Through", new AutonomousPassThrough(robot));
+    NamedCommands.registerCommand("Long Pass Through", new AutonomousLongPassThrough(robot));
     NamedCommands.registerCommand("Shoot", new AutonomousShoot(robot).andThen(Commands.waitSeconds(0.1)));
     NamedCommands.registerCommand("Shoot Interpolation",
         new AutonomousShootInterpolation(robot).andThen(Commands.waitSeconds(0.1)));
