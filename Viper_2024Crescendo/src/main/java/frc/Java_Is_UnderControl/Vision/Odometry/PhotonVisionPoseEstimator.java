@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomBooleanLogger;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomDoubleLogger;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomPose2dLogger;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomStringLogger;
 
 public class PhotonVisionPoseEstimator implements PoseEstimator {
 
@@ -34,6 +35,8 @@ public class PhotonVisionPoseEstimator implements PoseEstimator {
 
   CustomDoubleLogger distToTag;
 
+  CustomStringLogger stateOfPoseUpdate;
+
   public PhotonVisionPoseEstimator(PhotonCamera camera, Transform3d cameraPosition) {
     this.camera = camera;
     this.fieldAprilTagLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
@@ -49,6 +52,8 @@ public class PhotonVisionPoseEstimator implements PoseEstimator {
         "/Vision/PhotonVisionPoseEstimator/" + camera.getName() + "/DistanceToTag");
     this.isDetectingLogger = new CustomBooleanLogger(
         "/Vision/PhotonVisionPoseEstimator/" + camera.getName() + "/IsDetecting");
+    this.stateOfPoseUpdate = new CustomStringLogger(
+        "/Vision/PhotonVisionPoseEstimator/" + camera.getName() + "/StateOfPoseUpdate");
   }
 
   public PhotonVisionPoseEstimator(PhotonCamera camera, Transform3d cameraPosition, boolean only2TagsMeasurements) {
@@ -67,6 +72,8 @@ public class PhotonVisionPoseEstimator implements PoseEstimator {
         "/Vision/PhotonVisionPoseEstimator/" + camera.getName() + "/DistanceToTag");
     this.isDetectingLogger = new CustomBooleanLogger(
         "/Vision/PhotonVisionPoseEstimator/" + camera.getName() + "/IsDetecting");
+    this.stateOfPoseUpdate = new CustomStringLogger(
+        "/Vision/PhotonVisionPoseEstimator/" + camera.getName() + "/StateOfPoseUpdate");
   }
 
   public Optional<PoseEstimation> getEstimatedPose(Pose2d referencePose) {
@@ -74,21 +81,25 @@ public class PhotonVisionPoseEstimator implements PoseEstimator {
     Optional<EstimatedRobotPose> photonPoseEstimation = this.photonPoseEstimator.update();
     if (!photonPoseEstimation.isPresent()) {
       isDetectingLogger.append(false);
+      stateOfPoseUpdate.append("NO_TARGETS");
       return Optional.empty();
     }
     isDetectingLogger.append(true);
     PoseEstimation poseEstimation = convertPhotonPoseEstimation(photonPoseEstimation.get());
     if (only2TagsMeasurements && poseEstimation.numberOfTargetsUsed < 2) {
+      stateOfPoseUpdate.append("LESS_THAN_2_TARGETS");
       return Optional.empty();
     }
     if (poseEstimation.numberOfTargetsUsed == 1) {
-      if (photonPoseEstimation.get().targetsUsed.get(0).getPoseAmbiguity() > 0.7) {
+      if (photonPoseEstimation.get().targetsUsed.get(0).getPoseAmbiguity() > 0.35) {
+        stateOfPoseUpdate.append("HIGH_AMBIGUITY");
         return Optional.empty();
       }
     }
     distToTag.append(poseEstimation.distanceToTag);
     numberOfDetectedTagsLogger.append(poseEstimation.numberOfTargetsUsed);
     detectedPoseLogger.appendRadians(poseEstimation.estimatedPose.toPose2d());
+    stateOfPoseUpdate.append("UPDATING_POSE");
     return Optional.of(poseEstimation);
   }
 
