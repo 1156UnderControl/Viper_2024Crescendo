@@ -1,11 +1,11 @@
-package frc.robot.commands.Autonomous.Auto.Branch_1_gotNote1;
+package frc.robot.commands.Autonomous.Auto.Branch_1_gotNote1RIGHT;
 
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotSubsystems;
-import frc.robot.commands.Autonomous.Auto.AutoStealOverkillDynamic;
+import frc.robot.commands.Autonomous.Auto.AutoStealOverkillRIGHTDynamic;
 import frc.robot.commands.Autonomous.Auto.Commands.AutonomousAimSwerveSpeaker;
 import frc.robot.commands.Autonomous.Auto.Commands.AutonomousShootInterpolation;
 
@@ -14,7 +14,7 @@ public class gotNote1 extends SequentialCommandGroup {
 
   public gotNote1(RobotSubsystems robot) {
     addCommands(
-        new InstantCommand(() -> AutoStealOverkillDynamic.gotNotes[1] = true),
+        new InstantCommand(() -> AutoStealOverkillRIGHTDynamic.gotNotes[1] = true),
         new AutonomousAimSwerveSpeaker(robot),
         new AutonomousShootInterpolation(robot));
   }

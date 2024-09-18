@@ -1,4 +1,4 @@
-package frc.robot.commands.Autonomous.Auto.Branch_1_gotNote1;
+package frc.robot.commands.Autonomous.Auto.Branch_1_gotNote1LEFT;
 
 import static edu.wpi.first.wpilibj2.command.Commands.either;
 import static edu.wpi.first.wpilibj2.command.Commands.none;
@@ -6,14 +6,11 @@ import static edu.wpi.first.wpilibj2.command.Commands.none;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
 
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotSubsystems;
-import frc.robot.commands.Autonomous.Auto.AutoStealOverkillDynamic;
+import frc.robot.commands.Autonomous.Auto.AutoStealOverkillLEFTDynamic;
 import frc.robot.commands.Autonomous.Auto.Commands.AutonomousAimAtAngle;
-import frc.robot.commands.Autonomous.Auto.Commands.AutonomousAimSwerveSpeaker;
 import frc.robot.commands.Autonomous.Auto.Commands.AutonomousGoToNote;
-import frc.robot.commands.Autonomous.Auto.Commands.AutonomousShootInterpolation;
 
 public class goToNote2 extends SequentialCommandGroup {
   private PathPlannerPath path1 = PathPlannerPath.fromPathFile("steal ovk path 3 LEFT");
@@ -21,13 +18,11 @@ public class goToNote2 extends SequentialCommandGroup {
 
   public goToNote2(RobotSubsystems robot) {
     addCommands(
-        either(AutoBuilder.followPath(path1IfCatchedNote2), none(), () -> AutoStealOverkillDynamic.gotNotes[1]),
+        either(AutoBuilder.followPath(path1IfCatchedNote2), none(), () -> AutoStealOverkillLEFTDynamic.gotNotes[1]),
+        new AutonomousAimAtAngle(robot, 0),
         new AutonomousGoToNote(robot),
-        new InstantCommand(() -> AutoStealOverkillDynamic.gotNotes[0] = true),
         AutoBuilder.followPath(path1),
-        new AutonomousAimSwerveSpeaker(robot),
-        new AutonomousShootInterpolation(robot),
-        new AutonomousAimAtAngle(robot, 90),
-        new AutonomousGoToNote(robot));
+        either(new gotNote2(robot), none(), () -> robot.robotHasNote()),
+        new AutonomousAimAtAngle(robot, 90));
   }
 }

@@ -95,6 +95,11 @@ public class PhotonVisionPoseEstimator implements PoseEstimator {
         stateOfPoseUpdate.append("HIGH_AMBIGUITY");
         return Optional.empty();
       }
+
+      if (poseEstimation.distanceToTag > 2.7) {
+        stateOfPoseUpdate.append("TOO_FAR_FROM_ONE_TAG");
+        return Optional.empty();
+      }
     }
     distToTag.append(poseEstimation.distanceToTag);
     numberOfDetectedTagsLogger.append(poseEstimation.numberOfTargetsUsed);

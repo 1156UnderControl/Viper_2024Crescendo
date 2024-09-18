@@ -16,60 +16,12 @@
     },
     {
       "anchor": {
-        "x": 6.87666699156508,
-        "y": 2.3538781457020823
+        "x": 5.724585295324437,
+        "y": 1.8056505343779916
       },
       "prevControl": {
-        "x": 6.431655202825382,
-        "y": 2.295323962973176
-      },
-      "nextControl": {
-        "x": 7.432651441828431,
-        "y": 2.4270339944209427
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 2.787125015036219,
-        "y": 3.2999000290743905
-      },
-      "prevControl": {
-        "x": 4.265150441855804,
-        "y": 0.7143610292926715
-      },
-      "nextControl": {
-        "x": 2.594430453123296,
-        "y": 3.6369844227737493
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 2.3679949214366918,
-        "y": 1.4638545682226887
-      },
-      "prevControl": {
-        "x": 0.4076256625789936,
-        "y": 0.09118923549594671
-      },
-      "nextControl": {
-        "x": 2.449910125865591,
-        "y": 1.5212122118577933
-      },
-      "isLocked": false,
-      "linkedName": "end shoot ovk blue"
-    },
-    {
-      "anchor": {
-        "x": 2.6559660811629335,
-        "y": 1.6773802778374796
-      },
-      "prevControl": {
-        "x": 2.5653500601408044,
-        "y": 1.6350868181289493
+        "x": 5.27957350658474,
+        "y": 1.7470963516490854
       },
       "nextControl": null,
       "isLocked": false,
@@ -78,7 +30,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 2.0,
+      "waypointRelativePos": 1.5,
       "rotationDegrees": -43.43000000000001,
       "rotateFast": false
     },
@@ -88,7 +40,7 @@
       "rotateFast": false
     },
     {
-      "waypointRelativePos": 2.6,
+      "waypointRelativePos": 1.5,
       "rotationDegrees": -95.92605036712456,
       "rotateFast": false
     },
@@ -101,8 +53,8 @@
   "constraintZones": [
     {
       "name": "New Constraints Zone",
-      "minWaypointRelativePos": 2.55,
-      "maxWaypointRelativePos": 2.8,
+      "minWaypointRelativePos": 1.5,
+      "maxWaypointRelativePos": 1.5,
       "constraints": {
         "maxVelocity": 1.5,
         "maxAcceleration": 3.5,
@@ -137,7 +89,7 @@
     },
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 2.0,
+      "waypointRelativePos": 1.5,
       "command": {
         "type": "sequential",
         "data": {

@@ -13,16 +13,16 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotSubsystems;
-import frc.robot.commands.Autonomous.Auto.Branch_1_dontGotNote1.GoToNote3;
-import frc.robot.commands.Autonomous.Auto.Branch_1_dontGotNote1.dontGotNote1;
-import frc.robot.commands.Autonomous.Auto.Branch_1_gotNote1.goToNote2;
-import frc.robot.commands.Autonomous.Auto.Branch_1_gotNote1.gotNote1;
+import frc.robot.commands.Autonomous.Auto.Branch_1_dontGotNote1RIGHT.GoToNote3;
+import frc.robot.commands.Autonomous.Auto.Branch_1_dontGotNote1RIGHT.dontGotNote1;
+import frc.robot.commands.Autonomous.Auto.Branch_1_gotNote1RIGHT.goToNote2;
+import frc.robot.commands.Autonomous.Auto.Branch_1_gotNote1RIGHT.gotNote1;
 import frc.robot.commands.Autonomous.Auto.Commands.AutonomousAimSwerveSpeaker;
 import frc.robot.commands.Autonomous.Auto.Commands.AutonomousCollect;
 import frc.robot.commands.Autonomous.Auto.Commands.AutonomousGoToNote;
 import frc.robot.commands.Autonomous.Auto.Commands.AutonomousShootInterpolation;
 
-public class AutoStealOverkillDynamic extends SequentialCommandGroup {
+public class AutoStealOverkillRIGHTDynamic extends SequentialCommandGroup {
   private PathPlannerPath path1 = PathPlannerPath.fromPathFile("steal ovk path 5");
   private SendableChooser<Command> autoChooser;
   private RobotSubsystems robot;
@@ -30,7 +30,7 @@ public class AutoStealOverkillDynamic extends SequentialCommandGroup {
 
   public static boolean gotNotes[] = { false, false, false };
 
-  public AutoStealOverkillDynamic(RobotSubsystems robot, SendableChooser<Command> autoChooser) {
+  public AutoStealOverkillRIGHTDynamic(RobotSubsystems robot, SendableChooser<Command> autoChooser) {
     this.robot = robot;
     this.autoChooser = autoChooser;
     autoChooser.getSelected().getName();

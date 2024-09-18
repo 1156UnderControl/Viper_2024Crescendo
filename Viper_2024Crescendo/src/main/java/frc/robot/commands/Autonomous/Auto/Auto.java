@@ -17,13 +17,15 @@ public class Auto extends SequentialCommandGroup {
   public Auto(RobotSubsystems robot, SendableChooser<Command> autoChooser) {
     this.robot = robot;
     this.autoChooser = autoChooser;
-    autoChooser.getSelected().getName();
-    switch (autoChooser.getSelected().getName()) {
+    switch (this.autoChooser.getSelected().getName()) {
       case "Steal Overkill Left (Red) Dynamic":
-        addCommands(new AutoStealOverkillDynamic(robot, autoChooser));
+        addCommands(new AutoStealOverkillLEFTDynamic(robot, this.autoChooser));
+        break;
+      case "Steal Overkill RIGHT (Red) Dynamic":
+        addCommands(new AutoStealOverkillRIGHTDynamic(robot, this.autoChooser));
         break;
       default:
-        addCommands(autoChooser.getSelected());
+        addCommands(this.autoChooser.getSelected());
         break;
     }
   }
