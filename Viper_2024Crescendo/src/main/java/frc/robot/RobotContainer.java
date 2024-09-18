@@ -18,25 +18,25 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Joysticks.ControlBoard;
-import frc.robot.commands.Autonomous.AutonomousAim;
-import frc.robot.commands.Autonomous.AutonomousAimAtLastNote;
-import frc.robot.commands.Autonomous.AutonomousAimAtSpeakerMovingOFF;
-import frc.robot.commands.Autonomous.AutonomousAimAtSpeakerMovingON;
-import frc.robot.commands.Autonomous.AutonomousAimInterpolation;
-import frc.robot.commands.Autonomous.AutonomousAimSteal;
-import frc.robot.commands.Autonomous.AutonomousAimSteal1;
-import frc.robot.commands.Autonomous.AutonomousAimSteal2;
-import frc.robot.commands.Autonomous.AutonomousAimStealAuto2;
-import frc.robot.commands.Autonomous.AutonomousAimSubwoofer;
-import frc.robot.commands.Autonomous.AutonomousAimSwerveSpeaker;
-import frc.robot.commands.Autonomous.AutonomousCollect;
-import frc.robot.commands.Autonomous.AutonomousDeployOnlyIntake;
-import frc.robot.commands.Autonomous.AutonomousGoToNote;
-import frc.robot.commands.Autonomous.AutonomousPassThrough;
-import frc.robot.commands.Autonomous.AutonomousSecured;
-import frc.robot.commands.Autonomous.AutonomousShoot;
-import frc.robot.commands.Autonomous.AutonomousShootInterpolation;
-import frc.robot.commands.Autonomous.Auto.AutoStealOverkillDynamic;
+import frc.robot.commands.Autonomous.Auto.Auto;
+import frc.robot.commands.Autonomous.Auto.Commands.AutonomousAim;
+import frc.robot.commands.Autonomous.Auto.Commands.AutonomousAimAtAngle;
+import frc.robot.commands.Autonomous.Auto.Commands.AutonomousAimAtSpeakerMovingOFF;
+import frc.robot.commands.Autonomous.Auto.Commands.AutonomousAimAtSpeakerMovingON;
+import frc.robot.commands.Autonomous.Auto.Commands.AutonomousAimInterpolation;
+import frc.robot.commands.Autonomous.Auto.Commands.AutonomousAimSteal;
+import frc.robot.commands.Autonomous.Auto.Commands.AutonomousAimSteal1;
+import frc.robot.commands.Autonomous.Auto.Commands.AutonomousAimSteal2;
+import frc.robot.commands.Autonomous.Auto.Commands.AutonomousAimStealAuto2;
+import frc.robot.commands.Autonomous.Auto.Commands.AutonomousAimSubwoofer;
+import frc.robot.commands.Autonomous.Auto.Commands.AutonomousAimSwerveSpeaker;
+import frc.robot.commands.Autonomous.Auto.Commands.AutonomousCollect;
+import frc.robot.commands.Autonomous.Auto.Commands.AutonomousDeployOnlyIntake;
+import frc.robot.commands.Autonomous.Auto.Commands.AutonomousGoToNote;
+import frc.robot.commands.Autonomous.Auto.Commands.AutonomousPassThrough;
+import frc.robot.commands.Autonomous.Auto.Commands.AutonomousSecured;
+import frc.robot.commands.Autonomous.Auto.Commands.AutonomousShoot;
+import frc.robot.commands.Autonomous.Auto.Commands.AutonomousShootInterpolation;
 import frc.robot.commands.States.ClimbPosition;
 import frc.robot.commands.States.CollectHPposition;
 import frc.robot.commands.States.CollectPosition;
@@ -93,7 +93,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Deploy Intake", new AutonomousDeployOnlyIntake(robot));
     NamedCommands.registerCommand("Secured", new AutonomousSecured(robot));
     NamedCommands.registerCommand("Go To Note", new AutonomousGoToNote(robot));
-    NamedCommands.registerCommand("Aim Last Note Overkill", new AutonomousAimAtLastNote(robot));
+    NamedCommands.registerCommand("Aim Last Note Overkill", new AutonomousAimAtAngle(robot, 90));
 
     autoChooser = AutoBuilder.buildAutoChooser("None");
     SmartDashboard.putData("Aut Chooser", autoChooser);
@@ -135,9 +135,7 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    // return autoChooser.getSelected();
-    // PathPlannerPath path1 = PathPlannerPath.fromPathFile("New Path");
-    return new AutoStealOverkillDynamic(robot, autoChooser);
+    return new Auto(robot, autoChooser);
   }
 
   public void setRobotToBrake() {
