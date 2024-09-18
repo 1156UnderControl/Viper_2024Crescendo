@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 2.9066934025451485,
-      "y": 4.766310474133074
+      "x": 1.2671762861357376,
+      "y": 5.527514849608872
     },
     "rotation": 0
   },
@@ -15,6 +15,12 @@
           "type": "path",
           "data": {
             "pathName": "New Path"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Go To Note"
           }
         }
       ]

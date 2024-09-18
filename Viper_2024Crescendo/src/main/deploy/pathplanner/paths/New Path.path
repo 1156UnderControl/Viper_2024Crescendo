@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.9066934025451485,
-        "y": 4.766310474133074
+        "x": 1.2671762861357376,
+        "y": 5.527514849608872
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.539078576017347,
-        "y": 5.527514849608872
+        "x": 2.0752240077946618,
+        "y": 5.58606903233778
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.262597392527166,
-        "y": 7.14361029292672
+        "x": 2.1806215367066955,
+        "y": 4.731177964495728
       },
       "prevControl": {
-        "x": 6.94693201083977,
-        "y": 7.68230877403267
+        "x": 1.3725738150477715,
+        "y": 4.74288880104151
       },
       "nextControl": null,
       "isLocked": false,
@@ -41,7 +41,7 @@
             {
               "type": "named",
               "data": {
-                "name": "Aim At Speaker ON"
+                "name": "Intake"
               }
             }
           ]
@@ -57,7 +57,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": -91.24536426676835,
     "rotateFast": false
   },
   "reversed": false,

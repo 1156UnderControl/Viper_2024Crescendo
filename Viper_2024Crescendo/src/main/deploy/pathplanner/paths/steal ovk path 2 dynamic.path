@@ -56,15 +56,15 @@
     "maxAngularAcceleration": 300.0
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 1.0,
     "rotation": 0,
-    "rotateFast": false
+    "rotateFast": true
   },
   "reversed": false,
   "folder": "auto steal overkill",
   "previewStartingState": {
     "rotation": -5.527540151656195,
-    "velocity": 0
+    "velocity": 1.0
   },
   "useDefaultConstraints": true
 }

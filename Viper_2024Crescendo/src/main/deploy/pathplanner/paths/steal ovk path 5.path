@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.9815373154284097,
-        "y": 2.025974722420201
+        "x": 2.286019065618729,
+        "y": 1.8268905011419148
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.379705757984981,
-        "y": 2.5412515304345873
+        "x": 2.2391757194356035,
+        "y": 2.424143164976771
       },
       "isLocked": false,
       "linkedName": "end path 4 ovk"
     },
     {
       "anchor": {
-        "x": 2.7310308543584263,
-        "y": 3.314166742456167
+        "x": 2.5670791427174855,
+        "y": 3.3844317617308555
       },
       "prevControl": {
-        "x": 2.567079142717485,
-        "y": 2.857444117170688
+        "x": 2.4031274310765443,
+        "y": 2.9277091364453764
       },
       "nextControl": null,
       "isLocked": false,
@@ -41,7 +41,7 @@
             {
               "type": "named",
               "data": {
-                "name": "Intake"
+                "name": "Aim Shoot Interpolation"
               }
             }
           ]
@@ -50,8 +50,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.5,
-    "maxAcceleration": 3.5,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 5.0,
     "maxAngularVelocity": 100.0,
     "maxAngularAcceleration": 300.0
   },
@@ -63,8 +63,8 @@
   "reversed": false,
   "folder": "auto steal overkill",
   "previewStartingState": {
-    "rotation": -132.35745470593517,
-    "velocity": 1.0
+    "rotation": -88.21008939175395,
+    "velocity": 0.0
   },
   "useDefaultConstraints": false
 }

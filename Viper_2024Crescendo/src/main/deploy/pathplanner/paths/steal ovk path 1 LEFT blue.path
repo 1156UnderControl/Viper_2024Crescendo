@@ -32,16 +32,16 @@
     },
     {
       "anchor": {
-        "x": 7.64958220358666,
-        "y": 0.8314693947504864
+        "x": 7.696425549769787,
+        "y": 0.8080477216589235
       },
       "prevControl": {
-        "x": 7.928300113377978,
-        "y": 1.0797391295210546
+        "x": 7.975143459561106,
+        "y": 1.056317456429492
       },
       "nextControl": {
-        "x": 7.317961807034551,
-        "y": 0.5360764364790042
+        "x": 7.364805153217677,
+        "y": 0.5126547633874412
       },
       "isLocked": false,
       "linkedName": null
@@ -150,13 +150,13 @@
             {
               "type": "named",
               "data": {
-                "name": "Intake Aligning"
+                "name": "Intake"
               }
             },
             {
               "type": "named",
               "data": {
-                "name": "Aim Shoot Steal"
+                "name": "Aim Shoot Interpolation"
               }
             }
           ]
