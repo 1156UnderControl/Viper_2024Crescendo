@@ -45,6 +45,8 @@ public interface IShooter {
 
   boolean hasShooted();
 
+  boolean hasPassedNoteThrough();
+
   boolean isSecureForIntake();
 
   boolean isPivotAtSetpoint();

@@ -32,6 +32,10 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private boolean hasNote;
 
+  private boolean startedPassThrough;
+
+  private boolean passedThrough;
+
   private boolean wasNoteIn;
 
   private boolean manualValues;
@@ -93,6 +97,10 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private Trigger outSensorTrigger;
 
+  private Trigger inSensorTriggerPassThrough;
+
+  private Trigger outSensorTriggerPassThrough;
+
   public static ShooterSubsystem getInstance() {
     if (shooterInstance == null) {
       shooterInstance = new ShooterSubsystem();
@@ -115,6 +123,13 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     outSensorTrigger = new Trigger(this.noteSensorOut);
     outSensorTrigger.onTrue(
         new InstantCommand(() -> this.hasNote = this.state == "INTAKING" && this.wasNoteIn ? true : this.hasNote));
+    inSensorTrigger
+        .onTrue(new InstantCommand(
+            () -> this.startedPassThrough = this.state == "PASSING_THROUGH" ? true : this.startedPassThrough));
+    outSensorTrigger.onTrue(
+        new InstantCommand(
+            () -> this.passedThrough = this.state == "PASSING_THROUGH" && this.startedPassThrough ? true
+                : this.passedThrough));
   }
 
   private void configureFlywheelMotor(Motor flywheelMotor) {
@@ -272,6 +287,16 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   @Override
   public boolean hasNote() {
     return this.hasNote;
+  }
+
+  @Override
+  public boolean hasPassedNoteThrough() {
+    if (this.passedThrough) {
+      passedThrough = false;
+      return true;
+    } else {
+      return false;
+    }
   }
 
   @Override
