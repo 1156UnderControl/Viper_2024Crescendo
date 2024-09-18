@@ -1,22 +1,22 @@
-package frc.robot.commands.Autonomous;
+package frc.robot.commands.Autonomous.Auto.Commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.RobotSubsystems;
 import frc.robot.Constants.ShooterConstants;
 
-public class AutonomousAimSteal2 extends Command {
+public class AutonomousAimStealAuto2 extends Command {
   private RobotSubsystems robot;
-  private double shotPosition = 74.5;
+  private double shotPosition = 70;
 
-  public AutonomousAimSteal2(RobotSubsystems robot) {
+  public AutonomousAimStealAuto2(RobotSubsystems robot) {
     this.robot = robot;
     this.addRequirements(robot);
   }
 
   @Override
   public void initialize() {
-    Robot.autonomousState = "Aim Shoot Steal 2";
+    Robot.autonomousState = "Aim Shoot Steal auto 2";
     this.robot.intake.goToIntakePosition();
     this.robot.intake.stopIntaking();
     this.robot.shooter.setManualPivotPosition(shotPosition, ShooterConstants.setpoints.VELOCITY_SHOOT_SPEAKER);

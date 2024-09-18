@@ -1,4 +1,4 @@
-package frc.robot.commands.Autonomous;
+package frc.robot.commands.Autonomous.Auto.Commands;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -6,18 +6,20 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.RobotSubsystems;
 
-public class AutonomousAimAtLastNote extends Command {
+public class AutonomousAimAtAngle extends Command {
   private RobotSubsystems robot;
+  private double angleToAim;
 
-  public AutonomousAimAtLastNote(RobotSubsystems robot) {
+  public AutonomousAimAtAngle(RobotSubsystems robot, double angle) {
     this.robot = robot;
+    this.angleToAim = angle;
     this.addRequirements(robot);
   }
 
   @Override
   public void initialize() {
-    Robot.autonomousState = "Aim at Last Note OVK";
-    this.robot.swerve.aimSwerve(defineAngleToAlignAtNote());
+    Robot.autonomousState = "Aim at Angle:";
+    this.robot.swerve.aimSwerve(defineAngleToAlign(angleToAim));
     this.robot.intake.goToIntakePosition();
     this.robot.intake.intake();
     if (this.robot.intake.isSecureForShooter()) {
@@ -28,11 +30,10 @@ public class AutonomousAimAtLastNote extends Command {
 
   @Override
   public void execute() {
-    this.robot.swerve.aimSwerve(defineAngleToAlignAtNote());
+    this.robot.swerve.aimSwerve(defineAngleToAlign(angleToAim));
     if (this.robot.intake.isSecureForShooter()) {
       this.robot.shooter.goToIntakePosition();
       this.robot.shooter.intakeAuto();
-      this.robot.swerve.driveToNote();
     }
   }
 
@@ -45,12 +46,12 @@ public class AutonomousAimAtLastNote extends Command {
     return robot.swerve.isAtTargetHeading();
   }
 
-  private double defineAngleToAlignAtNote() {
+  private double defineAngleToAlign(double angle) {
     Alliance alliance = DriverStation.getAlliance().isPresent() ? DriverStation.getAlliance().get() : Alliance.Red;
     if (alliance == Alliance.Red) {
-      return 100;
+      return angle;
     } else {
-      return -100;
+      return -angle;
     }
   }
 }

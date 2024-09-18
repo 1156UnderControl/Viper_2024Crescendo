@@ -1,13 +1,13 @@
-package frc.robot.commands.Autonomous;
+package frc.robot.commands.Autonomous.Auto.Commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.RobotSubsystems;
 
-public class AutonomousCollect extends Command {
+public class AutonomousPassThrough extends Command {
   private RobotSubsystems robot;
 
-  public AutonomousCollect(RobotSubsystems robot) {
+  public AutonomousPassThrough(RobotSubsystems robot) {
     this.robot = robot;
     this.addRequirements(robot);
   }
@@ -21,8 +21,8 @@ public class AutonomousCollect extends Command {
 
   @Override
   public void execute() {
-    if (robot.intake.isSecureForShooter()) {
-      this.robot.shooter.intakeAuto();
+    if (this.robot.intake.isSecureForShooter()) {
+      this.robot.shooter.passThrough();
     }
     this.robot.intake.intake();
   }
@@ -33,6 +33,6 @@ public class AutonomousCollect extends Command {
 
   @Override
   public boolean isFinished() {
-    return this.robot.shooter.hasNote();
+    return false;
   }
 }

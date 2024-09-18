@@ -1,31 +1,31 @@
-package frc.robot.commands.Autonomous;
+package frc.robot.commands.Autonomous.Auto.Commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.RobotSubsystems;
 
-public class AutonomousAimAtSpeakerMovingOFF extends Command {
+public class AutonomousAimAtSpeakerMovingON extends Command {
   private RobotSubsystems robot;
 
-  public AutonomousAimAtSpeakerMovingOFF(RobotSubsystems robot) {
+  public AutonomousAimAtSpeakerMovingON(RobotSubsystems robot) {
     this.robot = robot;
     this.addRequirements(robot);
   }
 
   @Override
   public void initialize() {
-    Robot.autonomousState = "Aim At Speaker Moving OFF";
-    this.robot.swerve.overrideRotationAuto(false);
+    Robot.autonomousState = "Aim At Speaker Moving ON";
+    this.robot.swerve.overrideRotationAuto(true);
   }
 
   @Override
   public void execute() {
-    this.robot.swerve.overrideRotationAuto(false);
+    this.robot.swerve.overrideRotationAuto(true);
   }
 
   @Override
   public void end(boolean interrupted) {
-    this.robot.swerve.overrideRotationAuto(false);
+    this.robot.swerve.overrideRotationAuto(true);
   }
 
   @Override

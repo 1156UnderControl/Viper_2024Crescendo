@@ -1,28 +1,30 @@
-package frc.robot.commands.Autonomous;
+package frc.robot.commands.Autonomous.Auto.Commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.RobotSubsystems;
 
-public class AutonomousShoot extends Command {
+public class AutonomousCollect extends Command {
   private RobotSubsystems robot;
 
-  public AutonomousShoot(RobotSubsystems robot) {
+  public AutonomousCollect(RobotSubsystems robot) {
     this.robot = robot;
     this.addRequirements(robot);
   }
 
   @Override
   public void initialize() {
-    Robot.autonomousState = "Shoot";
-    this.robot.shooter.shoot();
-    this.robot.intake.intake();
+    Robot.autonomousState = "Collect";
     this.robot.intake.goToIntakePosition();
+    this.robot.intake.intake();
   }
 
   @Override
   public void execute() {
-    this.robot.shooter.shoot();
+    if (robot.intake.isSecureForShooter()) {
+      this.robot.shooter.intakeAuto();
+    }
+    this.robot.intake.intake();
   }
 
   @Override
@@ -31,6 +33,6 @@ public class AutonomousShoot extends Command {
 
   @Override
   public boolean isFinished() {
-    return this.robot.shooter.hasShooted();
+    return this.robot.shooter.hasNote();
   }
 }

@@ -1,30 +1,25 @@
-package frc.robot.commands.Autonomous;
+package frc.robot.commands.Autonomous.Auto.Commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.RobotSubsystems;
 
-public class AutonomousPassThrough extends Command {
+public class AutonomousDeployOnlyIntake extends Command {
   private RobotSubsystems robot;
 
-  public AutonomousPassThrough(RobotSubsystems robot) {
+  public AutonomousDeployOnlyIntake(RobotSubsystems robot) {
     this.robot = robot;
     this.addRequirements(robot);
   }
 
   @Override
   public void initialize() {
-    Robot.autonomousState = "Collect";
+    Robot.autonomousState = "Deploy only intake";
     this.robot.intake.goToIntakePosition();
-    this.robot.intake.intake();
   }
 
   @Override
   public void execute() {
-    if (this.robot.intake.isSecureForShooter()) {
-      this.robot.shooter.passThrough();
-    }
-    this.robot.intake.intake();
   }
 
   @Override
@@ -33,6 +28,6 @@ public class AutonomousPassThrough extends Command {
 
   @Override
   public boolean isFinished() {
-    return false;
+    return robot.intake.isAtSetpoint();
   }
 }
