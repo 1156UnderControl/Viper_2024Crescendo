@@ -378,9 +378,10 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
           new ObjectDetection(LimelightHelpers.getTX("limelight-note"), LimelightHelpers.getTY("limelight-note"),
               "Note"),
           intakeNoteDetectionCamera, 1, 1);
+      Pose2d notepose = estimationNote.getObjectPoseInField(getPose(), estimationNote.getObjectPoseFromRobotCenter());
       this.driveFieldOrientedLockedAngle(
           driveToNoteAssist.getCorrectedDesiredSpeedToTranslation(getPose(),
-              estimationNote.getObjectPoseInField(getPose(), estimationNote.getObjectPoseFromRobotCenter()),
+              notepose,
               new ChassisSpeeds(estimationNote.getDistanceFromObject() * kP, 0, 0)),
           getHeading());
     }
