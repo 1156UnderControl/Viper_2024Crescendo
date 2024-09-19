@@ -83,6 +83,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private CustomBooleanLogger hasNoteLog = new CustomBooleanLogger("/ShooterSubsystem/HasNote");
 
+  private CustomBooleanLogger hasPassedLog = new CustomBooleanLogger("/ShooterSubsystem/HasPassedThrough");
+
   private String state = "SAFE_POSITION";
 
   private CustomStringLogger stateLog = new CustomStringLogger("/ShooterSubsystem/State");
@@ -111,6 +113,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   private ShooterSubsystem() {
     this.hasNote = false;
     this.wasNoteIn = false;
+    this.startedPassThrough = false;
+    this.passedThrough = false;
     this.configureFlywheelMotor(this.upperFlywheelMotor);
     this.configureFlywheelMotor(this.lowerFlywheelMotor);
     this.configureFeederMotor();
@@ -600,6 +604,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     this.isAtSetpointLog.append(this.isPivotAtSetpoint());
     this.flywheelAtSetpointLog.append(isFlywheelAtSetpoint());
     this.hasNoteLog.append(this.hasNote);
+    this.hasPassedLog.append(this.passedThrough);
     this.stateLog.append(this.state);
     this.pivotMotor.updateLogs();
     this.feederMotor.updateLogs();

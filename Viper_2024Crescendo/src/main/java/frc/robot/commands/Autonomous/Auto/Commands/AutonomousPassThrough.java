@@ -14,7 +14,7 @@ public class AutonomousPassThrough extends Command {
 
   @Override
   public void initialize() {
-    Robot.autonomousState = "Collect";
+    Robot.autonomousState = "PASS_THROUGH";
     this.robot.intake.goToIntakePosition();
     this.robot.intake.intake();
   }

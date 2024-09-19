@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomStringLogger;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.States.SecuredPosition;
 import frc.robot.subsystems.LEDs.LedColor;
@@ -38,6 +39,8 @@ public class Robot extends TimedRobot {
   private RobotContainer robotContainer;
 
   private Timer disabledTimer;
+
+  private CustomStringLogger autonomousStateLogger = new CustomStringLogger("Autonomous/State");
 
   public static boolean isInAutonomous;
 
@@ -157,7 +160,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    SmartDashboard.putString("Auto State", autonomousState);
+    autonomousStateLogger.append(autonomousState);
   }
 
   @Override

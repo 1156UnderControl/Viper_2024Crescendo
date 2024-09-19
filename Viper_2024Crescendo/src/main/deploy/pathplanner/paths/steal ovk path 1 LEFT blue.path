@@ -142,7 +142,7 @@
     },
     {
       "name": "New Event Marker",
-      "waypointRelativePos": 1.6,
+      "waypointRelativePos": 1.75,
       "command": {
         "type": "sequential",
         "data": {
