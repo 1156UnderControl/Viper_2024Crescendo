@@ -24,6 +24,9 @@ public class Auto extends SequentialCommandGroup {
       case "Steal Overkill RIGHT (Red) Dynamic":
         addCommands(new AutoStealOverkillRIGHTDynamic(robot, this.autoChooser));
         break;
+      case "Auto Steal OVK":
+        addCommands(new AutoStealOVK4N(this.robot, this.autoChooser));
+        break;
       default:
         addCommands(this.autoChooser.getSelected());
         break;

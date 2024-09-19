@@ -97,9 +97,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private Trigger outSensorTrigger;
 
-  private Trigger inSensorTriggerPassThrough;
-
-  private Trigger outSensorTriggerPassThrough;
+  public static boolean[] getNote = new boolean[3];
 
   public static ShooterSubsystem getInstance() {
     if (shooterInstance == null) {

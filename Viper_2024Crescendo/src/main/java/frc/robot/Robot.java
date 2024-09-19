@@ -21,6 +21,7 @@ import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.States.SecuredPosition;
 import frc.robot.subsystems.LEDs.LedColor;
+import frc.robot.subsystems.Shooter.ShooterSubsystem;
 import swervelib.parser.SwerveParser;
 
 /**
@@ -109,6 +110,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
+    ShooterSubsystem.getNote[0] = false;
+    ShooterSubsystem.getNote[1] = false;
+    ShooterSubsystem.getNote[2] = false;
     Robot.isInAutonomous = false;
     this.disabledTimer.reset();
     this.disabledTimer.start();

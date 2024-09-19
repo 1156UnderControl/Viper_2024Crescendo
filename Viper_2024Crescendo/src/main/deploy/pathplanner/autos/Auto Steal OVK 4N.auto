@@ -1,0 +1,43 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.4827763977561854,
+      "y": 1.4449956159799326
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Auto Steal OVK 4N 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Auto Steal OVK 4N 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Auto Steal OVK 4N 3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Auto Steal OVK 4N 4"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

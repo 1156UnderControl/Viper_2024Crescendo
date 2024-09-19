@@ -42,6 +42,9 @@ public class RobotSubsystems extends SubsystemBase {
   private CustomDoubleLogger totalCurrentDrawLogEntry = new CustomDoubleLogger("/Robot/TotalCurrentDraw");
 
   public RobotSubsystems() {
+    ShooterSubsystem.getNote[0] = false;
+    ShooterSubsystem.getNote[1] = false;
+    ShooterSubsystem.getNote[2] = false;
     this.swerve = SwerveSubsystem.getInstance();
     this.intake = IntakeSubsystem.getInstance();
     this.shooter = ShooterSubsystem.getInstance();

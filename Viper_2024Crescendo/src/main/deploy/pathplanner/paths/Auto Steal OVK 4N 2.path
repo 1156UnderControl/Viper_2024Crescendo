@@ -1,0 +1,98 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.23,
+        "y": 3.17
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.2346731372157893,
+        "y": 3.163543621513864
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.619241085586694,
+        "y": 2.9370895586777053
+      },
+      "prevControl": {
+        "x": 3.5853856703924256,
+        "y": 2.9591918129794093
+      },
+      "nextControl": {
+        "x": 3.653096500780962,
+        "y": 2.9149873043760013
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.23,
+        "y": 3.17
+      },
+      "prevControl": {
+        "x": 3.2280319606543193,
+        "y": 3.1695627612653534
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": -32.213117714043825,
+      "rotateFast": false
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            },
+            {
+              "type": "named",
+              "data": {
+                "name": "Shoot Interpolation"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 100.0,
+    "maxAngularAcceleration": 300.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -31.444491889170322,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "auto steal overkill",
+  "previewStartingState": {
+    "rotation": -30.779999999999973,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}
