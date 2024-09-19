@@ -175,7 +175,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   private SwerveSubsystem(File directory, PoseEstimator poseEstimatorTeleOp, PoseEstimator poseEstimatorAuto) {
     super(directory, new OdometryEnabledSwerveConfig(
         SwerveConstants.MAX_VEL,
-        SwerveConstants.MAX_ROTATION_VEL,
+        SwerveConstants.MAX_ROTATION_VEL, 0.02,
         Alliance.Red,
         new SwervePathPlannerConfig(
             AutoConstants.TranslationPID,

@@ -12,12 +12,14 @@ public class OdometryEnabledSwerveConfig extends BaseSwerveConfig {
 
   public final PidConfig moveToPosePidConfig;
 
-  public OdometryEnabledSwerveConfig(double maxTranslationSpeed, double maxRotationSpeed, Alliance defaultAlliance,
-      SwervePathPlannerConfig pathPlannerConfig, PoseEstimator autonomousPoseEstimator, PoseEstimator teleoperatedPoseEstimator, PidConfig moveToPosePidConfig) {
-    super(maxTranslationSpeed, maxRotationSpeed, defaultAlliance, pathPlannerConfig);
+  public OdometryEnabledSwerveConfig(double maxTranslationSpeed, double maxRotationSpeed, double dtDiscretization,
+      Alliance defaultAlliance,
+      SwervePathPlannerConfig pathPlannerConfig, PoseEstimator autonomousPoseEstimator,
+      PoseEstimator teleoperatedPoseEstimator, PidConfig moveToPosePidConfig) {
+    super(maxTranslationSpeed, maxRotationSpeed, dtDiscretization, defaultAlliance, pathPlannerConfig);
     this.autonomousPoseEstimator = autonomousPoseEstimator;
     this.teleoperatedPoseEstimator = teleoperatedPoseEstimator;
     this.moveToPosePidConfig = moveToPosePidConfig;
   }
-  
+
 }

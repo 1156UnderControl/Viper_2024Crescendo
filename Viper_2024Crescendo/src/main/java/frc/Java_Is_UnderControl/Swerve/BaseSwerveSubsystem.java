@@ -63,6 +63,7 @@ public abstract class BaseSwerveSubsystem extends SubsystemBase {
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
     this.createSwerveDriveFromYagsl(directory);
     this.setupPathPlanner(config.pathPlannerConfig);
+    this.swerveDrive.setChassisDiscretization(true, config.dtDiscretization);
   }
 
   protected abstract void updateLogs();
