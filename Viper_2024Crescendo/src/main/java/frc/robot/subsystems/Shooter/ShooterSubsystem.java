@@ -126,7 +126,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     inSensorTrigger.onTrue(new InstantCommand(() -> this.wasNoteIn = this.state == "INTAKING" ? true : this.wasNoteIn));
     outSensorTrigger = new Trigger(this.noteSensorOut);
     outSensorTrigger.onTrue(
-        new InstantCommand(() -> this.hasNote = this.state == "INTAKING" && this.wasNoteIn ? true : this.hasNote));
+        new InstantCommand(() -> this.hasNote = this.state == "INTAKING" &&
+            this.wasNoteIn ? true : this.hasNote));
     inSensorTrigger
         .onTrue(new InstantCommand(
             () -> this.startedPassThrough = this.state == "PASSING_THROUGH" ? true : this.startedPassThrough));
@@ -296,7 +297,6 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   @Override
   public boolean hasPassedNoteThrough() {
     if (this.passedThrough) {
-      passedThrough = false;
       return true;
     } else {
       return false;

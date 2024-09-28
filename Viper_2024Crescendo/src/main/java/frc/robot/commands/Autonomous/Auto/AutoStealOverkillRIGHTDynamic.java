@@ -44,7 +44,7 @@ public class AutoStealOverkillRIGHTDynamic extends SequentialCommandGroup {
         this.autoChooser.getSelected()
             .alongWith(
                 Commands.run(() -> gotNotes[0] = robot.shooter.hasPassedNoteThrough())
-                    .until(() -> timer.get() > 5 || gotNotes[0]))
+                    .until(() -> gotNotes[0]))
             .until(() -> timer.get() >= 5.2
                 && !this.robot.shooter.hasNote()),
         new InstantCommand(() -> passedFirstNote.append(gotNotes[0])),

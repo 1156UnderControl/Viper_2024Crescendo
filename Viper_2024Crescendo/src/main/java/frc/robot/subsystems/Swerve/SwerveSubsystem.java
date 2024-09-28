@@ -349,7 +349,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
               "Note"),
           intakeNoteDetectionCamera, 1, 1);
       if (controller.notUsingJoystick()) {
-        targetAngle = lastHeadingJoystickTarget;
+        targetAngle = angleAlign;
       } else {
         targetAngle = Rotation2d.fromRadians(Math.atan2(controller.getCOS_Joystick(), controller.getSIN_Joystick()));
         lastHeadingJoystickTarget = targetAngle;
