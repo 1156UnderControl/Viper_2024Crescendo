@@ -40,7 +40,7 @@ public class Robot extends TimedRobot {
 
   private Timer disabledTimer;
 
-  private CustomStringLogger autonomousStateLogger = new CustomStringLogger("Autonomous/State");
+  private CustomStringLogger autonomousStateLogger;
 
   public static boolean isInAutonomous;
 
@@ -52,9 +52,6 @@ public class Robot extends TimedRobot {
 
   public Robot() {
     instance = this;
-    addPeriodic(() -> {
-      robotContainer.robot.shooter.runNoteDetection();
-    }, 0.05, 0.005);
   }
 
   public static Robot getInstance() {
@@ -67,18 +64,20 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-
+    DataLogManager.start("", "", 0.02);
+    DriverStation.startDataLog(DataLogManager.getLog());
+    autonomousStateLogger = new CustomStringLogger("Autonomous/State");
+    this.robotContainer = new RobotContainer();
+    addPeriodic(() -> {
+      robotContainer.robot.shooter.runNoteDetection();
+    }, 0.05, 0.005);
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our
     // autonomous chooser on the dashboard.
-    this.robotContainer = new RobotContainer();
-
     // Create a timer to disable motor brake a few seconds after disable. This will
     // let the robot stop
     // immediately when disabled, but then also let it be pushed more
     this.disabledTimer = new Timer();
-    DataLogManager.start();
-    DriverStation.startDataLog(DataLogManager.getLog());
   }
 
   /**
@@ -123,7 +122,7 @@ public class Robot extends TimedRobot {
     if (alliance == Alliance.Red) {
       LimelightHelpers.setPipelineIndex("limelight-back", 1);
     } else {
-      LimelightHelpers.setPipelineIndex("limelight-back", 0);
+      LimelightHelpers.setPipelineIndex("limelight-back", 1);
     }
     if (switchBrake.get()) {
       this.robotContainer.setRobotToCoast();
