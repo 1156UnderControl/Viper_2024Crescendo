@@ -19,7 +19,6 @@ public class goToNote2 extends SequentialCommandGroup {
   public goToNote2(RobotSubsystems robot) {
     addCommands(
         either(AutoBuilder.followPath(path1IfCatchedNote2), none(), () -> AutoStealOverkillLEFTDynamic.gotNotes[1]),
-        new AutonomousAimAtAngle(robot, 0),
         new AutonomousGoToNote(robot),
         AutoBuilder.followPath(path1),
         either(new gotNote2(robot), none(), () -> robot.robotHasNote()),
