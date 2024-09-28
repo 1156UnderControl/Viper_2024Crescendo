@@ -51,8 +51,8 @@ public class ShooterConstants {
     public static final double ANGLE_SHOOT_OVER_STAGE = 55;
 
     public static final double VELOCITY_SHOOT_SPEAKER = 8000;
-    public static final double VELOCITY_SHOOT_AMP = 5500;
-    public static final double VELOCITY_SHOOT_OVER_STAGE = 6500;
+    public static final double VELOCITY_SHOOT_AMP = 4500;
+    public static final double VELOCITY_SHOOT_OVER_STAGE = 6750;
     public static final double VELOCITY_CRUISE_SHOOTER = 6000;
     public static final double VELOCITY_SHOOTER_CORRECT_PASSED_NOTE = -0.2;
     public static final double VELOCITY_SHOOTER_COLLECT_HP = -6000;
