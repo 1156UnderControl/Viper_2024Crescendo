@@ -126,7 +126,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     inSensorTrigger.onTrue(new InstantCommand(() -> this.wasNoteIn = this.state == "INTAKING" ? true : this.wasNoteIn));
     outSensorTrigger = new Trigger(this.noteSensorOut);
     outSensorTrigger.onTrue(
-        new InstantCommand(() -> this.hasNote = this.state == "INTAKING" && this.wasNoteIn ? true : this.hasNote));
+        new InstantCommand(() -> this.hasNote = this.state == "INTAKING" &&
+            this.wasNoteIn ? true : this.hasNote));
     inSensorTrigger
         .onTrue(new InstantCommand(
             () -> this.startedPassThrough = this.state == "PASSING_THROUGH" ? true : this.startedPassThrough));
@@ -296,7 +297,6 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   @Override
   public boolean hasPassedNoteThrough() {
     if (this.passedThrough) {
-      passedThrough = false;
       return true;
     } else {
       return false;
@@ -514,9 +514,9 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   }
 
   private static void interpolationTreePivotAngle() {
-    pivotAngleMap.put(1.2, 51.0);
-    pivotAngleMap.put(1.43, 53.0);
-    pivotAngleMap.put(1.73, 58.0);
+    pivotAngleMap.put(1.2, 48.0);
+    pivotAngleMap.put(1.43, 51.0);
+    pivotAngleMap.put(1.73, 56.0);
     pivotAngleMap.put(2.04, 61.5);
     pivotAngleMap.put(2.3, 65.0);
     pivotAngleMap.put(2.6, 67.0);
@@ -545,7 +545,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   }
 
   private static void interpolationTreeFlywheelRPM() {
-    flywheelRPMmap.put(1.2, 6000.0);
+    flywheelRPMmap.put(1.2, 5600.0);
     flywheelRPMmap.put(1.43, 6500.0);
     flywheelRPMmap.put(1.73, 7000.0);
     flywheelRPMmap.put(2.04, 7000.0);
