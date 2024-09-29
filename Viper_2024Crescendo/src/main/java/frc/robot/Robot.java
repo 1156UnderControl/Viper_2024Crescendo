@@ -64,7 +64,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    DataLogManager.start("", "", 0.02);
+    DataLogManager.start("", "", 0.05);
     DriverStation.startDataLog(DataLogManager.getLog());
     autonomousStateLogger = new CustomStringLogger("Autonomous/State");
     this.robotContainer = new RobotContainer();
