@@ -1,6 +1,8 @@
 package frc.Java_Is_UnderControl.Logging.EnhancedLoggers;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -18,13 +20,14 @@ public class CustomPose2dLogger extends Pose2dLogEntry {
     super(DataLogManager.getLog(), name);
     this.name = name;
     CustomPose2dLogger.isFmsMatch = DriverStation.getMatchNumber() > 0;
-    this.loggedValue = new Pose2d(1,1,1); // Set to something different than default for initial logging
-    this.append(new Pose2d());
+    this.loggedValue = new Pose2d(new Translation2d(100, 100), new Rotation2d()); // Set to something different than
+                                                                                  // default for initial logging
+    this.appendRadians(new Pose2d());
   }
 
   @Override
   public void appendRadians(Pose2d pose) {
-    if(!pose.equals(this.loggedValue)){
+    if (!pose.equals(this.loggedValue)) {
       this.loggedValue = pose;
       super.appendRadians(pose);
       if (!CustomPose2dLogger.isFmsMatch) {

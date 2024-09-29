@@ -1,6 +1,7 @@
 package frc.Java_Is_UnderControl.Logging.EnhancedLoggers;
 
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -13,19 +14,20 @@ public class CustomPose3dLogger extends Pose3dLogEntry {
 
   private String name;
 
-  private loggedValue Pose3d;
+  private Pose3d loggedValue;
 
   public CustomPose3dLogger(String name) {
     super(DataLogManager.getLog(), name);
     this.name = name;
     CustomPose3dLogger.isFmsMatch = DriverStation.getMatchNumber() > 0;
-    this.loggedValue = new Pose3d(1,1,1); // Set to something different than default for initial logging
-    this.append(new Pose3d());
+    this.loggedValue = new Pose3d(100, 100, 0, new Rotation3d()); // Set to something different than default for initial
+    // // logging
+    this.appendRadians(new Pose3d());
   }
 
   @Override
   public void appendRadians(Pose3d pose) {
-    if(!pose.equals(this.loggedValue)){
+    if (!pose.equals(this.loggedValue)) {
       this.loggedValue = pose;
       super.appendRadians(pose);
       if (!CustomPose3dLogger.isFmsMatch) {
