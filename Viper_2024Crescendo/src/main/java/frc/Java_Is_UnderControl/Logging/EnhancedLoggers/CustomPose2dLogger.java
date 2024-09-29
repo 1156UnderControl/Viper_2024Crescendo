@@ -12,21 +12,28 @@ public class CustomPose2dLogger extends Pose2dLogEntry {
 
   private String name;
 
+  private Pose2d loggedValue;
+
   public CustomPose2dLogger(String name) {
     super(DataLogManager.getLog(), name);
     this.name = name;
     CustomPose2dLogger.isFmsMatch = DriverStation.getMatchNumber() > 0;
+    this.loggedValue = new Pose2d(1,1,1); // Set to something different than default for initial logging
+    this.append(new Pose2d());
   }
 
   @Override
   public void appendRadians(Pose2d pose) {
-    super.appendRadians(pose);
-    if (!CustomPose2dLogger.isFmsMatch) {
-      double[] data = new double[3];
-      data[0] = pose.getTranslation().getX();
-      data[1] = pose.getTranslation().getY();
-      data[2] = pose.getRotation().getRadians();
-      SmartDashboard.putNumberArray(this.name, data);
+    if(!pose.equals(this.loggedValue)){
+      this.loggedValue = pose;
+      super.appendRadians(pose);
+      if (!CustomPose2dLogger.isFmsMatch) {
+        double[] data = new double[3];
+        data[0] = pose.getTranslation().getX();
+        data[1] = pose.getTranslation().getY();
+        data[2] = pose.getRotation().getRadians();
+        SmartDashboard.putNumberArray(this.name, data);
+      }
     }
   }
 

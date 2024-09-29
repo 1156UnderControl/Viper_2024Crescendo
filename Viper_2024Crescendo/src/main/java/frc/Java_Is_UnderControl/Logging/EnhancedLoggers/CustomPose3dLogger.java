@@ -13,22 +13,29 @@ public class CustomPose3dLogger extends Pose3dLogEntry {
 
   private String name;
 
+  private loggedValue Pose3d;
+
   public CustomPose3dLogger(String name) {
     super(DataLogManager.getLog(), name);
     this.name = name;
     CustomPose3dLogger.isFmsMatch = DriverStation.getMatchNumber() > 0;
+    this.loggedValue = new Pose3d(1,1,1); // Set to something different than default for initial logging
+    this.append(new Pose3d());
   }
 
   @Override
   public void appendRadians(Pose3d pose) {
-    super.appendRadians(pose);
-    if (!CustomPose3dLogger.isFmsMatch) {
-      double[] data = new double[4];
-      data[0] = pose.getTranslation().getX();
-      data[1] = pose.getTranslation().getY();
-      data[2] = pose.getZ();
-      data[3] = pose.getRotation().getAngle();
-      SmartDashboard.putNumberArray(this.name, data);
+    if(!pose.equals(this.loggedValue)){
+      this.loggedValue = pose;
+      super.appendRadians(pose);
+      if (!CustomPose3dLogger.isFmsMatch) {
+        double[] data = new double[4];
+        data[0] = pose.getTranslation().getX();
+        data[1] = pose.getTranslation().getY();
+        data[2] = pose.getZ();
+        data[3] = pose.getRotation().getAngle();
+        SmartDashboard.putNumberArray(this.name, data);
+      }
     }
   }
 
