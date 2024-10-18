@@ -1,6 +1,6 @@
 package frc.robot.Joysticks;
 
-import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class OperatorController implements IOperatorController {
@@ -14,71 +14,71 @@ public class OperatorController implements IOperatorController {
     return mInstance;
   }
 
-  CommandPS5Controller controller;
+  CommandXboxController controller;
 
   private OperatorController() {
-    controller = new CommandPS5Controller(1);
+    controller = new CommandXboxController(1);
   }
 
   @Override
   public Trigger getIntake() {
-    return controller.button(2);
+
+    return controller.a();
   }
 
   @Override
   public Trigger getIntakeFromHP() {
-    return controller.L2();
+    return controller.rightTrigger(0.2);
   }
 
   @Override
   public Trigger getSecured() {
-    return controller.button(4);
+    return controller.y();
   }
 
   @Override
   public Trigger getPrepareAmp() {
-    return controller.L1();
+    return controller.leftBumper();
   }
 
   @Override
   public Trigger getPrepareSpeaker() {
-    return controller.R1();
+    return controller.rightBumper();
   }
 
   @Override
   public Trigger getShoot() {
-    return controller.R2();
+    return controller.leftTrigger(0.2);
   }
 
   @Override
   public Trigger climb() {
-    return controller.button(9);
+    return controller.back();
   }
 
   @Override
   public Trigger release() {
-    return controller.button(10);
+    return controller.start();
   }
 
   @Override
   public Trigger getDoNotShoot() {
-    return controller.button(3);
+    return controller.b();
   }
 
   @Override
   public Trigger falsePositive() {
-    return controller.R3();
-
+    return controller.rightStick();
   }
 
   @Override
   public Trigger falseNegative() {
-    return controller.L3();
+    return controller.leftStick();
   }
 
   @Override
   public Trigger expell() {
-    return controller.button(1);
+    return controller.x();
   }
 
 }
