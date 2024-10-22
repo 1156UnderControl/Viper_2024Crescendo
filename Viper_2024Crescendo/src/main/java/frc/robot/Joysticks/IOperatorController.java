@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public interface IOperatorController {
   Trigger getIntake();
 
+  Trigger getIntakeFromHP();
+
   Trigger getSecured();
 
   Trigger getPrepareAmp();
@@ -16,6 +18,8 @@ public interface IOperatorController {
   Trigger climb();
 
   Trigger release();
+
+  Trigger getDoNotShoot();
 
   Trigger falsePositive();
 

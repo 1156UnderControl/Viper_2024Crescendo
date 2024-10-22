@@ -1,13 +1,13 @@
 package frc.robot.Joysticks;
 
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Joysticks.controllers.TypeXboxController;
+import frc.robot.Joysticks.controllers.TypePS5Controller;
 
 public class OperatorController implements IOperatorController {
   private static OperatorController mInstance = null;
 
   RobotController controller;
-  TypeXboxController controllerType;
+  TypePS5Controller controllerType;
 
   public static OperatorController getInstance() {
     if (mInstance == null) {
@@ -23,6 +23,12 @@ public class OperatorController implements IOperatorController {
   @Override
   public Trigger getIntake() {
     return controller.typeController.buttomDown();
+  }
+
+  // Remover
+  @Override
+  public Trigger getIntakeFromHP() {
+    return controller.typeController.R2();
   }
 
   @Override
@@ -56,6 +62,11 @@ public class OperatorController implements IOperatorController {
   }
 
   @Override
+  public Trigger getDoNotShoot() {
+    return controller.typeController.buttomRight();
+  }
+
+  @Override
   public Trigger falsePositive() {
     return controller.typeController.R3();
   }
@@ -69,4 +80,5 @@ public class OperatorController implements IOperatorController {
   public Trigger expell() {
     return controller.typeController.buttomLeft();
   }
+
 }
