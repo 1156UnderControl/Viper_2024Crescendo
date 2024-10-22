@@ -1,84 +1,72 @@
 package frc.robot.Joysticks;
 
-import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Joysticks.controllers.TypeXboxController;
 
 public class OperatorController implements IOperatorController {
   private static OperatorController mInstance = null;
+
+  RobotController controller;
+  TypeXboxController controllerType;
 
   public static OperatorController getInstance() {
     if (mInstance == null) {
       mInstance = new OperatorController();
     }
-
     return mInstance;
   }
 
-  CommandPS5Controller controller;
-
   private OperatorController() {
-    controller = new CommandPS5Controller(1);
+    controller = new RobotController(controllerType, 1);
   }
 
   @Override
   public Trigger getIntake() {
-    return controller.button(2);
-  }
-
-  @Override
-  public Trigger getIntakeFromHP() {
-    return controller.L2();
+    return controller.typeController.buttomDown();
   }
 
   @Override
   public Trigger getSecured() {
-    return controller.button(4);
+    return controller.typeController.buttomUp();
   }
 
   @Override
   public Trigger getPrepareAmp() {
-    return controller.L1();
+    return controller.typeController.L1();
   }
 
   @Override
   public Trigger getPrepareSpeaker() {
-    return controller.R1();
+    return controller.typeController.R1();
   }
 
   @Override
   public Trigger getShoot() {
-    return controller.R2();
+    return controller.typeController.R2();
   }
 
   @Override
   public Trigger climb() {
-    return controller.button(9);
+    return controller.typeController.share();
   }
 
   @Override
   public Trigger release() {
-    return controller.button(10);
-  }
-
-  @Override
-  public Trigger getDoNotShoot() {
-    return controller.button(3);
+    return controller.typeController.options();
   }
 
   @Override
   public Trigger falsePositive() {
-    return controller.R3();
-
+    return controller.typeController.R3();
   }
 
   @Override
   public Trigger falseNegative() {
-    return controller.L3();
+    return controller.typeController.R3();
   }
 
   @Override
   public Trigger expell() {
-    return controller.button(1);
+    return controller.typeController.buttomLeft();
   }
-
 }

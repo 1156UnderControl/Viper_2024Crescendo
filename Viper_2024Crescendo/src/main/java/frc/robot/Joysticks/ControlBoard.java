@@ -87,11 +87,6 @@ public class ControlBoard implements IDriverController, IOperatorController {
   }
 
   @Override
-  public Trigger getIntakeFromHP() {
-    return mOperatorController.getIntakeFromHP();
-  }
-
-  @Override
   public Trigger getSecured() {
     return mOperatorController.getSecured();
   }
@@ -119,11 +114,6 @@ public class ControlBoard implements IDriverController, IOperatorController {
   @Override
   public Trigger release() {
     return mOperatorController.release();
-  }
-
-  @Override
-  public Trigger getDoNotShoot() {
-    return mOperatorController.getDoNotShoot();
   }
 
   @Override
