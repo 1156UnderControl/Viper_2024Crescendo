@@ -15,6 +15,8 @@ public interface IShooter {
 
   void passThrough();
 
+  void longPassThrough();
+
   void passThroughWithoutPosition();
 
   void stopIntaking();
