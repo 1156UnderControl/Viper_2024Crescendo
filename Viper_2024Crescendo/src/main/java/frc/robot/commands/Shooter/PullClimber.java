@@ -2,11 +2,11 @@ package frc.robot.commands.Shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotSubsystems;
-import frc.robot.Joysticks.ControlBoard;
+import frc.robot.Joysticks.controllers.OneController;
 
 public class PullClimber extends Command {
   private RobotSubsystems robot;
-  private ControlBoard mControlBoard = ControlBoard.getInstance();
+  private OneController mControlBoard = OneController.getInstance();
 
   public PullClimber(RobotSubsystems robot) {
     this.robot = robot;

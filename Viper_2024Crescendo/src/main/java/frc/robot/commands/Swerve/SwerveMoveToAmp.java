@@ -1,13 +1,13 @@
 package frc.robot.commands.Swerve;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Joysticks.ControlBoard;
+import frc.robot.Joysticks.controllers.OneController;
 import frc.robot.subsystems.Swerve.ISwerve;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
 public class SwerveMoveToAmp extends Command {
   private ISwerve swerve;
-  private ControlBoard controller = ControlBoard.getInstance();
+  private OneController controller = OneController.getInstance();
   boolean angleAligned;
 
   public SwerveMoveToAmp(SwerveSubsystem swerve) {

@@ -1,4 +1,4 @@
-package frc.robot.Joysticks.controllers;
+package frc.robot.Joysticks.type_controllers;
 
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -28,13 +28,13 @@ public interface IController {
 
   public Trigger dPadDown();
 
-  public Trigger R1();
+  public boolean R1();
 
   public Trigger R2();
 
   public Trigger R3();
 
-  public Trigger L1();
+  public boolean L1();
 
   public Trigger L2();
 

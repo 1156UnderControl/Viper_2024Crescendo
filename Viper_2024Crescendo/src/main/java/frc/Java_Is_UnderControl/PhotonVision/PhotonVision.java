@@ -22,7 +22,7 @@ public class PhotonVision {
   private CustomDoubleLogger targetPositionYLogEntry;
 
   public PhotonVision() {
-    this("Microsoft_LifeCam_HD-3000 (1)");
+    this("Microsoft_LifeCam_HD-3000");
   }
 
   public PhotonVision(String cameraName) {

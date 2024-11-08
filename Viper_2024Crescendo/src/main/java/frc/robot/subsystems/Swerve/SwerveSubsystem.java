@@ -51,11 +51,11 @@ import frc.robot.Constants.CommandsConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.SwerveConstants;
-import frc.robot.Joysticks.ControlBoard;
+import frc.robot.Joysticks.controllers.OneController;
 
 public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements ISwerve {
 
-  private ControlBoard controller = ControlBoard.getInstance();
+  private OneController controller = OneController.getInstance();
 
   public boolean twoApriltagsDetected = false;
 

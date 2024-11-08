@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomDoubleLogger;
-import frc.robot.Joysticks.ControlBoard;
 import frc.robot.subsystems.Climber.ClimberSubsystem;
 import frc.robot.subsystems.Climber.IClimber;
 import frc.robot.subsystems.Intake.IIntake;
@@ -28,8 +27,6 @@ public class RobotSubsystems extends SubsystemBase {
   private SubsystemBase shooterSubsystem;
   private SubsystemBase climberSubsystem;
   private SubsystemBase ledSubsystem;
-
-  private ControlBoard controlBoard = ControlBoard.getInstance();
 
   public static boolean shootFinished = true;
   public boolean preparingShoot = false;
@@ -88,9 +85,6 @@ public class RobotSubsystems extends SubsystemBase {
   }
 
   public boolean isRobotAbleToShoot() {
-    if (this.controlBoard.getDoNotShoot().getAsBoolean()) {
-      return false;
-    }
     return shooter.isPivotAtSetpointForAutoShoot()
         && shooter.isFlywheelAtSetpoint()
         && swerve.isSwerveAlignedWithSpeaker()

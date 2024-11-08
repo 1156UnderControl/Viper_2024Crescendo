@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.Joysticks.ControlBoard;
+import frc.robot.Joysticks.controllers.OneController;
 import frc.robot.commands.Autonomous.Auto.Auto;
 import frc.robot.commands.Autonomous.Auto.Commands.AutonomousAim;
 import frc.robot.commands.Autonomous.Auto.Commands.AutonomousAimAtAngle;
@@ -37,7 +37,6 @@ import frc.robot.commands.Autonomous.Auto.Commands.AutonomousPassThrough;
 import frc.robot.commands.Autonomous.Auto.Commands.AutonomousSecured;
 import frc.robot.commands.Autonomous.Auto.Commands.AutonomousShoot;
 import frc.robot.commands.Autonomous.Auto.Commands.AutonomousShootInterpolation;
-import frc.robot.commands.States.ClimbPosition;
 import frc.robot.commands.States.CollectPosition;
 import frc.robot.commands.States.ExpellPosition;
 import frc.robot.commands.States.SecuredPosition;
@@ -64,7 +63,7 @@ public class RobotContainer {
 
   private final SendableChooser<Command> autoChooser;
 
-  public ControlBoard controlBoard = ControlBoard.getInstance();
+  public OneController controlBoard = OneController.getInstance();
 
   public RobotContainer() {
     this.swerve = SwerveSubsystem.getInstance(new File(Filesystem.getDeployDirectory(),
@@ -126,7 +125,6 @@ public class RobotContainer {
     this.controlBoard.getDoNotShoot().and(() -> !robot.preparingShoot).and(() -> robot.shooter.hasNote())
         .onTrue(parallel(
             new ShootOverStagePosition(robot), new SwerveAlignShootOverStage(swerve)));
-    this.controlBoard.release().onTrue(new ClimbPosition(robot));
     this.controlBoard.expell().onTrue(new ExpellPosition(robot));
     this.controlBoard.falseNegative().onTrue(new InstantCommand(() -> robot.shooter.setHasNoteTrue()));
     this.controlBoard.falsePositive().onTrue(new InstantCommand(() -> robot.shooter.setHasNoteFalse()));

@@ -1,29 +1,30 @@
-package frc.robot.Joysticks.controllers;
+package frc.robot.Joysticks.type_controllers;
 
-import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-public class TypePS5Controller implements IController {
-  CommandPS5Controller controller;
+public class TypeXboxController implements IController {
+  CommandXboxController controller;
 
-  public TypePS5Controller(int controllerID) {
-    controller = new CommandPS5Controller(controllerID);
+  public TypeXboxController(int controllerID) {
+    controller = new CommandXboxController(controllerID);
   }
 
+  @Override
   public Trigger buttomUp() {
-    return controller.button(3);
+    return controller.x();
   }
 
   public Trigger buttomDown() {
-    return controller.button(0);
+    return controller.a();
   }
 
   public Trigger buttomRight() {
-    return controller.button(1);
+    return controller.b();
   }
 
   public Trigger buttomLeft() {
-    return controller.button(2);
+    return controller.y();
   }
 
   @Override
@@ -46,63 +47,67 @@ public class TypePS5Controller implements IController {
     return controller.getRightX();
   }
 
+  // Can be pressed with the back right up buttom
   @Override
   public Trigger dPadUp() {
     return controller.povUp();
   }
 
+  // Can be pressed with the back right down buttom
   @Override
   public Trigger dPadRight() {
     return controller.povRight();
   }
 
+  // Can be pressed with the back left down buttom
   @Override
   public Trigger dPadLeft() {
     return controller.povLeft();
   }
 
+  // Can be pressed with the back left up buttom
   @Override
   public Trigger dPadDown() {
     return controller.povDown();
   }
 
   @Override
-  public Trigger R1() {
-    return controller.R1();
+  public boolean R1() {
+    return controller.rightBumper().getAsBoolean();
   }
 
   @Override
   public Trigger R2() {
-    return controller.R2();
+    return controller.rightTrigger();
   }
 
   @Override
   public Trigger R3() {
-    return controller.R3();
+    return controller.rightStick();
   }
 
   @Override
-  public Trigger L1() {
-    return controller.L1();
+  public boolean L1() {
+    return controller.leftBumper().getAsBoolean();
   }
 
   @Override
   public Trigger L2() {
-    return controller.L2();
+    return controller.leftTrigger();
   }
 
   @Override
   public Trigger L3() {
-    return controller.L3();
+    return controller.leftStick();
   }
 
   @Override
   public Trigger options() {
-    return controller.button(7);
+    return controller.start();
   }
 
   @Override
   public Trigger share() {
-    return controller.button(6);
+    return controller.back();
   }
 }

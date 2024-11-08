@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotSubsystems;
-import frc.robot.Joysticks.ControlBoard;
+import frc.robot.Joysticks.controllers.OneController;
 import frc.robot.commands.Intake.GoToShootIntake;
 import frc.robot.commands.Shooter.ShootAmp;
 import frc.robot.commands.Swerve.SwerveAutoAmpRoutine;
@@ -13,7 +13,7 @@ import frc.robot.subsystems.LEDs.LedColor;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
 public class ShootAmpPosition extends SequentialCommandGroup {
-  ControlBoard controlBoard = ControlBoard.getInstance();
+  OneController controller = OneController.getInstance();
 
   public ShootAmpPosition(RobotSubsystems robot, SwerveSubsystem swerve) {
     addCommands(

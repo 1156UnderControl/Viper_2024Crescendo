@@ -1,12 +1,12 @@
 package frc.robot.Joysticks;
 
-import frc.robot.Joysticks.controllers.IController;
-import frc.robot.Joysticks.controllers.TypePS5Controller;
-import frc.robot.Joysticks.controllers.TypeXboxController;
+import frc.robot.Joysticks.type_controllers.IController;
+import frc.robot.Joysticks.type_controllers.TypePS5Controller;
+import frc.robot.Joysticks.type_controllers.TypeXboxController;
 
 public class RobotController {
 
-  IController typeController;
+  public IController typeController;
 
   public RobotController(IController typeController, int controllerID) {
     this.typeController = typeController;
