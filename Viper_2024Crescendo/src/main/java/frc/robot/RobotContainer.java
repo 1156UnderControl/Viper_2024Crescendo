@@ -17,8 +17,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+<<<<<<< HEAD
 import frc.robot.Joysticks.controllers.OneController;
 import frc.robot.commands.Autonomous.Auto.Auto;
+=======
+import frc.robot.Joysticks.ControlBoard;
+import frc.robot.commands.Autonomous.Auto.AutoStealOverkillLEFTDynamic;
+import frc.robot.commands.Autonomous.Auto.AutoStealOverkillRIGHTDynamic;
+>>>>>>> main
 import frc.robot.commands.Autonomous.Auto.Commands.AutonomousAim;
 import frc.robot.commands.Autonomous.Auto.Commands.AutonomousAimAtAngle;
 import frc.robot.commands.Autonomous.Auto.Commands.AutonomousAimAtSpeakerMovingOFF;
@@ -131,7 +137,14 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return new Auto(robot, autoChooser);
+    switch (autoChooser.getSelected().getName()) {
+      case "Steal Overkill Left (Red) Dynamic":
+        return new AutoStealOverkillLEFTDynamic(this.robot, this.autoChooser);
+      case "Steal Overkill RIGHT (Red) Dynamic":
+        return new AutoStealOverkillRIGHTDynamic(this.robot, this.autoChooser);
+      default:
+        return this.autoChooser.getSelected();
+    }
   }
 
   public void setRobotToBrake() {

@@ -83,6 +83,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
 
   private CustomBooleanLogger hasNoteLog = new CustomBooleanLogger("/ShooterSubsystem/HasNote");
 
+  private CustomBooleanLogger hasPassedLog = new CustomBooleanLogger("/ShooterSubsystem/HasPassedThrough");
+
   private String state = "SAFE_POSITION";
 
   private CustomStringLogger stateLog = new CustomStringLogger("/ShooterSubsystem/State");
@@ -109,6 +111,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   private ShooterSubsystem() {
     this.hasNote = false;
     this.wasNoteIn = false;
+    this.startedPassThrough = false;
+    this.passedThrough = false;
     this.configureFlywheelMotor(this.upperFlywheelMotor);
     this.configureFlywheelMotor(this.lowerFlywheelMotor);
     this.configureFeederMotor();
@@ -120,7 +124,8 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     inSensorTrigger.onTrue(new InstantCommand(() -> this.wasNoteIn = this.state == "INTAKING" ? true : this.wasNoteIn));
     outSensorTrigger = new Trigger(this.noteSensorOut);
     outSensorTrigger.onTrue(
-        new InstantCommand(() -> this.hasNote = this.state == "INTAKING" && this.wasNoteIn ? true : this.hasNote));
+        new InstantCommand(() -> this.hasNote = this.state == "INTAKING" &&
+            this.wasNoteIn ? true : this.hasNote));
     inSensorTrigger
         .onTrue(new InstantCommand(
             () -> this.startedPassThrough = this.state == "PASSING_THROUGH" ? true : this.startedPassThrough));
@@ -290,7 +295,6 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   @Override
   public boolean hasPassedNoteThrough() {
     if (this.passedThrough) {
-      passedThrough = false;
       return true;
     } else {
       return false;
@@ -378,7 +382,15 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     this.goToIntakePosition();
     this.feederMotor.set(1);
     this.state = "PASSING_THROUGH";
+  }
 
+  @Override
+  public void longPassThrough() {
+    this.lowerFlywheelMotor.setVelocityReference(3600, 0);
+    this.upperFlywheelMotor.setVelocityReference(3200, 0);
+    this.goToIntakePosition();
+    this.feederMotor.set(1);
+    this.state = "LONG_PASSING_THROUGH";
   }
 
   @Override
@@ -508,9 +520,9 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   }
 
   private static void interpolationTreePivotAngle() {
-    pivotAngleMap.put(1.2, 51.0);
-    pivotAngleMap.put(1.43, 53.0);
-    pivotAngleMap.put(1.73, 58.0);
+    pivotAngleMap.put(1.2, 48.0);
+    pivotAngleMap.put(1.43, 51.0);
+    pivotAngleMap.put(1.73, 56.0);
     pivotAngleMap.put(2.04, 61.5);
     pivotAngleMap.put(2.3, 65.0);
     pivotAngleMap.put(2.6, 67.0);
@@ -539,7 +551,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
   }
 
   private static void interpolationTreeFlywheelRPM() {
-    flywheelRPMmap.put(1.2, 6000.0);
+    flywheelRPMmap.put(1.2, 5600.0);
     flywheelRPMmap.put(1.43, 6500.0);
     flywheelRPMmap.put(1.73, 7000.0);
     flywheelRPMmap.put(2.04, 7000.0);
@@ -598,6 +610,7 @@ public class ShooterSubsystem extends SubsystemBase implements IShooter {
     this.isAtSetpointLog.append(this.isPivotAtSetpoint());
     this.flywheelAtSetpointLog.append(isFlywheelAtSetpoint());
     this.hasNoteLog.append(this.hasNote);
+    this.hasPassedLog.append(this.passedThrough);
     this.stateLog.append(this.state);
     this.pivotMotor.updateLogs();
     this.feederMotor.updateLogs();

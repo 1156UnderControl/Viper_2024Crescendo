@@ -11,17 +11,24 @@ public class CustomIntegerLogger extends IntegerLogEntry {
 
   private String name;
 
+  private long loggedValue;
+
   public CustomIntegerLogger(String name) {
     super(DataLogManager.getLog(), name);
     this.name = name;
     CustomIntegerLogger.isFmsMatch = DriverStation.getMatchNumber() > 0;
+    this.loggedValue = 1; // Set to something different than default for initial logging
+    this.append(0);
   }
 
   @Override
   public void append(long value) {
-    super.append(value);
-    if (!CustomIntegerLogger.isFmsMatch) {
-      SmartDashboard.putNumber(this.name, value);
+    if(value != this.loggedValue){
+      this.loggedValue = value;
+      super.append(value);
+      if (!CustomIntegerLogger.isFmsMatch) {
+        SmartDashboard.putNumber(this.name, value);
+      }
     }
   }
 }

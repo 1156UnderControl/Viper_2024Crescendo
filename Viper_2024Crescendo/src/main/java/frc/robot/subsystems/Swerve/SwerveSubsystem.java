@@ -128,7 +128,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   private PhotonVision shooterTopCamera = new PhotonVision("Microsoft_LifeCam_HD-3000");
 
   private DriveAssist intakeDriveAssist = new DriveAssist(
-      IntakeConstants.intakeRollerPositionRelativeToRobotCenter.getTranslation(), 1, 2, 70);
+      IntakeConstants.intakeRollerPositionRelativeToRobotCenter.getTranslation(), 0.8, 1, 70);
 
   private DriveAssist driveToNoteAssist = new DriveAssist(
       IntakeConstants.intakeRollerPositionRelativeToRobotCenter.getTranslation(), 1, 10, 360);
@@ -145,7 +145,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
 
   private static PoseEstimator configureMulticameraPoseEstimation() {
     Transform3d robotToCamArducamLeft = new Transform3d(new Translation3d(-0.185, 0.272, 0.28),
-        new Rotation3d(0, Units.degreesToRadians(-37.5), Units.degreesToRadians(70)));
+        new Rotation3d(0, Units.degreesToRadians(-37.5), Units.degreesToRadians(78)));
     Transform3d robotToCamArducamRight = new Transform3d(new Translation3d(-0.185, -0.272, 0.27),
         new Rotation3d(0, Units.degreesToRadians(-37.5), Units.degreesToRadians(-70)));
     List<PoseEstimator> listOfEstimators = new ArrayList<>();
@@ -175,7 +175,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   private SwerveSubsystem(File directory, PoseEstimator poseEstimatorTeleOp, PoseEstimator poseEstimatorAuto) {
     super(directory, new OdometryEnabledSwerveConfig(
         SwerveConstants.MAX_VEL,
-        SwerveConstants.MAX_ROTATION_VEL,
+        SwerveConstants.MAX_ROTATION_VEL, 0.02,
         Alliance.Red,
         new SwervePathPlannerConfig(
             AutoConstants.TranslationPID,
@@ -349,7 +349,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
               "Note"),
           intakeNoteDetectionCamera, 1, 1);
       if (controller.notUsingJoystick()) {
-        targetAngle = lastHeadingJoystickTarget;
+        targetAngle = angleAlign;
       } else {
         targetAngle = Rotation2d.fromRadians(Math.atan2(controller.getCOS_Joystick(), controller.getSIN_Joystick()));
         lastHeadingJoystickTarget = targetAngle;
@@ -493,7 +493,7 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
     double aprilTagX = this.shooterTopCamera.targetPositionX();
     double aprilTagY = this.shooterTopCamera.targetPositionY();
     boolean isAlignedInX = Util.inRange(aprilTagX, targetX - deadbandX, targetX + deadbandX);
-    boolean isAlignedInY = aprilTagY > 1;
+    boolean isAlignedInY = aprilTagY > 2;
     double headingDegrees = getHeading().getDegrees();
     boolean alignedWithAngle = Util.inRange(Math.abs(headingDegrees), Math.abs(angleAlign.getDegrees()) - 3,
         Math.abs(angleAlign.getDegrees()) + 3);

@@ -8,16 +8,24 @@ public class BaseSwerveConfig {
 
   public final double maxRotationSpeed;
 
+  public final double dtDiscretization;
+
   public final Alliance defaultAlliance;
 
   public final SwervePathPlannerConfig pathPlannerConfig;
 
-  public BaseSwerveConfig(double maxTranslationSpeed, double maxRotationSpeed, Alliance defaultAlliance,
+  public BaseSwerveConfig(double maxTranslationSpeed, double maxRotationSpeed, double dtDiscretization,
+      Alliance defaultAlliance,
       SwervePathPlannerConfig pathPlannerConfig) {
+    this.dtDiscretization = dtDiscretization;
     this.maxTranslationSpeed = maxTranslationSpeed;
     this.maxRotationSpeed = maxRotationSpeed;
     this.defaultAlliance = defaultAlliance;
     this.pathPlannerConfig = pathPlannerConfig;
   }
-  
+
+  public BaseSwerveConfig(double maxTranslationSpeed, double maxRotationSpeed, Alliance defaultAlliance,
+      SwervePathPlannerConfig pathPlannerConfig) {
+    this(maxTranslationSpeed, maxRotationSpeed, 0.02, defaultAlliance, pathPlannerConfig);
+  }
 }

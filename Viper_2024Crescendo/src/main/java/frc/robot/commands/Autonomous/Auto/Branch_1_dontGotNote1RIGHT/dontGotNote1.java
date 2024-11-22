@@ -5,6 +5,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Robot;
 import frc.robot.RobotSubsystems;
 import frc.robot.commands.Autonomous.Auto.AutoStealOverkillRIGHTDynamic;
 
@@ -17,6 +18,7 @@ public class dontGotNote1 extends SequentialCommandGroup {
     this.robot = robot;
     addCommands(
         new InstantCommand(() -> AutoStealOverkillRIGHTDynamic.gotNotes[1] = false),
+        new InstantCommand(() -> Robot.autonomousState = "DIDNT_GOT_SECOND_NOTE"),
         AutoBuilder.followPath(this.path1));
   }
 }

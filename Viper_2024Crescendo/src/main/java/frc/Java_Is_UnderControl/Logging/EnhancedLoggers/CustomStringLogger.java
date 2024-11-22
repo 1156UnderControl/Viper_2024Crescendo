@@ -11,17 +11,24 @@ public class CustomStringLogger extends StringLogEntry {
 
   private String name;
 
+  private String loggedValue;
+
   public CustomStringLogger(String name) {
     super(DataLogManager.getLog(), name);
     this.name = name;
     CustomStringLogger.isFmsMatch = DriverStation.getMatchNumber() > 0;
+    this.loggedValue = "a"; // Set to something different than default for initial logging
+    this.append("");
   }
 
   @Override
   public void append(String value) {
-    super.append(value);
-    if (!CustomStringLogger.isFmsMatch) {
-      SmartDashboard.putString(this.name, value);
+    if(!value.equals(this.loggedValue)){
+      this.loggedValue = value;
+      super.append(value);
+      if (!CustomStringLogger.isFmsMatch) {
+        SmartDashboard.putString(this.name, value);
+      }
     }
   }
 

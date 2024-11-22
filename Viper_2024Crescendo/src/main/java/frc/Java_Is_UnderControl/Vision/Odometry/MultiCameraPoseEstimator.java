@@ -41,7 +41,6 @@ public class MultiCameraPoseEstimator implements PoseEstimator {
       return Optional.empty();
     }
     PoseEstimation poseEstimation;
-    pose2Ds.sort(new ComparatorPose2D());
     poseEstimations.sort(new ComparatorPoseEstimationTagCount());
     if (poseEstimations.size() > 1) {
       double TagCount1 = poseEstimations.get(poseEstimations.size() - 1).numberOfTargetsUsed;
