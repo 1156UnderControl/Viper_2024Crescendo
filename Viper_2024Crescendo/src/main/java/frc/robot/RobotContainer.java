@@ -17,14 +17,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-<<<<<<< HEAD
 import frc.robot.Joysticks.controllers.OneController;
-import frc.robot.commands.Autonomous.Auto.Auto;
-=======
-import frc.robot.Joysticks.ControlBoard;
 import frc.robot.commands.Autonomous.Auto.AutoStealOverkillLEFTDynamic;
 import frc.robot.commands.Autonomous.Auto.AutoStealOverkillRIGHTDynamic;
->>>>>>> main
 import frc.robot.commands.Autonomous.Auto.Commands.AutonomousAim;
 import frc.robot.commands.Autonomous.Auto.Commands.AutonomousAimAtAngle;
 import frc.robot.commands.Autonomous.Auto.Commands.AutonomousAimAtSpeakerMovingOFF;
@@ -43,6 +38,8 @@ import frc.robot.commands.Autonomous.Auto.Commands.AutonomousPassThrough;
 import frc.robot.commands.Autonomous.Auto.Commands.AutonomousSecured;
 import frc.robot.commands.Autonomous.Auto.Commands.AutonomousShoot;
 import frc.robot.commands.Autonomous.Auto.Commands.AutonomousShootInterpolation;
+import frc.robot.commands.Shooter.PullClimber;
+import frc.robot.commands.Shooter.ReleaseClimber;
 import frc.robot.commands.States.CollectPosition;
 import frc.robot.commands.States.ExpellPosition;
 import frc.robot.commands.States.SecuredPosition;
@@ -65,7 +62,10 @@ import frc.robot.subsystems.Swerve.SwerveSubsystem;
 public class RobotContainer {
 
   private final SwerveSubsystem swerve;
+
   public final RobotSubsystems robot;
+
+  private boolean climbMode;
 
   private final SendableChooser<Command> autoChooser;
 
@@ -113,16 +113,15 @@ public class RobotContainer {
 
   private void configureSwerveBindings() {
     this.controlBoard.resetGyro().onTrue(new InstantCommand(swerve::zeroGyro));
-    this.controlBoard.setHeadingFront().onTrue(new InstantCommand(swerve::setAngle0));
-    this.controlBoard.setHeadingBack().onTrue(new InstantCommand(swerve::setAngle180));
-    this.controlBoard.setHeadingLeft().onTrue(new InstantCommand(swerve::setAngle90));
-    this.controlBoard.setHeadingRight().onTrue(new InstantCommand(swerve::setAngleNeg90));
     this.controlBoard.getSecured().onTrue(new SwerveTeleopControl(swerve));
     this.controlBoard.getPrepareSpeaker().and(() -> robot.shooter.hasNote())
         .onTrue(new SwerveAlignSpeaker(swerve));
+    this.swerve.setButtonHeading(controlBoard, swerve);
   }
 
   private void configureRobotBindings() {
+    this.controlBoard.falsePositive().and(controlBoard.falsePositive())
+        .onTrue(new InstantCommand(() -> OneController.climbMode = true));
     this.controlBoard.getSecured().onTrue(new SecuredPosition(robot));
     this.controlBoard.getPrepareAmp().and(() -> robot.shooter.hasNote())
         .onTrue(new ShootAmpPosition(robot, swerve));
@@ -134,6 +133,8 @@ public class RobotContainer {
     this.controlBoard.expell().onTrue(new ExpellPosition(robot));
     this.controlBoard.falseNegative().onTrue(new InstantCommand(() -> robot.shooter.setHasNoteTrue()));
     this.controlBoard.falsePositive().onTrue(new InstantCommand(() -> robot.shooter.setHasNoteFalse()));
+    this.controlBoard.climb().onTrue(new PullClimber(robot));
+    this.controlBoard.release().onTrue(new ReleaseClimber(robot));
   }
 
   public Command getAutonomousCommand() {

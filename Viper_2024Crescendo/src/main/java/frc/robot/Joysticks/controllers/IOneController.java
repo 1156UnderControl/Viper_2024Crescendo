@@ -11,13 +11,9 @@ public interface IOneController {
 
   double getSIN_Joystick();
 
-  Trigger setHeadingFront();
+  double getHeadingY();
 
-  Trigger setHeadingRight();
-
-  Trigger setHeadingBack();
-
-  Trigger setHeadingLeft();
+  double getHeadingX();
 
   boolean turboActivate();
 
@@ -38,8 +34,6 @@ public interface IOneController {
   Trigger getPrepareAmp();
 
   Trigger getPrepareSpeaker();
-
-  Trigger getShoot();
 
   Trigger climb();
 

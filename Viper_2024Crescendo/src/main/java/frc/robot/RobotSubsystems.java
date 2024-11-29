@@ -4,7 +4,9 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
+import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomBooleanLogger;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomDoubleLogger;
+import frc.robot.Joysticks.controllers.OneController;
 import frc.robot.subsystems.Climber.ClimberSubsystem;
 import frc.robot.subsystems.Climber.IClimber;
 import frc.robot.subsystems.Intake.IIntake;
@@ -29,7 +31,9 @@ public class RobotSubsystems extends SubsystemBase {
   private SubsystemBase ledSubsystem;
 
   public static boolean shootFinished = true;
+
   public boolean preparingShoot = false;
+
   public boolean climbing;
 
   private PowerDistribution powerDistributionHub;
@@ -37,6 +41,8 @@ public class RobotSubsystems extends SubsystemBase {
   private CustomDoubleLogger batteryVoltageLogEntry = new CustomDoubleLogger("/Robot/BatteryVoltage");
 
   private CustomDoubleLogger totalCurrentDrawLogEntry = new CustomDoubleLogger("/Robot/TotalCurrentDraw");
+
+  private CustomBooleanLogger climbModeLog = new CustomBooleanLogger("/Robot/Joysticks/Mode");
 
   public RobotSubsystems() {
     ShooterSubsystem.getNote[0] = false;
@@ -66,6 +72,7 @@ public class RobotSubsystems extends SubsystemBase {
     this.ledSubsystem.periodic();
     this.batteryVoltageLogEntry.append(this.powerDistributionHub.getVoltage());
     this.totalCurrentDrawLogEntry.append(this.powerDistributionHub.getTotalCurrent());
+    this.climbModeLog.append(OneController.climbMode);
   }
 
   public boolean robotHasNote() {

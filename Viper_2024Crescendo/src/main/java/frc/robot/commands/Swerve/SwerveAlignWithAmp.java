@@ -34,6 +34,6 @@ public class SwerveAlignWithAmp extends Command {
 
   @Override
   public boolean isFinished() {
-    return (this.swerve.isAlignedWithAmp() && timer.get() > 1.5) || this.controller.getShoot().getAsBoolean();
+    return (this.swerve.isAlignedWithAmp() && timer.get() > 1.5);
   }
 }

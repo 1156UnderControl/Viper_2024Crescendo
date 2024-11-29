@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.Java_Is_UnderControl.Control.PidConfig;
 import frc.Java_Is_UnderControl.Limelight.LimelightHelpers;
 import frc.Java_Is_UnderControl.Logging.EnhancedLoggers.CustomBooleanLogger;
@@ -391,6 +392,31 @@ public class SwerveSubsystem extends OdometryEnabledSwerveSubsystem implements I
   @Override
   public void aimSwerve(double angleToAim) {
     this.driveFieldOrientedLockedAngle(new ChassisSpeeds(), Rotation2d.fromDegrees(angleToAim));
+  }
+
+  @Override
+  public InstantCommand setButtonHeading(OneController controller, SwerveSubsystem swerve) {
+    ChassisSpeeds desiredSpeeds = this.inputsToChassisSpeeds(controller.getYtranslation(),
+        controller.getXtranslation());
+    // front
+    if (controller.getHeadingY() >= 0.5 && (controller.getHeadingX() <= 0.5 || controller.getHeadingX() >= -0.5)) {
+      return new InstantCommand(swerve::setAngle0);
+    }
+    // right
+    else if (controller.getHeadingX() >= 0.5 && (controller.getHeadingY() < 0.5 || controller.getHeadingY() > -0.5)) {
+      return new InstantCommand(swerve::setAngleNeg90);
+    }
+    // left
+    else if (controller.getHeadingX() <= -0.5 && (controller.getHeadingY() < 0.5 || controller.getHeadingY() > -0.5)) {
+      return new InstantCommand(swerve::setAngle90);
+    }
+    // back
+    else if (controller.getHeadingY() <= -0.5 && (controller.getHeadingX() < 0.5 || controller.getHeadingX() > -0.5)) {
+      return new InstantCommand(swerve::setAngle180);
+    } else {
+      return null;
+    }
+
   }
 
   @Override

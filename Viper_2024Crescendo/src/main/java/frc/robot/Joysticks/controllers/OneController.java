@@ -3,14 +3,13 @@ package frc.robot.Joysticks.controllers;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.JoystickConstants;
-import frc.robot.Joysticks.RobotController;
 import frc.robot.Joysticks.type_controllers.TypeXboxController;
 
 public class OneController implements IOneController {
   private static OneController mInstance = null;
+  public static boolean climbMode = false;
 
   public static OneController getInstance() {
     if (mInstance == null) {
@@ -20,69 +19,55 @@ public class OneController implements IOneController {
     return mInstance;
   }
 
-  final CommandXboxController driverController;
-  final TypeXboxController xboxController;
-  final RobotController controller;
+  final TypeXboxController controller;
 
   private OneController() {
-    xboxController = new TypeXboxController(0);
-    driverController = new CommandXboxController(0);
-    controller = new RobotController(xboxController, 0);
+    controller = new TypeXboxController(0);
   }
 
   @Override
   public double getXtranslation() {
     if (turboActivate()) {
-      return -MathUtil.applyDeadband(performAllianceSpeedDirectionCorrection(driverController.getLeftX()),
+      return -MathUtil.applyDeadband(performAllianceSpeedDirectionCorrection(controller.leftX()),
           JoystickConstants.DEADBAND);
     }
-    return -MathUtil.applyDeadband(performAllianceSpeedDirectionCorrection(driverController.getLeftX()),
+    return -MathUtil.applyDeadband(performAllianceSpeedDirectionCorrection(controller.leftX()),
         JoystickConstants.DEADBAND) * 0.6;
   }
 
   @Override
   public double getYtranslation() {
     if (turboActivate()) {
-      return -MathUtil.applyDeadband(performAllianceSpeedDirectionCorrection(driverController.getLeftY()),
+      return -MathUtil.applyDeadband(performAllianceSpeedDirectionCorrection(controller.leftX()),
           JoystickConstants.DEADBAND);
     }
-    return -MathUtil.applyDeadband(performAllianceSpeedDirectionCorrection(driverController.getLeftY()),
+    return -MathUtil.applyDeadband(performAllianceSpeedDirectionCorrection(controller.leftX()),
         JoystickConstants.DEADBAND) * 0.6;
   }
 
   @Override
-  public Trigger setHeadingBack() {
-    return driverController.a();
+  public double getHeadingY() {
+    return controller.rightY();
   }
 
   @Override
-  public Trigger setHeadingFront() {
-    return driverController.y();
-  }
-
-  @Override
-  public Trigger setHeadingLeft() {
-    return driverController.x();
-  }
-
-  @Override
-  public Trigger setHeadingRight() {
-    return driverController.b();
+  public double getHeadingX() {
+    return controller.rightX();
   }
 
   @Override
   public double getCOS_Joystick() {
-    return -driverController.getRightX();
+    return -controller.rightX();
   }
 
   @Override
   public double getSIN_Joystick() {
-    return -driverController.getRightY();
+    return -controller.rightY();
   }
 
   @Override
   public boolean turboActivate() {
-    return 0.2 < driverController.getRightTriggerAxis();
+    return 0.2 < controller.leftY();
   }
 
   @Override
@@ -96,22 +81,22 @@ public class OneController implements IOneController {
 
   @Override
   public boolean rotateLeft() {
-    return controller.typeController.L1();
+    return controller.L1();
   }
 
   @Override
   public boolean rotateRight() {
-    return controller.typeController.R1();
+    return controller.R1();
   }
 
   @Override
   public boolean isForcingDriverControl() {
-    return 0.2 < driverController.getLeftTriggerAxis();
+    return 0.2 < controller.leftY();
   }
 
   @Override
   public Trigger resetGyro() {
-    return driverController.back();
+    return controller.share();
   }
 
   private double performAllianceSpeedDirectionCorrection(Double value) {
@@ -125,57 +110,60 @@ public class OneController implements IOneController {
 
   @Override
   public Trigger getIntake() {
-    return controller.typeController.dPadRight();
+    return controller.buttomDown();
   }
 
   @Override
   public Trigger getSecured() {
-    return controller.typeController.buttomDown();
+    return controller.buttomRight();
   }
 
   @Override
   public Trigger getPrepareAmp() {
-    return controller.typeController.dPadLeft();
+    return controller.L2();
   }
 
   @Override
   public Trigger getPrepareSpeaker() {
-    return controller.typeController.dPadDown();
-  }
-
-  @Override
-  public Trigger getShoot() {
-    return controller.typeController.dPadUp();
+    return controller.R2();
   }
 
   @Override
   public Trigger climb() {
-    return controller.typeController.share();
+    if (OneController.climbMode) {
+      return controller.dPadUp();
+    } else {
+      return new Trigger(() -> false);
+    }
   }
 
   @Override
   public Trigger release() {
-    return controller.typeController.options();
+    if (OneController.climbMode) {
+      return controller.dPadDown();
+    } else {
+      return new Trigger(() -> false);
+    }
   }
 
   @Override
   public Trigger getDoNotShoot() {
-    return controller.typeController.buttomRight();
+    return controller.buttomRight();
   }
 
   @Override
   public Trigger falsePositive() {
-    return controller.typeController.R3();
+    return controller.R3();
   }
 
   @Override
   public Trigger falseNegative() {
-    return controller.typeController.L3();
+    return controller.L3();
   }
 
   @Override
   public Trigger expell() {
-    return controller.typeController.buttomLeft();
+    return controller.buttomLeft();
   }
 
 }

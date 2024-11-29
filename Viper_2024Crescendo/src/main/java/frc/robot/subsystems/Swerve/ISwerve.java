@@ -1,5 +1,8 @@
 package frc.robot.subsystems.Swerve;
 
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.Joysticks.controllers.OneController;
+
 public interface ISwerve {
   void setModulesToCoast();
 
@@ -16,6 +19,8 @@ public interface ISwerve {
   void alignSpeaker();
 
   void aimSwerve(double angleToAim);
+
+  InstantCommand setButtonHeading(OneController controller, SwerveSubsystem swerve);
 
   boolean isAtTargetHeading();
 
